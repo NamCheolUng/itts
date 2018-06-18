@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="CallingCardFileDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="callingCardFileVO" type="mobile.com.callingCard.service.CallingCardFileVO"/>
+	
+	<delete id="callingCardFileDAO.deleteCallingCardArticle" parameterClass="callingCardFileVO">
+		<![CDATA[
+			DELETE FROM tb_mobile_file 
+			WHERE EMPL_NO = #emplNo# AND
+				  FILE_TYPE = #fileType#
+			]]>
+	</delete>
+	
+ 	<select id="callingCardFileDAO.selectCallingCardArticle" resultClass="callingCardFileVO">
+			SELECT ATCH_FILE_ID AS atchFileId,
+				   EMPL_NO AS emplNo,
+				   CREATE_DT AS createDt,
+				   FILE_TYPE AS fileType
+			FROM tb_mobile_file 
+			WHERE
+				 EMPL_NO = #emplNo# AND
+				 FILE_TYPE = #fileType#
+	</select>
+	
+  	<insert id="callingCardFileDAO.insertfile">
+			INSERT INTO tb_mobile_file
+				( 
+				ATCH_FILE_ID,
+				EMPL_NO,
+				CREATE_DT,
+				FILE_TYPE
+				)
+			VALUES 
+				(
+				#atchFileId#,
+				#emplNo#,
+				curdate(),
+				#fileType#
+				)
+	</insert>
+	
+	 <select id="callingCardFileDAO.selectCallingCardName" resultClass="egovMap">
+			SELECT Distinct(NM)
+			FROM comtnfiledetail a, tb_mobile_file b
+			WHERE b.EMPL_NO = #emplNo# AND
+				  b.FILE_TYPE = #fileType# AND
+				  b.ATCH_FILE_ID = a.ATCH_FILE_ID
+	</select>
+</sqlMap>

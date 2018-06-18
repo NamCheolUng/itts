@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="LaterSettleDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	 <select id="laterSettleDAO.selectFoodExpensesList" resultClass="egovMap">
+			SELECT EMPL_NO,
+				   FOOD_DT,
+				   EMPL_NM,
+				   PAYMENT_DT,
+				   FOOD_CNT,
+				   COST,
+				   RM,
+				   EMAIL_ADRES,
+				   AFFILIATION_ID
+				   
+			FROM tb_foodexpenses
+			WHERE AFFILIATION_ID = #affiliationId#
+					<isEmpty prepend="AND" property="foodDt">
+						FOOD_DT = date_format(now(), '%Y%m')
+					</isEmpty>
+					<isNotEmpty prepend="AND" property="foodDt">						
+						FOOD_DT = #foodDt#
+					</isNotEmpty>
+	</select>
+	
+	<select id="laterSettleDAO.selectFoodExpensesListExcel" resultClass="egovMap">
+			SELECT EMPL_NM,
+				   FOOD_CNT,
+				   COST,
+				   PAYMENT_DT,
+				   RM
+				   
+			FROM tb_foodexpenses
+			WHERE AFFILIATION_ID = #affiliationId# AND			
+				  FOOD_DT = #foodDt# AND
+				  EMPL_NO = #emplNo#
+	</select>
+	
+	<select id="laterSettleDAO.selectParkingExpensesListExcel" resultClass="egovMap">
+			SELECT EMPL_NM,
+				   CAR_NUMB,
+				   EXTENSION_DT,
+				   CAR_DIV,
+				   COST,
+				   PAYMENT_DT,
+				   EXPIRATION_DT,
+				   RM			   
+				   
+			FROM tb_parkingstub
+			WHERE AFFILIATION_ID = #affiliationId# AND			
+				  CAR_NUMB = #carNumb#
+	</select>
+	
+	<insert id="laterSettleDAO.insertEmplyrToFoodList">
+			INSERT INTO tb_foodexpenses
+				(
+					EMPL_NO ,
+					FOOD_DT ,
+					EMPL_NM ,
+					EMAIL_ADRES,
+					AFFILIATION_ID
+				)VALUES
+				(
+					#emplNo#,
+					#foodDt#,
+					#emplNm#,
+					#emailAdres#,
+					#affiliationId#
+				)
+	</insert>
+	
+	<update id="laterSettleDAO.updateFoodList">
+			UPDATE tb_foodexpenses SET
+					FOOD_CNT = #foodCnt#,
+					COST = #cost#,
+					PAYMENT_DT = #paymentDt#,
+					RM = #rm#
+			WHERE EMPL_NO = #emplNo# AND
+				  FOOD_DT = #foodDt# AND
+				  EMPL_NM = #emplNm# AND
+				  AFFILIATION_ID = #affiliationId#
+	</update>
+	
+	<select id="laterSettleDAO.checkEmplyrUser" resultClass="int">
+			SELECT count(EMPL_NO)	
+			FROM tb_foodexpenses
+			WHERE EMPL_NO = #emplNo# AND
+			      FOOD_DT = #foodDt# AND
+			      EMPL_NM = #emplNm# AND
+			      AFFILIATION_ID = #affiliationId#
+	</select>
+	
+	<select id="laterSettleDAO.selectyearList" resultClass="egovMap">
+				SELECT DISTINCT left(FOOD_DT, 4) as yearList
+				FROM tb_foodexpenses
+				ORDER BY FOOD_DT DESC
+	</select>
+
+	<delete id="laterSettleDAO.deleteFoodList">
+	       DELETE FROM tb_foodexpenses
+	       WHERE EMPL_NO = #emplNo# AND
+			      FOOD_DT = #foodDt# AND
+			      EMPL_NM = #emplNm# AND
+			      AFFILIATION_ID = #affiliationId#
+	</delete>
+	
+	 <select id="laterSettleDAO.selectUserList" resultClass="egovMap" >
+			SELECT 
+				EMPL_NO, 
+				USER_NM,
+				EMAIL_ADRES
+			FROM 
+				comtnemplyrinfo
+			WHERE AFFILIATION_ID = #affiliationId# AND
+				  EMPLYR_ENDDE IS NULL
+			ORDER BY USER_NM
+ 	</select>
+ 	
+	<select id="laterSettleDAO.selectParkingExpenseList" resultClass="egovMap">
+	    	SELECT 	CAR_NUMB,
+					EXTENSION_DT, 
+					EMPL_NM, 
+					PAYMENT_DT, 
+					EXPIRATION_DT, 
+					CAR_DIV, 
+					COST, 
+					RM,
+					EMAIL_ADRES,
+					AFFILIATION_ID,
+					EMPL_NO
+					
+	    	FROM	tb_parkingstub a
+	    	WHERE   AFFILIATION_ID = #affiliationId#
+	</select>
+	
+	<select id="laterSettleDAO.checkEmplyrUserParking" resultClass="int">
+			SELECT count(EMPL_NM)	
+			FROM tb_parkingstub
+			WHERE CAR_NUMB = #carNumb# AND
+			      EMPL_NM = #emplNm# AND
+			      AFFILIATION_ID = #affiliationId#
+	</select>
+	
+	<insert id="laterSettleDAO.insertEmplyrToParkingList">
+			INSERT INTO tb_parkingstub
+				(
+					CAR_NUMB ,
+					EMPL_NO,
+					EMPL_NM ,
+					EMAIL_ADRES ,
+					AFFILIATION_ID
+				)VALUES
+				(
+					#carNumb#,
+					#emplNo#,
+					#emplNm#,
+					#emailAdres#,
+					#affiliationId#
+				)
+	</insert>
+	
+	<update id="laterSettleDAO.updateparkingList">
+			UPDATE tb_parkingstub SET
+					CAR_NUMB = #carNumb#,
+					EXTENSION_DT = #extensionDt#,
+					PAYMENT_DT = #paymentDt#,
+					EXPIRATION_DT = #expirationDt#,
+					CAR_DIV = #carDiv#,
+					COST = #cost#,
+					RM = #rm#
+					
+			WHERE 
+				  EMPL_NM = #emplNm# AND
+				  AFFILIATION_ID = #affiliationId#
+	</update>
+	
+		<delete id="laterSettleDAO.deleteParkingList">
+	       DELETE FROM tb_parkingstub
+	       WHERE
+			      CAR_NUMB = #carNumb# AND
+			      EMPL_NM = #emplNm# AND
+			      AFFILIATION_ID = #affiliationId#
+	</delete>
+</sqlMap>

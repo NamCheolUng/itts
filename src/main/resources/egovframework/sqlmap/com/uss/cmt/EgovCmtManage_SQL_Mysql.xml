@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="User">
+
+    <typeAlias alias="egovMap" type = "egovframework.rte.psl.dataaccess.util.EgovMap"/> 
+    <typeAlias alias="cmtVO"   type = "egovframework.com.uss.cmt.service.CmtManageVO"/>
+    
+    <insert id="cmtManageDAO.insertWrkStartCmtInfo_S">
+        <![CDATA[
+            INSERT INTO COMTNCOMMUTE 
+                (   WRKTM_ID            ,
+                    EMPLYR_ID           ,
+                    ORGNZT_ID            ,
+                    WRKT_DT             ,
+                    WRK_START_TIME      ,
+                    WRK_END_TIME        ,
+                    WRK_HOURS           ,
+                    OVTMWRK_HOURS       ,
+                    WRK_START_STATUS    ,
+                    WRK_END_STATUS      ,
+                    RM                  ,
+                    FRST_REGIST_PNTTM   )
+            VALUES (
+                    #wrktmId#          ,
+                    #emplyrId#         ,
+                    #orgnztId#          ,
+                    #wrktDt#           ,
+                    NOW()    ,
+                    #wrkEndTime#      ,                   
+                    #wrkHours#         ,
+                    #ovtmwrkHours#     ,
+                    #wrkStartStatus#  ,
+                    #wrkEndStatus#    ,
+                    #rm#             ,
+                    NOW()				)
+        ]]>
+    </insert>
+    
+    <update id="cmtManageDAO.updateWrkStartCmtInfo" parameterClass="cmtVO">
+        <![CDATA[
+            UPDATE COMTNCOMMUTE 
+              SET   WRK_START_TIME      = NOW(), 
+                    WRK_START_STATUS         = #wrkStartStatus# 
+             WHERE 
+             		WRKTM_ID  =  #wrktmId#     
+        ]]>
+    </update>
+    
+    <update id="cmtManageDAO.updateWrkCmtInfoOfManager" parameterClass="cmtVO">
+        <![CDATA[
+            UPDATE COMTNCOMMUTE 
+              SET   WRK_START_TIME      = 	#wrkStartTime#	, 
+              		WRK_END_TIME 		= #wrkEndTime#	,
+              		RM					= 		#rm#	,
+              		WRK_END_STATUS         = #wrkEndStatus# ,
+              		LAST_UPDT_PNTTM		=	NOW()		,
+                    WRK_START_STATUS         = #wrkStartStatus# ,
+                    MODIFY_REASON       = #modifyReason#,
+                    OUT_RM = #outRm#,
+                    OUT_WRK_STIME = #outWrkStime#,
+                    OUT_WRK_ETIME = #outWrkEtime#,
+                    OUT_WRK_PLACE = #outWrkPlace#
+             WHERE 
+             		WRKTM_ID  =  #wrktmId#     
+        ]]>
+    </update>
+    
+    
+    
+    <update id="cmtManageDAO.insertWrkEndCmtInfo_S" parameterClass="cmtVO">
+        <![CDATA[
+            UPDATE COMTNCOMMUTE 
+              SET   WRK_END_TIME      = NOW(), 
+                    WRK_HOURS         = #wrkHours#,    
+                    OVTMWRK_HOURS     = #ovtmwrkHours#, 
+                    RM     			  = #rm#,
+                    WRK_END_STATUS    = #wrkEndStatus# 
+             WHERE 
+             		WRKTM_ID  =  #wrktmId#     
+        ]]>
+    </update>
+    
+   <select id="cmtManageDAO.selectWrktmId_S" resultClass="String">
+        <![CDATA[
+            SELECT
+                    WRKTM_ID   
+            FROM    COMTNCOMMUTE
+            WHERE   EMPLYR_ID = #emplyrId# and WRKT_DT=#wrktDt#
+        ]]>
+    </select>
+    
+    <select id="cmtManageDAO.selectTodayWrkStartInfo" resultClass="cmtVO">
+        <![CDATA[
+            SELECT
+                    WRKTM_ID		wrktmId,  
+                    WRK_START_TIME  wrkStartTime,
+                    OUT_WRK_STIME   outWrkStime                    
+            FROM    COMTNCOMMUTE
+            WHERE   EMPLYR_ID = #emplyrId# and WRKT_DT= #wrktDt#
+        ]]>
+    </select>
+    
+    
+    <select id="cmtManageDAO.selectWrkStartInfo_S" resultClass="cmtVO">
+        <![CDATA[
+            SELECT
+                    WRKTM_ID		wrktmId,  
+                    WRKT_DT			wrktDt,
+                    WRK_START_TIME  wrkStartTime  
+            FROM    COMTNCOMMUTE
+            WHERE   EMPLYR_ID = #emplyrId# 
+            and WRKT_DT= (SELECT MAX(WRKT_DT) FROM COMTNCOMMUTE WHERE  EMPLYR_ID = #emplyrId#)
+        ]]>
+    </select>
+    
+     <select id="cmtManageDAO.selectUserCmtYearList" resultClass="cmtVO">
+       <![CDATA[
+            SELECT  LEFT(WRKT_DT, 4)      wrktDt 
+            FROM    COMTNCOMMUTE
+            WHERE	EMPLYR_ID = #emplyrId#
+            GROUP BY LEFT(WRKT_DT, 4)            
+        ]]>
+    </select>  
+    
+    <select id="cmtManageDAO.selectDateCmtList" resultClass="cmtVO">
+       <![CDATA[
+            SELECT  
+                    WRKTM_ID           wrktmId ,
+                    A.ESNTL_ID          emplyrId ,
+                    A.ORGNZT_ID          orgnztId  ,
+                    DATE_FORMAT(#wrktDt#, '%Y-%m-%d') AS wrktDt ,
+                    DATE_FORMAT(WRK_START_TIME, '%H:%i:%S') AS wrkStartTime ,                    
+                    DATE_FORMAT(WRK_END_TIME, '%H:%i:%S') AS wrkEndTime ,
+                    WRK_HOURS          wrkHours ,
+                    OVTMWRK_HOURS      ovtmwrkHours ,
+                    WRK_START_STATUS   wrkStartStatus ,
+                    WRK_END_STATUS     wrkEndStatus ,
+                    OUT_WRK_STIME      outWrkStime	,
+                    OUT_WRK_ETIME	   outWrkEtime	,
+                    OUT_WRK_PLACE	   outWrkPlace	, 
+                    RM				   rm			,
+                    USER_NM				userNm		,
+                    C.LAST_UPDT_PNTTM	 	lastUpdtPnttn,                    
+                    DAYOFWEEK(#wrktDt#)   AS dow	,
+                    (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE_ID = 'COM056' AND CODE = VCT.VCATN_SE) AS vct
+            FROM    COMTNEMPLYRINFO  A LEFT OUTER JOIN COMTNCOMMUTE C ON 
+            (C.EMPLYR_ID = A.ESNTL_ID AND  WRKT_DT = #wrktDt# AND EMPLYR_ENDDE IS NULL)
+            LEFT OUTER JOIN COMTNVCATNMANAGE VCT ON ( A.ESNTL_ID =  VCT.APPLCNT_ID and #wrktDt# BETWEEN VCT.BGNDE AND VCT.ENDDE )   
+            WHERE 1=1      
+        ]]>
+        <isNotEmpty prepend="AND" property="orgnztId">
+					 A.ORGNZT_ID = #orgnztId#
+		</isNotEmpty>
+    </select>  
+    
+    <select id="cmtManageDAO.selectUserMonthCmtList" resultClass="cmtVO">
+       <![CDATA[
+            SELECT  
+                    WRKTM_ID           wrktmId ,
+                    EMPLYR_ID          emplyrId ,
+                    ORGNZT_ID          orgnztId  ,
+                    DATE_FORMAT(date_string, '%Y-%m-%d')AS wrktDt ,
+                    DATE_FORMAT(WRK_START_TIME, '%H:%i:%S') AS wrkStartTime ,                    
+                    DATE_FORMAT(WRK_END_TIME, '%H:%i:%S') AS wrkEndTime ,
+                    WRK_HOURS          wrkHours ,
+                    OVTMWRK_HOURS      ovtmwrkHours ,
+                    WRK_START_STATUS   wrkStartStatus ,
+                    WRK_END_STATUS     wrkEndStatus ,
+                    OUT_WRK_STIME      outWrkStime	,
+                    OUT_WRK_ETIME	   outWrkEtime	,
+                    OUT_WRK_PLACE	   outWrkPlace	, 
+                    RM				   rm			,
+                    CMUT.LAST_UPDT_PNTTM	 	lastUpdtPnttn,
+                    dow				   dow			,
+                    MODIFY_REASON      modifyReason,
+                    (SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE_ID = 'COM056' AND CODE = VCT.VCATN_SE) AS vct
+            FROM   (SELECT * FROM(
+				    SELECT
+				            date_string
+				            ,DAYOFWEEK(date_string)              AS dow 
+				    FROM
+				    (
+				        SELECT      CONCAT(#wrktDt#,LPAD(n,2,'0')) AS date_string
+				        FROM
+				        (
+				            SELECT '1' AS n                                     
+				            UNION SELECT '2'  UNION SELECT '3'  UNION SELECT '4'  UNION SELECT '5'
+				            UNION SELECT '6'  UNION SELECT '7'  UNION SELECT '8'  UNION SELECT '9'  UNION SELECT '10'
+				            UNION SELECT '11' UNION SELECT '12' UNION SELECT '13' UNION SELECT '14' UNION SELECT '15'
+				            UNION SELECT '16' UNION SELECT '17' UNION SELECT '18' UNION SELECT '19' UNION SELECT '20'
+				            UNION SELECT '21' UNION SELECT '22' UNION SELECT '23' UNION SELECT '24' UNION SELECT '25'
+				            UNION SELECT '26' UNION SELECT '27' UNION SELECT '28' UNION SELECT '29' UNION SELECT '30'
+				            UNION SELECT '31' UNION SELECT '32' UNION SELECT '33' UNION SELECT '34' UNION SELECT '35'
+				        ) AS a
+				    ) AS b
+				) AS c
+				WHERE
+				    dow IS NOT NULL and date_string <= NOW()
+				    AND date_string >= (SELECT A.EMPLYR_BNGDE FROM comtnemplyrinfo A WHERE A.ESNTL_ID = #emplyrId#)
+				 )WKDAY LEFT OUTER JOIN COMTNCOMMUTE CMUT ON 
+            (WKDAY.date_string = CMUT.WRKT_DT and EMPLYR_ID = #emplyrId#)
+            LEFT OUTER JOIN COMTNVCATNMANAGE VCT ON ( CMUT.EMPLYR_ID =  VCT.APPLCNT_ID and WKDAY.date_string BETWEEN VCT.BGNDE AND VCT.ENDDE )   
+            order by date_string      
+        ]]>
+    </select>
+    
+    <select id="cmtManageDAO.selectUserCmtDetail" resultClass="cmtVO">
+       <![CDATA[
+            SELECT  
+                    WRKTM_ID           wrktmId ,
+                    EMPLYR_ID          emplyrId ,
+                    ORGNZT_ID          orgnztId  ,
+                    DATE_FORMAT(WRKT_DT, '%Y-%m-%d')AS wrktDt ,
+                    DATE_FORMAT(WRK_START_TIME, '%H:%i:%S') AS wrkStartTime ,                    
+                    DATE_FORMAT(WRK_END_TIME, '%H:%i:%S') AS wrkEndTime ,
+                    WRK_HOURS          wrkHours ,
+                    OVTMWRK_HOURS      ovtmwrkHours ,
+                    WRK_START_STATUS   wrkStartStatus ,
+                    WRK_END_STATUS     wrkEndStatus ,
+                    OUT_WRK_STIME      outWrkStime	,
+                    OUT_WRK_ETIME	   outWrkEtime	,
+                    OUT_WRK_PLACE	   outWrkPlace	, 
+                    RM				   rm			,
+                    OUT_RM			   outRm			,
+                    MODIFY_REASON	   modifyReason
+            FROM    COMTNCOMMUTE
+            WHERE	EMPLYR_ID = #emplyrId# AND WRKT_DT = #wrktDt#            
+        ]]>
+    </select>
+    
+    <select id="cmtManageDAO.selectUserCmtList" resultClass="cmtVO">
+       <![CDATA[
+            SELECT  
+                    WRKTM_ID           wrktmId ,
+                    EMPLYR_ID          emplyrId ,
+                    ORGNZT_ID          orgnztId  ,
+                    WRKT_DT            wrktDt ,
+                    WRK_START_TIME     wrkStartTime ,
+                    WRK_END_TIME       wrkEndTime ,
+                    WRK_HOURS          wrkHours ,
+                    OVTMWRK_HOURS      ovtmwrkHours ,
+                    WRK_START_STATUS   wrkStartStatus ,
+                    WRK_END_STATUS     wrkEndStatus ,
+                    OUT_WRK_STIME      outWrkStime	,
+                    OUT_WRK_ETIME	   outWrkEtime	,
+                    OUT_WRK_PLACE	   outWrkPlace	, 
+                    RM				   rm
+            FROM    COMTNCOMMUTE
+            WHERE	EMPLYR_ID = #emplyrId# AND WRKT_DT LIKE CONCAT( #wrktDt#, '%')
+            
+        ]]>
+    </select>    
+    <select id="cmtManageDAO.selectCmtList_S" resultClass="cmtVO">
+       <![CDATA[
+            SELECT  
+                    WRKTM_ID           wrktmId ,
+                    EMPLYR_ID          emplyrId ,
+                    ORGNZT_ID          orgnztId  ,
+                    WRKT_DT            wrktDt ,
+                    WRK_START_TIME     wrkStartTime ,
+                    WRK_END_TIME       wrkEndTime ,
+                    WRK_HOURS          wrkHours ,
+                    OVTMWRK_HOURS      ovtmwrkHours ,
+                    WRK_START_STATUS   wrkStartStatus ,
+                    WRK_END_STATUS     wrkEndStatus  
+            FROM    COMTNCOMMUTE           
+        ]]>
+    </select>
+    
+    <insert id="cmtManageDAO.insertOutWrkStartCmtInfo">
+        <![CDATA[
+            INSERT INTO COMTNCOMMUTE 
+                (   WRKTM_ID            ,
+                    EMPLYR_ID           ,
+                    ORGNZT_ID            ,
+                    WRKT_DT             ,
+                    WRK_START_TIME      ,
+                    WRK_END_TIME        ,
+                    WRK_HOURS           ,
+                    OVTMWRK_HOURS       ,
+                    WRK_START_STATUS    ,
+                    WRK_END_STATUS      ,
+                    OUT_WRK_STIME   	,
+                    OUT_WRK_ETIME		,
+                    OUT_WRK_PLACE		,
+                    RM                  )
+            VALUES (
+                    #wrktmId#          ,
+                    #emplyrId#         ,
+                    #orgnztId#          ,
+                    #wrktDt#           ,
+                    #wrkStartTime#    		,
+                    #wrkEndTime#      ,                   
+                    #wrkHours#         ,
+                    #ovtmwrkHours#     ,
+                    #wrkStartStatus#  ,
+                    #wrkEndStatus#    ,
+                    #outWrkStime#		,
+                    #outWrkEtime#		,
+                    #outWrkPlace#		,
+                    #rm#             )
+        ]]>
+    </insert>
+    
+    <insert id="cmtManageDAO.insertWrkCmtInfoOfManager">
+        <![CDATA[
+            INSERT INTO COMTNCOMMUTE 
+                (   WRKTM_ID            ,
+                    EMPLYR_ID           ,
+                    ORGNZT_ID            ,
+                    WRKT_DT             ,
+                    WRK_START_TIME      ,
+                    WRK_END_TIME        ,
+                    WRK_HOURS           ,
+                    OVTMWRK_HOURS       ,
+                    WRK_START_STATUS    ,
+                    WRK_END_STATUS      ,
+                    OUT_WRK_STIME   	,
+                    OUT_WRK_ETIME		,
+                    OUT_WRK_PLACE		,
+                    RM                  ,
+                    MODIFY_REASON,
+                    LAST_UPDT_PNTTM		)
+            VALUES (
+                    #wrktmId#          ,
+                    #emplyrId#         ,
+                    #orgnztId#          ,
+                    #wrktDt#           ,
+                    #wrkStartTime#    		,
+                    #wrkEndTime#      ,                   
+                    #wrkHours#         ,
+                    #ovtmwrkHours#     ,
+                    #wrkStartStatus#  ,
+                    #wrkEndStatus#    ,
+                    #outWrkStime#		,
+                    #outWrkEtime#		,
+                    #outWrkPlace#		,
+                    #rm#             	,
+                    #modifyReason#		,
+                    NOW()				)
+        ]]>
+    </insert>
+    
+    
+    <update id="cmtManageDAO.updateOutWrkStartCmtInfo" parameterClass="cmtVO">
+        <![CDATA[
+            UPDATE COMTNCOMMUTE 
+              SET   WRK_END_TIME      	= #wrkEndTime#, 
+              		OUT_WRK_STIME		= #outWrkStime#,
+              		OUT_WRK_PLACE		= #outWrkPlace#,
+                    OUT_WRK_ETIME		= #outWrkEtime#,
+                    OUT_RM 					= #outRm#
+             WHERE 
+             		WRKTM_ID  =  #wrktmId#     
+        ]]>
+    </update>
+    
+    <update id="cmtManageDAO.updateOutWrkStartCmtInfoNoEnd" parameterClass="cmtVO">
+        <![CDATA[
+            UPDATE COMTNCOMMUTE 
+              SET  
+              		OUT_WRK_STIME		= #outWrkStime#,
+              		OUT_WRK_PLACE		= #outWrkPlace#,
+                    OUT_WRK_ETIME		= #outWrkEtime#,
+                    OUT_RM 					= #outRm#
+             WHERE 
+             		WRKTM_ID  =  #wrktmId#     
+        ]]>
+    </update>
+    
+</sqlMap>

@@ -1,0 +1,1542 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Epay">
+                                          
+	<typeAlias  alias="EpayDraftInfoVO" type="tis.com.epay.service.EpayDraftInfoVO"/>
+	<typeAlias  alias="EpayApprHistVO" type="tis.com.epay.service.EpayApprHistVO"/>
+	<typeAlias  alias="EpayDocFormVO" type="tis.com.epay.service.EpayDocFormVO"/>
+	<typeAlias  alias="EpayDraftVO" type="tis.com.epay.service.EpayDraftVO"/>
+	<typeAlias  alias="EpayApprLnCfgVO" type="tis.com.epay.service.EpayApprLnCfgVO"/>
+	<typeAlias  alias="EpayApprLnCfgTmpVO" type="tis.com.epay.service.EpayApprLnCfgTmpVO"/>
+	<typeAlias  alias="EpayApprLineVO" type="tis.com.epay.service.EpayApprLineVO"/>
+	
+	<typeAlias  alias="EpayExpHistVO" type="tis.com.epay.service.EpayExpHistVO"/>
+	<typeAlias  alias="EpayExpCorHistVO" type="tis.com.epay.service.EpayExpCorHistVO"/>
+	<typeAlias  alias="EpayTaskPersonVO" type="tis.com.epay.service.EpayTaskPersonVO"/>
+	<typeAlias  alias="EpayExpVO" type="tis.com.epay.service.EpayExpVO"/>
+	<typeAlias  alias="EpayExpCorVO" type="tis.com.epay.service.EpayExpCorVO"/>
+	<typeAlias  alias="EpayCnsulVO" type="tis.com.epay.service.EpayCnsulVO"/>
+	
+	<typeAlias  alias="EpayApprInfoVO" type="tis.com.epay.service.EpayApprInfoVO"/>
+	
+	<typeAlias  alias="EpayHolidayVO" type="tis.com.epay.service.EpayHolidayVO"/>
+	
+	<resultMap id="mapDraftInfoList" class="EpayDraftInfoVO">
+		<result property="apprSttus" column="APPR_STTUS"></result>
+		<result property="docFormNm" column="DOCFORM_NM"></result>
+		<result property="title" column="TITLE"></result>
+		<result property="regDt" column="REG_DT"></result>
+		<result property="userNm" column="USER_NM"></result>
+		<result property="orgnztNm" column="ORGNZT_NM"></result>
+		<result property="draftInfoId" column="DRAFT_INFO_ID"></result>
+		<result property="code" column="CODE"></result>
+		<result property="docFormId" column="DOC_FORM_ID"></result>
+	</resultMap>
+	
+	<resultMap id="mapApprInfoList" class="EpayDraftInfoVO">
+		<result property="apprSttus" column="APPR_STTUS"></result>
+		<result property="docFormNm" column="DOCFORM_NM"></result>
+		<result property="title" column="TITLE"></result>
+		<result property="regDt" column="REG_DT"></result>
+		<result property="userNm" column="USER_NM"></result>
+		<result property="orgnztNm" column="ORGNZT_NM"></result>
+		<result column="DRAFT_INFO_ID" property="draftInfoId"></result>
+		<result property="code" column="CODE"></result>
+		<result property="codeNm" column="CODE_NM"></result>
+		<result column="DOC_FORM_ID" property="docFormId"></result>
+	</resultMap>
+
+	<resultMap id="mapDraftInfo" class="EpayDraftInfoVO">
+		<result property="apprSttus" column="APPR_STTUS"></result>
+		<result property="docFormNm" column="DOCFORM_NM"></result>
+		<result property="title" column="TITLE"></result>
+		<result property="regDt" column="REG_DT"></result>
+		<result property="userNm" column="USER_NM"></result>
+		<result property="orgnztNm" column="ORGNZT_NM"></result>
+		<result column="DRAFT_INFO_ID" property="draftInfoId"></result>
+		<result property="code" column="CODE"></result>
+		<result column="DOC_FORM_ID" property="docFormId"></result>
+		<result column="EMPL_NO" property="emplNo"></result>
+	<result property="codeNm" column="CODE_NM"></result>
+<result column="ORGNZT_ID" property="orgnztId"></result>
+</resultMap>
+	
+	<resultMap id="mapApprHist" class="EpayApprHistVO">
+		<result property="apprHistId" column="APPR_HIST_ID"></result>
+		<result property="draftInfoId" column="DRAFT_INFO_ID"></result>
+		<result property="apprTm" column="APPR_TM"></result>
+		<result property="emplNo" column="EMPL_NO"></result>
+		<result property="approverNm" column="APPROVER_NM"></result>
+		<result property="apprState" column="APPR_STATE"></result>
+		<result property="cm" column="CM"></result>
+		<result property="returnCm" column="RETURN_CM"></result>
+		<result property="apprOrdr" column="APPR_ORDR"></result>
+		<result property="apprTy" column="APPR_TY"></result>
+		<result property="postn" column="POSTN"></result>
+		<result property="orgnztNm" column="ORGNZT_NM"></result>
+		<result property="userNm" column="USER_NM"></result>
+	</resultMap>
+	
+	<resultMap id="mapDocForm" class="EpayDocFormVO">
+		<result property="docFormId" column="DOC_FORM_ID"></result>
+		<result property="formNm" column="FORM_NM"></result>
+		<result property="formRm" column="FORM_RM"></result>
+	</resultMap>
+	
+	<resultMap id="mapDraft" class="EpayDraftVO">
+		<result column="DRAFT_ID" property="draftId"></result>
+		<result column="DRAFT_INFO_ID" property="draftInfoId"></result>
+		<result column="TASK_NM" property="taskNm"></result>
+		<result column="ATCH_FILE_ID" property="atchFileId"></result>
+		<result column="DRAFT_SDATE" property="draftSDate"></result>
+		<result column="DRAFT_CONTENTS" property="draftContents"></result>
+		<result column="RM" property="rm"></result>
+		
+		<!-- <result property="DraftInfoVO" column="{draftInfoId=DRAFT_INFO_ID}" select="DraftInfoDAO.selectDraftInfoList"/> -->
+		<result column="EMPL_NO" property="emplNo"></result>
+		<result column="ORGNZT_NM" property="orgnztNm"></result>
+		<result column="DRAFTER_NM" property="drafterNm"></result>
+		<result column="TITLE" property="title"></result>
+		<result column="DOC_NO" property="docNo"></result>
+		<result column="REG_DT" property="regDt"></result>
+	</resultMap>
+
+	<resultMap id="mapApprLine" class="EpayApprLineVO"><result property="apprLineId" column="APPR_LINE_ID"></result>
+		<result property="codeId" column="CODE_ID"></result>
+		<result property="code" column="CODE"></result>
+		<result property="apprLineNm" column="APPR_LINE_NM"></result>
+		<result property="rm" column="RM"></result>
+	</resultMap>
+	<resultMap id="mapApprLnCfgList" class="EpayApprLnCfgVO"><result column="APPRLNCFG_ID" property="apprLnCfgId"></result>
+		<result column="APPR_LINE_ID" property="apprLineId"></result>
+		<result column="APPR_ORDR" property="apprOrdr"></result>
+		<result column="EMPL_NO" property="emplNo"></result>
+		<result column="APPR_TY" property="apprTy"></result>
+		<result column="POSITION" property="position"></result>
+	</resultMap>
+
+	<resultMap id="mapApprLnListByOrgzntId" class="EpayApprLnCfgVO"><result column="APPRLNCFG_ID" property="apprLnCfgId"></result>
+		<result column="APPR_LINE_ID" property="apprLineId"></result>
+		<result column="APPR_ORDR" property="apprOrdr"></result>
+		<result column="EMPL_NO" property="emplNo"></result>
+		<result column="APPR_TY" property="apprTy"></result>
+		<result column="POSITION" property="position"></result>
+	</resultMap>
+	
+	<resultMap id="mapExp" class="EpayExpVO">
+		<result column="EXP_STAT_ID" property="expStatId"></result>
+		<result column="DRAFT_INFO_ID" property="draftInfoId"></result>
+		<result column="EXP_SDATE" property="expSdate"></result>
+		<result column="EXP_EDATE" property="expEdate"></result>
+		<result column="DRAFT_DATE" property="draftDate"></result>
+		<result column="RM" property="rm"></result>
+		<result column="ATCH_FILE_ID" property="atchFileId"></result>
+		<result column="ACUNT_REGIST_YN" property="acuntRegistYn"></result>
+		<result column="EXP_TOT_PRICE" property="expTotPrice"></result>
+	</resultMap>
+	
+	<resultMap id="mapExpCor" class="EpayExpCorVO">
+		<result column="EXPCOR_STAT_ID" property="expcorStatId"></result>
+		<result column="DRAFT_INFO_ID" property="draftInfoId"></result>
+		<result column="DRAFT_DATE" property="draftDate"></result>
+		<result column="RM" property="rm"></result>
+		<result column="ATCH_FILE_ID" property="atchFileId"></result>
+		<result column="EXPCOR_TOT_PRICE" property="expcorTotPrice"></result>
+		<result column="ACUNT_REGIST_YN" property="acuntRegistYn"></result>
+
+	</resultMap>
+	
+	<resultMap id="mapApprLnCfgTmpList" class="EpayApprLnCfgTmpVO">
+		<result column="DRAFT_INFO_ID" property="draftInfoId"></result>
+		<result column="APPR_ORDR" property="apprOrdr"></result>
+		<result column="EMPL_NO" property="emplNo"></result>
+		<result column="APPR_TY" property="apprTy"></result>
+		<result column="POSITION" property="position"></result>
+		<result column="USER_NM" property="userNm"></result>
+	</resultMap>
+
+<select id="EpayDraftInfoDAO.selectEpayDraftInfoList" parameterClass="EpayDraftInfoVO" resultMap="mapDraftInfoList">
+/* 기안목록 조회*/
+	<![CDATA[
+		SELECT  A.APPR_STTUS as 'APPR_STTUS', 
+				(SELECT form_nm 
+				 FROM tb_docform
+				 WHERE doc_form_id = A.doc_form_id) as 'DOCFORM_NM', 
+				A.title as 'TITLE', 
+				a.reg_dt as 'REG_DT', 
+				B.USER_NM as 'USER_NM', 
+				(SELECT orgnzt_nm 
+				 FROM comtnorgnztinfo 
+				 WHERE orgnzt_id = B.ORGNZT_ID) as 'ORGNZT_NM',
+				A.DRAFT_INFO_ID,
+				A.CODE,
+				A.DOC_FORM_ID
+		FROM tb_draft_info A
+		LEFT JOIN comtnemplyrinfo B ON B.EMPL_NO = A.EMPL_NO
+		WHERE 1=1
+	]]>
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(A.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+			<![CDATA[	(A.REG_DT >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+			<![CDATA[	(A.REG_DT <= #searchEdate#) 		]]>
+	</isNotEmpty>
+	<isEqual prepend="AND" property="searchCnd" compareValue="title">
+		<![CDATA[	(A.title LIKE "%$searchWrd$%")		]]>
+	</isEqual>
+	<isNotEmpty prepend="AND" property="searchDocFormCnd">
+		<![CDATA[	($searchDocFormCnd$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchApprSttusCnd">
+		<![CDATA[	($searchApprSttusCnd$)		]]>
+	</isNotEmpty>
+	ORDER BY DRAFT_INFO_ID DESC
+	<!-- <isNotEmpty prepend="ORDER BY" property="sortColumn">
+		<![CDATA[	$sortColumn$ $sortOrderBy$						]]>
+	</isNotEmpty> -->
+	<isGreaterThan property="recordCountPerPage" compareValue="-1">
+		<![CDATA[	LIMIT $recordCountPerPage$ OFFSET $firstIndex$	]]>
+	</isGreaterThan>
+	
+</select>
+
+<select id="EpayDraftInfoDAO.epayDraftInfoListCount" resultClass="java.lang.Integer">
+	<![CDATA[
+		SELECT  COUNT(A.DRAFT_INFO_ID)
+		FROM tb_draft_info A LEFT JOIN comtnemplyrinfo B
+		ON A.EMPL_NO = B.EMPL_NO
+		WHERE 1=1
+	]]>
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(A.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+			<![CDATA[	(A.REG_DT >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+			<![CDATA[	(A.REG_DT <= #searchEdate#) 		]]>
+	</isNotEmpty>
+	<isEqual prepend="AND" property="searchCnd" compareValue="title">
+		<![CDATA[	(A.title LIKE "%$searchWrd$%")		]]>
+	</isEqual>
+	<isNotEmpty prepend="AND" property="searchDocFormCnd">
+		<![CDATA[	($searchDocFormCnd$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchApprSttusCnd">
+		<![CDATA[	($searchApprSttusCnd$)		]]>
+	</isNotEmpty>
+</select>
+
+<select id="EpayDraftInfoDAO.selectEpayDraft" resultMap="mapDraft">
+/* 기안서 조회*/
+/* SELECT (SELECT TASK_NAME FROM tb_task  WHERE TASK_ID = B.TASK_ID) as '과제명', 
+		A.REG_DT as '기안일자', 
+		B.DRAFT_SDATE as '시행일자', 
+		A.DRAFTER_ID as '부서',
+		A.DRAFTER_ID as '기안자',
+		A.TITLE as '제목',
+		B.DRAFT_CONTENTS as '내용',
+		B.RM as '비고',
+		B.ATCH_FILE_ID as '첨부파일'
+FROM tb_draft_info A, tb_draft B
+WHERE DRAFT_INFO_ID = #drafInfoId#
+AND A.DRAFT_INFO_ID = B.DRAFT_INFO_ID */
+</select>
+
+<select id="EpayDraftInfoDAO.selectEpayApprHist" parameterClass="EpayApprHistVO" resultMap="mapApprHist">
+/* 결재이력 조회*/
+SELECT APPR_HIST_ID, 
+		DRAFT_INFO_ID, 
+		DATE_FORMAT(APPR_TM, '%Y-%m-%d %H:%i:%s') AS APPR_TM, 
+		EMPL_NO, 
+		(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) as APPROVER_NM, 
+		APPR_STATE, CM, 
+		RETURN_CM, 
+		APPR_ORDR, 
+		APPR_TY, 
+		POSTN,
+		(SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) AS 'ORGNZT_NM',
+		(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) AS 'USER_NM'
+FROM tb_appr_hist A
+WHERE A.DRAFT_INFO_ID = #draftInfoId#
+  	<isNotEmpty prepend="AND" property="apprHistId">
+			<![CDATA[	(APPR_HIST_ID = #apprHistId#)   ]]>
+	</isNotEmpty>
+  	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(EMPL_NO = #emplNo#)   ]]>
+	</isNotEmpty>
+ORDER BY APPR_ORDR ASC
+</select>
+
+
+<select id="EpayDocFormDAO.selectEpayDocForm" parameterClass="EpayDocFormVO" resultMap="mapDocForm">
+<![CDATA[
+SELECT DOC_FORM_ID, 
+	   FORM_NM, 
+	   FORM_RM
+  FROM TB_DOCFORM
+ ]]>
+</select>
+
+<select id="EpayDraftDAO.selectEpayDraft" parameterClass="EpayDraftVO" resultMap="mapDraft">
+<![CDATA[
+  SELECT A.DRAFT_ID, 
+  		 A.DRAFT_INFO_ID, 
+		 A.TASK_ID,
+		 (SELECT TASK_NM FROM TB_SPMGTASK WHERE A.TASK_ID = TASK_ID) as TASK_NM, 
+		 A.ATCH_FILE_ID,
+		 A.DRAFT_SDATE,
+		 A.DRAFT_CONTENTS,
+		 A.RM,
+		 B.EMPL_NO,
+		 '' as ORGNZT_NM,
+		 '' as DRAFTER_NM,
+		 B.TITLE,
+		 B.DOC_NO, 
+		 B.REG_DT
+  FROM tb_draft as A LEFT JOIN tb_draft_info as B
+  ON A.DRAFT_INFO_ID = B.DRAFT_INFO_ID
+  WHERE B.DRAFT_INFO_ID = #draftInfoId#
+]]>
+</select>
+
+
+<insert id="EpayDraftDAO.insertEpayDraft" parameterClass="EpayDraftVO">
+INSERT INTO tb_draft
+		(
+			DRAFT_ID, DRAFT_INFO_ID, TASK_ID, ATCH_FILE_ID, DRAFT_SDATE, DRAFT_CONTENTS, RM
+		)
+		VALUES
+		(
+			#draftId#, #draftInfoId#, #taskId#, #atchFileId#, #draftSDate#, #draftContents#, #rm#
+		)
+</insert>
+<insert id="EpayDraftInfoDAO.insertEpayDraftInfo" parameterClass="EpayDraftInfoVO">
+INSERT INTO tb_draft_info
+		(
+			DRAFT_INFO_ID, DOC_FORM_ID, REG_DT, DEL_AT, EMPL_NO, TITLE, DOC_NO, NO_YEAR, NO_ID, APPR_STTUS, CODE, APPR_EMPL_NO
+		)
+		VALUES
+		(
+			#draftInfoId#, #docFormId#, #regDt#, #delAt#, #emplNo#, #title#, #docNo#, #noYear#, #noId#, #apprSttus#, #code#, #apprEmplNo#
+		)
+</insert>
+<insert id="EpayApprHistDAO.insertEpayApprHist" parameterClass="EpayApprHistVO">
+INSERT INTO tb_appr_hist
+		(
+			APPR_HIST_ID, DRAFT_INFO_ID, APPR_TM, EMPL_NO, APPR_STATE, CM, RETURN_CM, APPR_ORDR, APPR_TY, POSTN
+		)
+		VALUES
+		(
+			#apprHistId#, #draftInfoId#, #apprTm#, #emplNo#, #apprState#, #cm#, #returnCm#, #apprOrdr#, #apprTy#, #postn#
+		)
+</insert>
+
+<update id="EpayApprHistDAO.updateEpayApprHist" parameterClass="EpayApprHistVO">
+	UPDATE
+		TB_APPR_HIST
+	SET 
+		APPR_HIST_ID = #apprHistId#
+		<isNotEmpty prepend="," property="draftInfoId">
+			<![CDATA[ DRAFT_INFO_ID = #draftInfoId# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="cm">
+			<![CDATA[ CM = #cm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprTm">
+			<![CDATA[ APPR_TM = #apprTm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="emplNo">
+			<![CDATA[ EMPL_NO = #emplNo# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprState">
+			<![CDATA[ APPR_STATE = #apprState# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnCm">
+			<![CDATA[ RETURN_CM = #returnCm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprOrdr">
+			<![CDATA[ APPR_ORDR = #apprOrdr# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprTy">
+			<![CDATA[ APPR_TY = #apprTy# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="postn">
+			<![CDATA[ POSTN = #postn# ]]>
+		</isNotEmpty>
+	WHERE 1=1
+  	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) ]]>
+	</isNotEmpty>
+  	<isNotEmpty prepend="AND" property="apprHistId">
+			<![CDATA[	(APPR_HIST_ID = #apprHistId#)   ]]>
+	</isNotEmpty>
+	
+</update>
+
+<select id="EpayApprLnCfgDAO.selectEpayApprLnCfgList" parameterClass="EpayApprLnCfgVO" resultClass="EpayApprLnCfgVO" resultMap="mapApprLnCfgList">
+SELECT APPRLNCFG_ID,
+  		 APPR_LINE_ID, 
+		 APPR_ORDR,
+		 EMPL_NO,
+		 APPR_TY,
+		 POSITION
+  FROM tb_apprlncfg
+  WHERE APPR_LINE_ID = #apprLineId#
+</select>
+<select id="EpayApprLineDAO.selectEpayApprLine" resultMap="mapApprLine">
+SELECT APPR_LINE_ID,
+	       CODE_ID,
+	       CODE,
+	       APPR_LINE_NM,
+	       RM
+  FROM tb_apprline
+  WHERE 1=1
+  	<isNotEmpty prepend="AND" property="orgzntId">
+			<![CDATA[	(CODE = #orgzntId#) 		]]>
+	</isNotEmpty>
+  
+</select>
+
+<select id="EpayApprLineDAO.selectEpayApprLnListByOrgzntId" resultMap="mapApprLnListByOrgzntId">
+SELECT B.APPRLNCFG_ID AS APPRLNCFG_ID, 
+		   B.APPR_LINE_ID AS APPR_LINE_ID, 
+		   B.APPR_ORDR AS APPR_ORDR, 
+		   B.EMPL_NO AS EMPL_NO,
+		   B.APPR_TY AS APPR_TY, 
+		   B.POSITION AS POSITION 
+FROM tb_apprline AS A 
+RIGHT JOIN tb_apprlncfg AS B 
+ON A.APPR_LINE_ID = B.APPR_LINE_ID
+WHERE A.CODE = #orgzntId#
+</select>
+
+<select id="EpayExpHistDAO.selectEpayExpHistList" resultClass="egovMap" parameterClass="EpayExpHistVO">
+SELECT A.EXP_HIST_ID, 
+       A.EXP_STAT_ID, 
+       A.TASK_ID,
+       (SELECT TASK_NM FROM TB_SPMGTASK WHERE TASK_ID = A.TASK_ID) AS 'TASK_NM',
+       A.EXP_DATE, 
+       A.EXP_SUBJ, 
+       (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM501' AND CODE = A.EXP_SUBJ) AS 'EXP_SUBJ_NM',
+       A.EXP_PLACE, 
+       A.RM, 
+       A.PRICE, 
+       A.ATCH_FILE_ID,
+       A.EMPL_NO
+FROM TB_EXP_HIST AS A
+WHERE 1=1
+
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isEmpty prepend="AND" property="expStatId">
+			<![CDATA[	(A.EXP_STAT_ID IS NULL) 		]]>
+	</isEmpty>
+	<isNotEmpty prepend="AND" property="expStatId">
+			<![CDATA[	(A.EXP_STAT_ID = #expStatId#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+			<![CDATA[	(A.EXP_DATE >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+			<![CDATA[	(A.EXP_DATE <= #searchEdate#) 		]]>
+	</isNotEmpty>
+</select>
+
+<select id="EpayTaskDAO.selectEpayTaskList" resultClass="egovMap" parameterClass="EpayTaskPersonVO">
+	SELECT A.TASK_PER_ID,
+			 A.EMPL_NO,
+			 A.TASK_ID,
+			 A.ROLE,
+			 A.RATE,
+			 A.REG_DT,
+			 A.REGSTR_NM,
+			 A.STTUS,
+			 A.STTUS_CHNG_DATE,
+			 B.TASK_ID,
+			 B.TASK_NM
+	FROM TB_TASK_PERSON AS A LEFT JOIN TB_SPMGTASK AS B
+	ON A.TASK_ID = B.TASK_ID
+	WHERE 1=1
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="sttus">
+			<![CDATA[	(A.STTUS = #sttus#) 		]]>
+	</isNotEmpty>
+</select>
+
+
+
+<update id="EpayExpHistDAO.updateEpayExpHist" parameterClass="EpayExpHistVO">
+UPDATE TB_EXP_HIST
+SET 
+	EXP_STAT_ID = #expStatId#,
+	TASK_ID = #taskId#,
+	EXP_DATE = #expDate#,
+	EXP_SUBJ = #expSubj#,
+	EXP_PLACE = #expPlace#,
+	<![CDATA[ RM = #rm#,	]]>
+	PRICE = #price#
+<isNotEmpty prepend="," property="atchFileId">
+	<![CDATA[	(ATCH_FILE_ID = #atchFileId#) 		]]>
+</isNotEmpty>
+WHERE EXP_HIST_ID = #expHistId#
+</update>
+
+<insert id="EpayExpDAO.insertEpayExp">
+INSERT INTO tb_exp
+		(
+			EXP_STAT_ID, DRAFT_INFO_ID, EXP_SDATE, EXP_EDATE, DRAFT_DATE, RM, ATCH_FILE_ID, EXP_TOT_PRICE
+		)
+		VALUES
+		(
+			#expStatId#, #draftInfoId#, #expSdate#, #expEdate#, #draftDate#, #rm#, #atchFileId#, #expTotPrice#
+		)
+</insert>
+<select id="EpayDraftInfoDAO.selectEpayDraftInfo" resultClass="egovMap" parameterClass="EpayDraftInfoVO" resultMap="mapDraftInfo">
+<![CDATA[
+		SELECT  A.APPR_STTUS as 'APPR_STTUS', 
+				(SELECT form_nm 
+				 FROM tb_docform
+				 WHERE doc_form_id = A.doc_form_id) as 'DOCFORM_NM', 
+				A.title as 'TITLE', 
+				a.reg_dt as 'REG_DT', 
+				B.USER_NM as 'USER_NM',
+				(SELECT ORGNZT_ID FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = B.ORGNZT_ID) AS 'ORGNZT_ID',
+				B.orgnzt_nm  as 'ORGNZT_NM',
+				 (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = A.CODE) AS 'CODE_NM',
+				A.DRAFT_INFO_ID,
+				A.CODE,
+				A.DOC_FORM_ID,
+				A.EMPL_NO
+		FROM tb_draft_info A LEFT JOIN comtnemplyrinfo B
+		ON A.EMPL_NO = B.EMPL_NO
+		WHERE 1=1
+	]]>
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(A.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+</select>
+<select id="EpayExpDAO.selectEpayExp" resultClass="egovMap" resultMap="mapExp" parameterClass="EpayExpVO">
+SELECT EXP_STAT_ID
+		, DRAFT_INFO_ID
+		, EXP_SDATE
+		,  EXP_EDATE
+		, DRAFT_DATE
+		, RM
+		, ATCH_FILE_ID
+		, EXP_TOT_PRICE
+		, ACUNT_REGIST_YN
+FROM TB_EXP
+WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+
+<select id="EpayExpDAO.selectEpayExpWithDInfo" resultClass="egovMap" parameterClass="EpayExpVO">
+SELECT A.EXP_STAT_ID, 
+  		 A.DRAFT_INFO_ID, 
+		 A.ATCH_FILE_ID,
+		 A.EXP_SDATE,
+		 A.EXP_EDATE,
+		 A.RM,
+		 A.EXP_TOT_PRICE,
+		 B.EMPL_NO,
+		 (SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'USER_NM',
+		 (SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_NM',
+		 '' as 'DRAFTER_NM',
+		 B.TITLE,
+		 B.CODE,
+		 (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = B.CODE) AS 'CODE_NM',
+		 B.DOC_NO, 
+		 B.REG_DT,
+		 B.APPR_EMPL_NO
+  FROM tb_exp as A LEFT JOIN tb_draft_info as B
+  ON A.DRAFT_INFO_ID = B.DRAFT_INFO_ID
+  WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(B.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+
+<delete id="EpayExpDAO.deleteEpayExp">
+		<![CDATA[
+			DELETE FROM tb_exp 
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+<delete id="EpayDraftInfoDAO.deleteEpayDraftInfo">
+		<![CDATA[
+			DELETE FROM tb_draft_info 
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+<update id="EpayDraftInfoDAO.updateEpayDraftInfo">
+UPDATE TB_DRAFT_INFO SET         
+			DRAFT_INFO_ID = #draftInfoId#
+		    <isNotNull property="regDt">,REG_DT = #regDt#</isNotNull>
+		    <isNotNull property="title">,TITLE = <![CDATA[ #title# ]]></isNotNull>
+			<isNotEmpty prepend="," property="apprSttus">
+				<![CDATA[ APPR_STTUS = #apprSttus# ]]>
+			</isNotEmpty>
+			<isNotNull prepend="," property="apprEmplNo">
+				<![CDATA[ APPR_EMPL_NO = #apprEmplNo# ]]>
+			</isNotNull>
+			<isNotEmpty prepend="," property="docNo">
+				<![CDATA[ DOC_NO = #docNo# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="noYear">
+				<![CDATA[ NO_YEAR = #noYear# ]]>
+			</isNotEmpty>
+			<isNotEmpty prepend="," property="noId">
+				<![CDATA[ NO_ID = #noId# ]]>
+			</isNotEmpty>
+		    <isNotNull property="code">,CODE = #code#</isNotNull>     
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+<update id="EpayExpDAO.updateEpayExp">
+UPDATE TB_EXP
+			SET         
+		     EXP_SDATE        =    #expSdate#       
+		     , EXP_EDATE    		   =    #expEdate#		       
+		     , DRAFT_DATE         =    #draftDate#    
+		     , EXP_TOT_PRICE             =    #expTotPrice# 
+		     , RM    = #rm#      
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+<insert id="EpayCnsulDAO.insertEpayCnsul" parameterClass="EpayCnsulVO">
+INSERT INTO tb_cnsul
+		(
+			CNSUL_ID, DRAFT_INFO_ID, TASK_ID, SALES_ID, PURCHASE_ID, CNSUL_CN, RM, CNSUL_SDATE
+		)
+		VALUES
+		(
+			#cnsulId#, #draftInfoId#, #taskId#, #salesId#, #purchaseId#, #cnsulCn#, #rm#, #cnsulSdate#
+		)
+</insert>
+
+<select id="EpayDraftInfoDAO.selectEpayMaxDocNo" resultClass="java.lang.String" parameterClass="EpayDraftInfoVO">
+<!-- SELECT LPAD(MAX(no_id)+1, 2,'0') AS no_id
+	FROM tb_draft_info
+	WHERE DEL_AT = 'N'; -->
+SELECT IFNULL(LPAD(MAX(no_id)+1, 2,'0'), '01') AS no_id
+	FROM tb_draft_info
+	WHERE DEL_AT = 'N'
+	AND NO_YEAR = DATE_FORMAT(NOW(), "%y%m%d")
+	AND DOC_FORM_ID = #docFormId#;
+</select>
+
+<select id="EpayCnsulDAO.selectEpayCnsul" parameterClass="EpayCnsulVO" resultClass="egovMap">
+	<![CDATA[
+	SELECT CNSUL_ID, 
+			DRAFT_INFO_ID, 
+			TASK_ID, 
+			SALES_ID,
+			PURCHASE_ID, 
+			CNSUL_CN, 
+			RM, 
+			CNSUL_SDATE 
+	FROM TB_CNSUL
+	WHERE 1=1
+	]]>
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+<select id="EpayCnsulDAO.selectEpayCnsulWithDInfo" parameterClass="EpayCnsulVO" resultClass="egovMap" >
+SELECT A.CNSUL_ID, 
+  		 A.DRAFT_INFO_ID, 
+		 A.TASK_ID,
+		 (SELECT TASK_NM FROM TB_SPMGTASK WHERE A.TASK_ID = TASK_ID) AS 'TASK_NM',
+		 A.SALES_ID,
+		 A.PURCHASE_ID,
+		 A.CNSUL_CN,
+		 A.RM,
+		 A.CNSUL_SDATE,
+		 (SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'USER_NM',
+		 (SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_NM',
+		 '' as DRAFTER_NM,
+		 B.TITLE,
+		 B.CODE,
+		 (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = B.CODE) AS 'CODE_NM',
+		 B.DOC_NO, 
+		 B.REG_DT,
+		 B.APPR_STTUS,
+		 B.APPR_EMPL_NO
+  FROM tb_cnsul as A LEFT JOIN tb_draft_info as B
+  ON A.DRAFT_INFO_ID = B.DRAFT_INFO_ID
+  WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(B.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+
+<delete id="EpayCnsulDAO.deleteEpayCnsul">
+<![CDATA[
+			DELETE FROM tb_cnsul
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+<delete id="EpayCnsulDAO.deleteEpayCnsulSales">
+<![CDATA[
+			DELETE FROM tb_sales
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+<delete id="EpayCnsulDAO.deleteEpayCnsulPurchase">
+<![CDATA[
+			DELETE FROM tb_purchase
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+<update id="EpayCnsulDAO.updateEpayCnsul">
+		UPDATE TB_CNSUL
+			SET         
+		     TASK_ID        			=    #taskId#       
+		     , CNSUL_CN    		   	=    #cnsulCn#		       
+		     , RM         				=    #rm#    
+		     , CNSUL_SDATE          =    #cnsulSdate#       
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+<update id="EpayCnsulDAO.updateEpayCnsulSales">
+		UPDATE TB_SALES
+			SET         
+		     TASK_ID        			=    #taskId#     
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+<update id="EpayCnsulDAO.updateEpayCnsulPurchase">
+		UPDATE TB_PURCHASE
+			SET         
+		     TASK_ID        			=    #taskId#     
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+
+<select id="EpayDraftInfoDAO.selectManageEpayDraftInfoList" resultClass="egovMap">
+/* 관리자 전자결제함 조회*/
+	<![CDATA[
+		SELECT  A.APPR_STTUS as 'APPR_STTUS', 
+				(SELECT form_nm FROM tb_docform
+				 WHERE doc_form_id = A.doc_form_id) as 'DOCFORM_NM', 
+				A.title as 'TITLE', 
+				a.reg_dt as 'REG_DT', 
+				B.USER_NM as 'USER_NM',
+				A.DRAFT_INFO_ID,
+				A.CODE,
+			   (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = B.ORGNZT_ID) AS ORGNZT_NM,
+				A.DOC_FORM_ID,
+				B.ORGNZT_ID,
+				B.ORGNZT_NM
+		FROM tb_draft_info A
+		LEFT JOIN comtnemplyrinfo B ON B.EMPL_NO = A.EMPL_NO
+		WHERE 1=1
+	]]>
+	<isNotEmpty prepend="AND" property="searchDocForm">
+		<![CDATA[	A.DOC_FORM_ID IN ($searchDocForm$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchApprSttus">
+		<![CDATA[	A.APPR_STTUS IN ($searchApprSttus$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchDeptCode">
+		<![CDATA[	B.ORGNZT_ID IN ($searchDeptCode$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+		<![CDATA[	(A.REG_DT >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+		<![CDATA[	(A.REG_DT <= #searchEdate#) 		]]>
+	</isNotEmpty>
+	<isEqual prepend="AND" property="searchCnd" compareValue="title">
+		<![CDATA[	(A.title LIKE "%$searchWrd$%")		]]>
+	</isEqual>
+	ORDER BY A.REG_DT DESC, A.DRAFT_INFO_ID DESC 
+	<isGreaterThan property="recordCountPerPage" compareValue="-1">
+		<![CDATA[	LIMIT $recordCountPerPage$ OFFSET $firstIndex$	]]>
+	</isGreaterThan> 
+	
+</select>
+
+<select id="EpayDraftInfoDAO.selectManageEpayDraftInfoListCount" resultClass="java.lang.Integer">
+/* 관리자 전자결제함 조회*/
+	<![CDATA[
+		SELECT  COUNT(A.DRAFT_INFO_ID)
+		FROM tb_draft_info A
+		LEFT JOIN comtnemplyrinfo B ON B.EMPL_NO = A.EMPL_NO
+		WHERE 1=1
+	]]>
+	<isNotEmpty prepend="AND" property="searchDocForm">
+		<![CDATA[	A.DOC_FORM_ID IN ($searchDocForm$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchApprSttus">
+		<![CDATA[	A.APPR_STTUS IN ($searchApprSttus$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchDeptCode">
+		<![CDATA[	B.ORGNZT_ID IN ($searchDeptCode$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+		<![CDATA[	(A.REG_DT >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+		<![CDATA[	(A.REG_DT <= #searchEdate#) 		]]>
+	</isNotEmpty>
+	<isEqual prepend="AND" property="searchCnd" compareValue="title">
+		<![CDATA[	(A.title LIKE "%$searchWrd$%")		]]>
+	</isEqual>
+</select>
+
+	<update id="EpayDraftInfoDAO.updateManageEpayApprSttus">
+		UPDATE TB_DRAFT_INFO
+		SET APPR_STTUS = #apprSttus#
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+	</update>
+	
+	<update id="EpayDraftInfoDAO.updateManageExpAcuntRegistYn">
+		update tb_exp
+		set ACUNT_REGIST_YN = #acuntRegistYn#
+		where EXP_STAT_ID = #expStatId#
+	</update>
+<select id="EpayApprInfoDAO.selectEpayApprInfoList" resultClass="egovMap" parameterClass="EpayApprInfoVO">
+
+	<!-- SELECT A.APPR_STATE,
+			B.APPR_STTUS,
+			(SELECT form_nm FROM tb_docform WHERE doc_form_id = B.doc_form_id) as 'DOCFORM_NM', 
+			B.title as 'TITLE', 
+			B.reg_dt as 'REG_DT', 
+			(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) as 'USER_NM', 
+			(SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_NM',
+			B.DRAFT_INFO_ID,
+			B.CODE,
+			(SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = B.CODE) AS CODE_NM,
+			B.DOC_FORM_ID,
+			 (SELECT ORGNZT_ID FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_ID',
+			 (SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_NM' 
+	FROM TB_APPR_HIST AS A 
+	LEFT JOIN TB_DRAFT_INFO AS B
+	ON (A.DRAFT_INFO_ID = B.DRAFT_INFO_ID)
+	WHERE 1=1
+	AND A.APPR_STATE IS NOT NULL
+	AND NOT(A.EMPL_NO = B.EMPL_NO) -->
+	SELECT A.APPR_STATE,
+			B.APPR_STTUS,
+			(SELECT form_nm FROM tb_docform WHERE doc_form_id = B.doc_form_id) as 'DOCFORM_NM', 
+			B.title as 'TITLE', 
+			B.reg_dt as 'REG_DT', 
+			B.USER_NM as 'USER_NM', 
+			B.ORGNZT_NM AS 'ORGNZT_NM',
+			B.DRAFT_INFO_ID,
+			B.CODE,
+			(SELECT CODE_NM FROM COMTCCMMNDETAILCODE WHERE CODE = B.CODE) AS CODE_NM,
+			B.DOC_FORM_ID,
+			B.ORGNZT_ID,
+			A.EMPL_NO
+	FROM TB_APPR_HIST AS A 
+	LEFT JOIN (
+			SELECT C.APPR_STTUS, C.DOC_FORM_ID, C.TITLE, C.REG_DT, C.EMPL_NO, C.DRAFT_INFO_ID, C.CODE, D.ORGNZT_ID, D.ORGNZT_NM, D.USER_NM 
+			FROM TB_DRAFT_INFO AS C 
+			LEFT JOIN comtnemplyrinfo AS D
+			ON (C.EMPL_NO = D.EMPL_NO)
+	) AS B
+	ON (A.DRAFT_INFO_ID = B.DRAFT_INFO_ID)
+	WHERE 1=1
+	AND A.APPR_STATE IS NOT NULL
+	AND NOT(A.EMPL_NO = B.EMPL_NO)
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(B.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+			<![CDATA[	(B.REG_DT >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+			<![CDATA[	(B.REG_DT <= #searchEdate#) 		]]>
+	</isNotEmpty>
+	<isEqual prepend="AND" property="searchCnd" compareValue="title">
+		<![CDATA[	(B.title LIKE "%$searchWrd$%")		]]>
+	</isEqual>
+	<isNotEmpty prepend="AND" property="searchDocFormCnd">
+		<![CDATA[	($searchDocFormCnd$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchApprSttusCnd">
+		<![CDATA[	($searchApprSttusCnd$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchDeptCode">
+		<![CDATA[	B.ORGNZT_ID IN ($searchDeptCode$)		]]>
+	</isNotEmpty>
+	ORDER BY B.REG_DT DESC, A.APPR_TM DESC
+	<!-- <isNotEmpty prepend="ORDER BY" property="sortColumn">
+		<![CDATA[	$sortColumn$ $sortOrderBy$						]]>
+	</isNotEmpty> -->
+	<isGreaterThan property="recordCountPerPage" compareValue="-1">
+		<![CDATA[	LIMIT $recordCountPerPage$ OFFSET $firstIndex$	]]>
+	</isGreaterThan>
+</select>
+<select id="EpayApprInfoDAO.epayApprInfoListCount" resultClass="java.lang.Integer">
+	<!-- SELECT COUNT(B.DRAFT_INFO_ID)
+	FROM TB_APPR_HIST AS A 
+	LEFT JOIN TB_DRAFT_INFO AS B
+	ON (A.DRAFT_INFO_ID = B.DRAFT_INFO_ID)
+	WHERE 1=1
+	AND A.APPR_STATE IS NOT NULL
+	AND NOT(A.EMPL_NO = B.EMPL_NO) -->
+	SELECT COUNT(B.DRAFT_INFO_ID)
+	FROM TB_APPR_HIST AS A 
+	LEFT JOIN (
+			SELECT C.APPR_STTUS, C.DOC_FORM_ID, C.TITLE, C.REG_DT, C.EMPL_NO, C.DRAFT_INFO_ID, C.CODE, D.ORGNZT_ID, D.ORGNZT_NM, D.USER_NM 
+			FROM TB_DRAFT_INFO AS C 
+			LEFT JOIN comtnemplyrinfo AS D
+			ON (C.EMPL_NO = D.EMPL_NO)
+	) AS B
+	ON (A.DRAFT_INFO_ID = B.DRAFT_INFO_ID)
+	WHERE 1=1
+	AND A.APPR_STATE IS NOT NULL
+	AND NOT(A.EMPL_NO = B.EMPL_NO)
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(B.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchSdate">
+			<![CDATA[	(B.REG_DT >= #searchSdate#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchEdate">
+			<![CDATA[	(B.REG_DT <= #searchEdate#) 		]]>
+	</isNotEmpty>
+	<isEqual prepend="AND" property="searchCnd" compareValue="title">
+		<![CDATA[	(B.title LIKE "%$searchWrd$%")		]]>
+	</isEqual>
+	<isNotEmpty prepend="AND" property="searchDocFormCnd">
+		<![CDATA[	($searchDocFormCnd$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchApprSttusCnd">
+		<![CDATA[	($searchApprSttusCnd$)		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="searchDeptCode">
+		<![CDATA[	B.ORGNZT_ID IN ($searchDeptCode$)		]]>
+	</isNotEmpty>
+</select>
+
+<update id="EpayApprHistDAO.epayApprHist">
+UPDATE TB_APPR_HIST
+	SET
+		APPR_TM = #apprTm#
+		<isNotEmpty prepend="," property="apprState">
+			<![CDATA[ APPR_STATE = #apprState# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="cm">
+			<![CDATA[ CM = #cm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnCm">
+			<![CDATA[ RETURN_CM = #returnCm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprTy">
+			<![CDATA[ APPR_TY = #apprTy# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="emplNo">
+			<![CDATA[ EMPL_NO = #emplNo# ]]>
+		</isNotEmpty>
+	WHERE DRAFT_INFO_ID = #draftInfoId#
+	<isNotEmpty prepend="AND" property="apprHistId">
+			<![CDATA[ APPR_HIST_ID = #apprHistId# ]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[ EMPL_NO = #emplNo# ]]>
+	</isNotEmpty>
+</update>
+
+<select id="EpayApprHistDAO.epayApprHistNextEmplNo" resultClass="egovMap">
+/* 결재라인 - 다음 결재자 조회 */
+	SELECT A.APPR_HIST_ID,
+				A.DRAFT_INFO_ID,
+				A.APPR_TM,
+				A.EMPL_NO,
+				A.APPR_STATE,
+				A.CM,
+				A.RETURN_CM,
+				A.APPR_ORDR,
+				A.APPR_TY,
+				A.POSTN,
+				(SELECT EMPLYR_ID FROM COMTNEMPLYRINFO WHERE EMPL_NO = A.EMPL_NO) AS EMPLYR_ID
+	FROM TB_APPR_HIST AS A
+	WHERE DRAFT_INFO_ID = #draftInfoId#
+	AND APPR_ORDR 
+	IN (SELECT APPR_ORDR+1 
+		FROM TB_APPR_HIST
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+		AND empl_no = #emplNo#)
+</select>
+
+<select id="EpayApprInfoDAO.epayApprWaitingCount" resultClass="java.lang.Integer" parameterClass="EpayApprInfoVO">
+SELECT COUNT(A.APPR_STATE) AS COUNT
+	FROM TB_APPR_HIST AS A 
+	LEFT JOIN TB_DRAFT_INFO AS B
+	ON (A.DRAFT_INFO_ID = B.DRAFT_INFO_ID)
+	WHERE A.APPR_STATE IS NOT NULL
+	AND A.APPR_STATE = '0'
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[ (A.EMPL_NO = #emplNo#) ]]>
+	</isNotEmpty>
+</select>
+
+<delete id="EpayApprHistDAO.deleteEpayApprHist" parameterClass="EpayApprHistVO">
+<![CDATA[
+			DELETE FROM TB_APPR_HIST 
+						WHERE  APPR_ORDR > #apprOrdr#
+						AND DRAFT_INFO_ID = #draftInfoId#
+				]]>
+</delete>
+<select id="EpayExpCorDAO.selectEpayExpCor" parameterClass="EpayExpCorVO" resultMap="mapExpCor">
+	SELECT EXPCOR_STAT_ID
+			, DRAFT_INFO_ID
+			, DRAFT_DATE
+			, RM
+			, ATCH_FILE_ID
+			, EXPCOR_TOT_PRICE
+			, ACUNT_REGIST_YN
+	FROM TB_EXP_COR
+	WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+
+<select id="EpayExpCorHistDAO.selectEpayExpCorHistList" resultClass="egovMap" parameterClass="EpayExpCorHistVO">
+SELECT A.EXPCOR_STAT_ID,
+       A.CARD_NUM,
+       A.ACCPT_DT,
+       A.EMPL_NO,
+       (SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) AS 'USER_NM', 
+       A.TASK_ID,
+       (SELECT TASK_NM FROM TB_SPMGTASK WHERE TASK_ID = A.TASK_ID) AS 'TASK_NM',
+       A.SUBJ_ID,
+       (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM501' AND CODE = A.SUBJ_ID) AS 'EXP_SUBJ_NM',
+       A.EXP_PLACE,
+       A.RM,
+       A.PRICE,
+       A.ACUNT_REGIST_TYPE
+FROM TB_EXPCOR_HIST AS A
+WHERE 1=1
+	<isNotEmpty prepend="AND" property="emplNo">
+			<![CDATA[	(A.EMPL_NO = #emplNo#) 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="AND" property="expcorStatId">
+			<![CDATA[	(A.EXPCOR_STAT_ID = #expcorStatId#) 		]]>
+	</isNotEmpty>
+</select>
+
+<select id="EpayDraftInfoDAO.selectEmplyrList" resultClass="egovMap">
+	SELECT
+		EMPL_NO AS emplNo
+		, USER_NM AS userNm
+	FROM comtnemplyrinfo
+	WHERE EMPLYR_ENDDE IS NULL
+</select>
+
+<select id="EpayTaskDAO.selectEpayTaskAllList" resultClass="egovMap">
+	SELECT TASK_ID, TASK_NM 
+	FROM TB_SPMGTASK
+	WHERE DEL_AT = 'N'
+</select>
+
+<select id="EpayTaskDAO.selectEpayTaskForPerson" resultClass="egovMap">
+	SELECT A.EMPL_NO,
+			 A.TASK_ID,
+			 B.TASK_NM
+	FROM TB_TASK_PERSON AS A LEFT JOIN TB_SPMGTASK AS B
+	ON A.TASK_ID = B.TASK_ID
+	WHERE 1=1
+	AND A.EMPL_NO = #emplNo#
+	ORDER BY B.REG_DT DESC
+</select>
+
+<insert id="EpayExpCorHistDAO.insertEpayExpCorHist" parameterClass="EpayExpCorHistVO">
+INSERT INTO TB_EXPCOR_HIST
+	(
+		EXPCOR_STAT_ID,
+		CARD_NUM, 
+		ACCPT_DT, 
+		EMPL_NO, 
+		TASK_ID, 
+		SUBJ_ID, 
+		EXP_PLACE, 
+		RM, 
+		PRICE
+	<isNotEmpty prepend="," property="acuntRegistType">
+			<![CDATA[	ACUNT_REGIST_TYPE 		]]>
+	</isNotEmpty>
+	)
+	VALUES
+	(
+		#expcorStatId#, 
+		#cardNum#, 
+		#accptDt#, 
+		#emplNo#, 
+		#taskId#, 
+		#subjId#, 
+		#expPlace#, 
+		#rm#, 
+		#price#
+	<isNotEmpty prepend="," property="acuntRegistType">
+		<![CDATA[	#acuntRegistType#		]]>
+	</isNotEmpty>
+	)
+</insert>
+
+<insert id="EpayExpCorDAO.insertEpayExpCor" parameterClass="EpayExpCorVO">
+INSERT INTO TB_EXP_COR
+		(
+			EXPCOR_STAT_ID, DRAFT_INFO_ID, DRAFT_DATE, RM, ATCH_FILE_ID, EXPCOR_TOT_PRICE, ACUNT_REGIST_YN
+		)
+		VALUES
+		(
+			#expcorStatId#, #draftInfoId#, #draftDate#, #rm#, #atchFileId#, #expcorTotPrice#, #acuntRegistYn#
+		)
+</insert>
+<select id="EpayExpCorDAO.selectEpayExpCorWithDInfo" parameterClass="EpayExpCorVO" resultClass="egovMap">
+SELECT A.EXPCOR_STAT_ID, 
+  		 A.DRAFT_INFO_ID, 
+  		 A.DRAFT_DATE,
+		 A.RM,
+		 A.ATCH_FILE_ID,
+		 A.EXPCOR_TOT_PRICE,
+		 A.ACUNT_REGIST_YN,
+		 B.EMPL_NO,
+		 (SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'USER_NM',
+		 (SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_NM',
+		 '' as 'DRAFTER_NM',
+		 B.TITLE,
+		 B.CODE,
+		 (SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = B.CODE) AS 'CODE_NM',
+		 B.DOC_NO, 
+		 B.REG_DT,
+		 B.APPR_EMPL_NO
+  FROM TB_EXP_COR as A LEFT JOIN TB_DRAFT_INFO as B
+  ON A.DRAFT_INFO_ID = B.DRAFT_INFO_ID
+  WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(B.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+
+<update id="EpayExpCorDAO.updateEpayExpCor">
+UPDATE TB_EXP_COR
+			SET         	       
+		     DRAFT_DATE         =    #draftDate#    
+		     , RM    = #rm#      
+		     , ATCH_FILE_ID = #atchFileId#
+		     , EXPCOR_TOT_PRICE             =    #expcorTotPrice# 
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+<update id="EpayExpCorDAO.updateManageExpCorAcuntRegistYn">
+	UPDATE TB_EXP_COR
+	SET ACUNT_REGIST_YN = #acuntRegistYn#
+	WHERE EXPCOR_STAT_ID = #expcorStatId#
+</update>
+<delete id="EpayExpCorDAO.deleteEpayExpCor">
+<![CDATA[
+			DELETE FROM TB_EXP_COR 
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+<update id="EpayExpCorHistDAO.updateEpayExpCorHist">
+UPDATE TB_EXPCOR_HIST
+SET 
+	EXPCOR_STAT_ID = #expcorStatId#,
+	CARD_NUM = #cardNum#,
+	ACCPT_DT = #accptDt#,
+	<![CDATA[EMPL_NO = #emplNo#,  ]]>
+	TASK_ID = #taskId#,
+	EXP_PLACE = #expPlace#,
+	<![CDATA[ RM = #rm#,	]]>
+	PRICE = #price#
+	<isNotEmpty prepend="," property="acuntRegistType">
+			<![CDATA[	(ACUNT_REGIST_TYPE = #acuntRegistType#) 		]]>
+	</isNotEmpty>
+WHERE EXPCOR_STAT_ID = #expcorStatId#
+</update>
+<delete id="EpayExpCorHistDAO.deleteEpayExpCorHist">
+<![CDATA[
+			DELETE FROM TB_EXPCOR_HIST
+						WHERE EXPCOR_STAT_ID=#expcorStatId#
+				]]>
+</delete>
+<select id="EpayApprLnCfgDAO.selectEpayApprLnCfgChk" resultClass="egovMap">
+	SELECT APPRLNCFG_ID, APPR_LINE_ID, APPR_ORDR, EMPL_NO, APPR_TY 
+	FROM TB_APPRLNCFG
+	WHERE APPR_LINE_ID = #apprLineId#
+	AND EMPL_NO = #emplNo#
+</select>
+
+<select id="EpayDraftInfoDAO.selectEmplyrListForOrgnztChart" resultClass="egovMap">
+	SELECT EMPL_NO, EMPLYR_ID, USER_NM, ORGNZT_ID, ORGNZT_NM, OFCPS_ID, OFCPS_NM, AFFILIATION_ID
+	FROM COMTNEMPLYRINFO
+	WHERE EMPLYR_ENDDE IS NULL
+</select>
+
+<select id="EpayDraftInfoDAO.selectEmplyrForOrgnztChart" resultClass="egovMap">
+	SELECT EMPL_NO, EMPLYR_ID, USER_NM, ORGNZT_ID, ORGNZT_NM, OFCPS_ID, OFCPS_NM, AFFILIATION_ID
+	FROM COMTNEMPLYRINFO
+	WHERE EMPLYR_ENDDE IS NULL
+	AND EMPL_NO = #emplNo#
+</select>
+
+<select id="EpayDraftInfoDAO.selectEpayApprLn" resultClass="egovMap">
+	SELECT A.APPRLNCFG_ID, 
+				A.APPR_LINE_ID, 
+				A.APPR_ORDR, 
+				A.EMPL_NO, 
+				A.APPR_TY, 
+				A.POSITION, 
+				B.EMPLYR_ID, 
+				B.USER_NM, 
+				B.OFCPS_ID, 
+				B.OFCPS_NM, 
+				B.ORGNZT_ID, 
+				B.ORGNZT_NM, 
+				B.AFFILIATION_ID 
+	FROM TB_APPRLNCFG A LEFT JOIN COMTNEMPLYRINFO B
+	ON A.EMPL_NO = B.EMPL_NO
+	WHERE A.APPR_LINE_ID = #apprLineId#
+</select>
+<insert id="EpayApprLnCfgDAO.insertEpayApprLnCfg" parameterClass="EpayApprLnCfgVO">
+INSERT INTO TB_APPRLNCFG
+		(
+			APPRLNCFG_ID, APPR_LINE_ID, APPR_ORDR, EMPL_NO, APPR_TY, POSITION
+		)
+		VALUES
+		(
+			#apprLnCfgId#, #apprLineId#, #apprOrdr#, #emplNo#, #apprTy#, #position#
+		)
+</insert>
+<insert id="EpayApprLineDAO.insertEpayApprLine" parameterClass="EpayApprLineVO">
+INSERT INTO TB_APPRLINE
+		(
+			APPR_LINE_ID, CODE_ID, CODE, APPR_LINE_NM, RM
+		)
+		VALUES
+		(
+			#apprLineId#, #codeId#, #code#, #apprLineNm#, #rm#
+		)
+</insert>
+<delete id="EpayApprLineDAO.deleteEpayApprLine" parameterClass="EpayApprLineVO">
+<![CDATA[
+			DELETE FROM TB_APPRLINE
+						WHERE  APPR_LINE_ID = #apprLineId#
+				]]>
+</delete>
+<delete id="EpayApprLnCfgDAO.deleteEpayApprLnCfg" parameterClass="EpayApprLnCfgVO">
+<![CDATA[
+			DELETE FROM TB_APPRLNCFG
+						WHERE  APPR_LINE_ID = #apprLineId#
+				]]>
+</delete>
+<insert id="EpayApprHistDAO.insertEpayApprHistTemp" parameterClass="EpayApprHistVO">
+INSERT INTO tb_appr_hist_temp
+		(
+			APPR_HIST_ID, DRAFT_INFO_ID, APPR_TM, EMPL_NO, APPR_STATE, CM, RETURN_CM, APPR_ORDR, APPR_TY, POSTN
+		)
+		VALUES
+		(
+			#apprHistId#, #draftInfoId#, #apprTm#, #emplNo#, #apprState#, #cm#, #returnCm#, #apprOrdr#, #apprTy#, #postn#
+		)
+</insert>
+<delete id="EpayApprHistDAO.deleteEpayApprHistTemp" parameterClass="EpayApprHistVO">
+<![CDATA[
+			DELETE FROM TB_APPR_HIST_TEMP 
+						WHERE  DRAFT_INFO_ID = #draftInfoId#
+]]>
+</delete>
+<update id="EpayApprHistDAO.updateEpayApprHistTemp" parameterClass="EpayApprHistVO">
+UPDATE
+		TB_APPR_HIST_TEMP
+	SET 
+			<![CDATA[ DRAFT_INFO_ID = #draftInfoId# ]]>
+		<isNotEmpty prepend="," property="cm">
+			<![CDATA[ CM = #cm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprTm">
+			<![CDATA[ APPR_TM = #apprTm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="emplNo">
+			<![CDATA[ EMPL_NO = #emplNo# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprState">
+			<![CDATA[ APPR_STATE = #apprState# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="returnCm">
+			<![CDATA[ RETURN_CM = #returnCm# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprOrdr">
+			<![CDATA[ APPR_ORDR = #apprOrdr# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="apprTy">
+			<![CDATA[ APPR_TY = #apprTy# ]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="postn">
+			<![CDATA[ POSTN = #postn# ]]>
+		</isNotEmpty>
+	WHERE 1=1
+  	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) ]]>
+	</isNotEmpty>
+</update>
+
+
+<select id="EpayDraftInfoDAO.selectEpayApprHistTemp" parameterClass="EpayApprHistVO" resultClass="egovMap">
+/* 결재이력 조회*/
+SELECT APPR_HIST_ID, 
+		DRAFT_INFO_ID, 
+		DATE_FORMAT(APPR_TM, '%Y-%m-%d %H:%i:%s') AS APPR_TM, 
+		EMPL_NO, 
+		(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) as APPROVER_NM, 
+		APPR_STATE, CM, 
+		RETURN_CM, 
+		APPR_ORDR, 
+		APPR_TY, 
+		POSTN,
+		(SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) AS 'ORGNZT_NM',
+		(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = A.EMPL_NO) AS 'USER_NM'
+FROM tb_appr_hist_temp A
+WHERE A.DRAFT_INFO_ID = #draftInfoId#
+ORDER BY APPR_ORDR ASC
+</select>
+<select id="EpayApprLnCfgDAO.selectEpayApprLnCfgTmpList" parameterClass="EpayApprLnCfgTmpVO" resultMap="mapApprLnCfgTmpList">
+SELECT A.DRAFT_INFO_ID,
+		 A.APPR_ORDR,
+		 A.EMPL_NO,
+		 A.APPR_TY,
+		 A.POSITION,
+		 B.USER_NM AS 'USER_NM'
+  FROM tb_apprlncfg_tmp AS A LEFT JOIN comtnemplyrinfo AS B
+  ON A.EMPL_NO = B.EMPL_NO
+  WHERE A.DRAFT_INFO_ID = #draftInfoId#
+</select>
+<insert id="EpayApprLnCfgDAO.insertEpayApprLnCfgTmp" parameterClass="EpayApprLnCfgTmpVO">
+INSERT INTO TB_APPRLNCFG_TMP
+		(
+			DRAFT_INFO_ID, APPR_ORDR, EMPL_NO, APPR_TY, POSITION
+		)
+		VALUES
+		(
+			#draftInfoId#, #apprOrdr#, #emplNo#, #apprTy#, #position#
+		)
+</insert>
+<delete id="EpayApprLnCfgDAO.deleteEpayApprLnCfgTmp" parameterClass="EpayApprLnCfgTmpVO">
+<![CDATA[
+			DELETE FROM TB_APPRLNCFG_TMP
+						WHERE  DRAFT_INFO_ID = #draftInfoId#
+				]]>
+</delete>
+<update id="EpayApprLnCfgDAO.updateEpayApprLnCfgTmp" parameterClass="EpayApprLnCfgTmpVO">
+UPDATE
+		TB_APPRLNCFG_TMP
+	SET 
+		APPR_ORDR = #apprOrdr#,
+		EMPL_NO = #emplNo#,
+		APPR_TY = #apprTy#,
+		POSITION = #position#
+	WHERE 1=1
+  	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) ]]>
+	</isNotEmpty>
+</update>
+<select id="EpayHolidayDAO.selectEpayHolidayWithDInfo" parameterClass="EpayHolidayVO" resultClass="egovMap">
+SELECT A.HOLIDAY_ID, 
+  		 A.DRAFT_INFO_ID, 
+  		 A.HOL_SDATE,
+  		 A.HOL_EDATE,
+  		 A.HOL_DAY,
+  		 A.HOL_TY,
+  		 A.HOL_RS,
+		 A.HOL_RM,
+		 A.EMERG_NUM,
+		 A.ATCH_FILE_ID,
+		 B.EMPL_NO,
+		 (SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'USER_NM',
+		 (SELECT ORGNZT_ID FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_ID',
+		 (SELECT ORGNZT_NM FROM comtnemplyrinfo WHERE EMPL_NO = B.EMPL_NO) AS 'ORGNZT_NM',
+		 B.TITLE,
+		 B.DOC_NO, 
+		 B.REG_DT,
+		 B.APPR_STTUS,
+		 B.APPR_EMPL_NO
+  FROM TB_HOLIDAY as A LEFT JOIN TB_DRAFT_INFO as B
+  ON A.DRAFT_INFO_ID = B.DRAFT_INFO_ID
+  WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(B.DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+<insert id="EpayHolidayDAO.insertEpayHoliday" parameterClass="EpayHolidayVO">
+INSERT INTO TB_HOLIDAY
+		(
+			HOLIDAY_ID
+			, DRAFT_INFO_ID
+	<isNotEmpty prepend="," property="holSdate">
+			<![CDATA[	HOL_SDATE 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="," property="holEdate">
+			<![CDATA[	HOL_EDATE 		]]>
+	</isNotEmpty>
+			, HOL_DAY
+			, HOL_TY
+			, HOL_RS
+			, HOL_RM
+			, EMERG_NUM
+			, ATCH_FILE_ID
+		)
+		VALUES
+		(
+			#holidayId#
+			, #draftInfoId#
+	<isNotEmpty prepend="," property="holSdate">
+			<![CDATA[	#holSdate# 		]]>
+	</isNotEmpty>
+	<isNotEmpty prepend="," property="holEdate">
+			<![CDATA[	#holEdate# 		]]>
+	</isNotEmpty>
+			, #holDay#
+			, #holTy# 
+			, #holRs#
+			, #holRm#
+			, #emergNum#
+			, #atchFileId#
+		)
+</insert>
+<update id="EpayHolidayDAO.updateEpayHoliday" parameterClass="EpayHolidayVO">
+UPDATE TB_HOLIDAY
+			SET         
+		     HOL_SDATE       =    	#holSdate#       
+		     , HOL_EDATE    	=    	#holEdate#
+		     , HOL_DAY			=		#holDay#
+		     , HOL_TY         	=    	#holTy#    
+		     , HOL_RS           =    	#holRs# 
+		     , HOL_RM			= 		#holRm#
+		     , EMERG_NUM	=		#emergNum#
+		     , ATCH_FILE_ID   = 		#atchFileId#      
+		WHERE DRAFT_INFO_ID = #draftInfoId#
+</update>
+<select id="EpayHolidayDAO.selectEpayHoliday" parameterClass="EpayHolidayVO" resultClass="egovMap">
+SELECT HOLIDAY_ID
+			, DRAFT_INFO_ID
+			, HOL_SDATE
+			, HOL_EDATE
+			, HOL_DAY
+			, HOL_TY
+			, HOL_RS
+			, HOL_RM
+			, EMERG_NUM
+			, ATCH_FILE_ID
+	FROM TB_HOLIDAY
+	WHERE 1=1
+	<isNotEmpty prepend="AND" property="draftInfoId">
+			<![CDATA[	(DRAFT_INFO_ID = #draftInfoId#) 		]]>
+	</isNotEmpty>
+</select>
+<delete id="EpayHolidayDAO.deleteEpayHoliday" parameterClass="EpayHolidayVO">
+<![CDATA[
+			DELETE FROM TB_HOLIDAY
+						WHERE DRAFT_INFO_ID=#draftInfoId#
+				]]>
+</delete>
+
+<insert id="EpayHolidayDAO.insertEpayManagerHoliday" parameterClass="EpayHolidayVO">
+<!-- INSERT INTO TB_HOLUSE (
+				EMPL_NO
+				, EMPLYR_ID
+				, HOL_YEAR
+				, REG_DT
+				, SEPT
+				, HOL_ADD_DAY
+				, HOL_DAY
+				, HOL_MINS_DAY
+				) 
+	SELECT B.EMPL_NO
+			, B.ESNTL_ID AS EMPLYR_ID
+			, DATE_FORMAT(NOW(), '%Y') AS HOL_YEAR
+			,  DATE_FORMAT(NOW(), '%Y%m%d') AS REG_DT
+			, A.HOL_TY AS SEPT
+			, 0 AS HOL_ADD_DAY
+			, A.HOL_DAY AS HOL_DAY
+			, A.HOL_DAY*(-1) AS HOL_MINS_DAY
+	FROM (
+				SELECT C.HOLIDAY_ID, C.DRAFT_INFO_ID, C. HOL_SDATE, C.HOL_EDATE, C.HOL_DAY, C.HOL_TY, C.HOL_RS, C.HOL_RM, C.EMERG_NUM, D.EMPL_NO 
+				FROM TB_HOLIDAY C 
+				LEFT JOIN TB_DRAFT_INFO D ON C.DRAFT_INFO_ID = D.DRAFT_INFO_ID
+				WHERE C.DRAFT_INFO_ID = #draftInfoId#
+			) A 
+	LEFT JOIN COMTNEMPLYRINFO B ON A.EMPL_NO = B.EMPL_NO -->
+
+INSERT INTO COMTNVCATNMANAGE (
+				APPLCNT_ID          /* 신청자 아이디 */
+				, VCATN_SE          /* 휴가구분 */
+				, BGNDE             /* 시작일 */
+				, ENDDE             /* 종료일 */
+				, VCATN_RESN        /* 휴가사유 */
+				, REQST_DE          /* 신청일 */
+				, OCCRRNC_YEAR      /* 발생연도 */
+				, SANCTN_DT         /* 결재일시 */
+				, FRST_REGISTER_ID  /* 최초등록자아이디 */
+				, FRST_REGIST_PNTTM /* 최초등록일 */
+				, VCATN_CNT         /* 휴가차감일수 */
+				) 
+	SELECT B.ESNTL_ID AS APPLCNT_ID
+			, A.HOL_TY AS VCATN_SE
+			, DATE_FORMAT(A.HOL_SDATE, '%Y%m%d') AS BGNDE
+			, DATE_FORMAT(A.HOL_EDATE, '%Y%m%d') AS ENDDE
+			, A.HOL_RS AS VCATN_RESN
+			, DATE_FORMAT(NOW(), '%Y%m%d') AS REQST_DE
+			, DATE_FORMAT(NOW(), '%Y') AS OCCRRNC_YEAR
+			, DATE_FORMAT(NOW(), '%Y%m%d') AS REG_DT
+			, '' AS FRST_REGISTER_ID
+			, NOW() AS FRST_REGIST_PNTTM
+			, A.HOL_DAY AS VCATN_CNT
+	FROM (
+				SELECT C.HOLIDAY_ID, C.DRAFT_INFO_ID, C. HOL_SDATE, C.HOL_EDATE, C.HOL_DAY, C.HOL_TY, C.HOL_RS, C.HOL_RM, C.EMERG_NUM, D.EMPL_NO 
+				FROM TB_HOLIDAY C 
+				LEFT JOIN TB_DRAFT_INFO D ON C.DRAFT_INFO_ID = D.DRAFT_INFO_ID
+				WHERE C.DRAFT_INFO_ID = #draftInfoId#
+			) A 
+	LEFT JOIN COMTNEMPLYRINFO B ON A.EMPL_NO = B.EMPL_NO
+</insert>
+
+<select id="EpayDraftInfoDAO.selectEpayDraftInfoForSlack" parameterClass="EpayDraftInfoVO" resultClass="egovMap">
+SELECT A.DOC_FORM_ID,
+		(SELECT FORM_NM 
+				 FROM TB_DOCFORM
+				 WHERE DOC_FORM_ID = A.DOC_FORM_ID) as 'DOCFORM_NM', 
+		A.REG_DT,
+		A.EMPL_NO,
+		A.TITLE,
+		A.DOC_NO,
+		A.APPR_STTUS,
+		A.APPR_EMPL_NO,
+		B.EMPLYR_ID,
+		B.USER_NM,
+		B.OFCPS_NM,
+		B.ORGNZT_NM,
+		B.AFFILIATION_ID
+FROM TB_DRAFT_INFO AS A
+LEFT JOIN COMTNEMPLYRINFO AS B
+ON A.EMPL_NO = B.EMPL_NO
+WHERE A.DRAFT_INFO_ID = #draftInfoId#
+</select>
+
+</sqlMap>

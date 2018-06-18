@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+		<sqlMap resource="egovframework/sqlmap/tis/com/common/TisCode_SQL.xml"/>
+
+		<sqlMap resource="egovframework/sqlmap/tis/com/task/Task_SQL.xml"/>
+		
+		<!-- 회계관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/profitLoss/ProfitLoss_SQL.xml"/>
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/sales/Sales_SQL.xml"/>
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/purchase/Purchase_SQL.xml"/>
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/cost/Cost_SQL.xml"/>
+		
+		<!-- 전자결재  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/epay/Epay_SQL.xml"/>
+		
+		<!-- 인사이력  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/comthemplyrinfochangedtls/Comthemplyrinfochangedtls_SQL.xml"/>
+		
+		<!-- 통장관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/tbBankbookmanage/TbBankbookmanage_SQL.xml"/>		
+		<!-- 카드관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/tbBankcardmanage/TbBankcardmanage_SQL.xml"/>		
+		<!-- 공용품관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/tbItemmanage/TbItemmanage_SQL.xml"/>	
+		<!-- 전체연차관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/tbAllvcatnmanage/TbAllvcatnmanage_SQL.xml"/>
+		<!-- 영업외이익관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/nonOperProfit/NonOperProfit_SQL.xml"/>
+		<!-- 정기정산관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/periodicSettle/PeriodicSettle_SQL.xml"/>
+		<!-- 보증금관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/deposit/Deposit_SQL.xml"/>
+		<!-- 후불정산관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/laterSettle/LaterSettle_SQL.xml"/>
+		<!-- 급여관리  -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/financial/salary/Salary_SQL.xml"/>
+		<!-- 마이페이지 -->
+		<sqlMap resource="egovframework/sqlmap/tis/com/myPage/MyPage_SQL.xml"/>
+		
+</sqlMapConfig>

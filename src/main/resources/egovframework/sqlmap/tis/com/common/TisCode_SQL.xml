@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TisCodeDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="tisCodeDAO.selectCodeDetailList" resultClass="egovMap">
+		<![CDATA[
+			SELECT CODE_ID
+				,CODE
+				,CODE_NM
+				,CODE_DC
+				,USE_AT
+				,(select CODE_ID_NM from comtccmmncode where CODE_ID = '$codeId$') as CODE_ID_NM
+			FROM
+				comtccmmndetailcode
+			WHERE CODE_ID = '$codeId$'
+		]]>
+	</select>
+	
+	<select id="tisCodeDAO.selectCodeDetailByVOList" resultClass="egovMap">
+		<![CDATA[
+			SELECT CODE_ID
+				,CODE
+				,CODE_NM
+				,CODE_DC
+				,USE_AT
+				,(select CODE_ID_NM from comtccmmncode where CODE_ID = '$codeId$') as CODE_ID_NM
+			FROM
+				comtccmmndetailcode
+			WHERE CODE_ID = '$codeId$'
+			AND CODE IN ($code$)
+		]]>
+	</select>
+</sqlMap>

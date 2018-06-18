@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TbBankcardmanage">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="tbBankcardmanageVO" type="tis.com.financial.bankBook.service.TbBankcardmanageVO"/>
+	<typeAlias  alias="emplyrListVO" type="tis.com.financial.bankBook.service.EmplyrVO"/>
+	
+	<resultMap id="tbBankcardmanage" class="tis.com.financial.bankBook.service.TbBankcardmanageVO">
+		<result property="bankNm" column="BANK_NM" columnIndex="1"/>
+		<result property="bankAccountNum" column="BANK_ACCOUNT_NUM" columnIndex="2"/>
+		<result property="cardNum" column="CARD_NUM" columnIndex="3"/>
+		<result property="depositorNm" column="DEPOSITOR_NM" columnIndex="4"/>
+		<result property="cardNm" column="CARD_NM" columnIndex="5"/>
+		<result property="endPnttm" column="END_PNTTM" columnIndex="6"/>
+		<result property="useAt" column="USE_AT" columnIndex="7"/>
+		<result property="rm" column="RM" columnIndex="8"/>
+		<result property="cpCode" column="CP_CODE" columnIndex="9"/>
+	</resultMap>
+	
+	<insert id="tbBankcardmanageDAO.insertTbBankcardmanage_S">
+		<![CDATA[
+			INSERT INTO tb_bankcardmanage 
+				( BANK_NM
+				  , BANK_ACCOUNT_NUM
+				  , CARD_NUM
+				  , DEPOSITOR_NM
+				  , CARD_NM
+				  , END_PNTTM
+				  , USE_AT
+				  , RM
+				  , CP_CODE )
+			VALUES ( #bankNm#
+				  , #bankAccountNum#
+				  , #cardNum#
+				  , #depositorNm#
+				  , #cardNm#
+				  , #endPnttm#
+				  , #useAt#
+				  , #rm#
+				  , #cpCode# )
+		]]>
+	</insert>
+	
+	<update id="tbBankcardmanageDAO.updateTbBankcardmanage_S">
+		<![CDATA[
+			UPDATE tb_bankcardmanage
+			SET BANK_NM=#bankNm#
+				, BANK_ACCOUNT_NUM=#bankAccountNum#				
+				, DEPOSITOR_NM=#depositorNm#				
+				, END_PNTTM=#endPnttm#
+				, USE_AT=#useAt#
+				, RM=#rm#
+				, CP_CODE=#cpCode#
+			WHERE CARD_NUM=#cardNum# AND CARD_NM=#cardNm#	
+			]]>
+	</update>
+	
+	<delete id="tbBankcardmanageDAO.deleteTbBankcardmanage_S">
+		<![CDATA[
+			DELETE FROM tb_bankcardmanage 
+			WHERE CARD_NUM=#cardNum# AND CARD_NM=#cardNm#
+			]]>
+	</delete>
+	
+	<select id="tbBankcardmanageDAO.selectTbBankcardmanage_S" resultMap="tbBankcardmanage">
+		<![CDATA[
+			SELECT
+				BANK_NM
+				, BANK_ACCOUNT_NUM
+				, CARD_NUM
+				, DEPOSITOR_NM
+				, CARD_NM
+				, END_PNTTM
+				, USE_AT
+				, RM
+				, CP_CODE
+			FROM tb_bankcardmanage
+			WHERE CARD_NUM=#cardNum# AND CARD_NM=#cardNm#
+			]]>
+	</select>
+	
+	<select id="tbBankcardmanageDAO.selectTbBankcardmanageList_D" parameterClass="tbBankcardmanageVO" resultClass="egovMap">
+					SELECT
+								BANK_NM
+								, BANK_ACCOUNT_NUM
+								, CARD_NUM
+								, DEPOSITOR_NM
+								, CARD_NM
+								, END_PNTTM
+								, USE_AT
+								, RM
+								, CP_CODE
+					FROM tb_bankcardmanage
+					WHERE 	1=1
+							<isNotNull prepend="AND" property="cpCode">
+							CP_CODE = #cpCode#
+							</isNotNull>
+	</select>	
+	<select id="tbBankcardmanageDAO.selectTbBankcardmanageListTotCnt_S" parameterClass="tbBankcardmanageVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM tb_bankcardmanage
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				BANK_NM = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				BANK_ACCOUNT_NUM LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+	
+	<select id="tbBankcardmanageDAO.selectEmplyrList" resultClass="emplyrListVO">
+			SELECT
+				EMPL_NO AS emplNo
+				, USER_NM AS userNm
+			FROM comtnemplyrinfo
+			WHERE EMPLYR_ENDDE IS NULL
+	</select>	
+	
+
+</sqlMap>

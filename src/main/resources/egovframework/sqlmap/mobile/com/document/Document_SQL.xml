@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DocumentFileDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="documentFileVO" type="mobile.com.document.service.DocumentFileVO"/>
+	
+	<delete id="documentFileDAO.deleteDocumentArticle">
+		<![CDATA[
+			DELETE FROM tb_mobile_file 
+			WHERE EMPL_NO = #emplNo# AND
+				  FILE_TYPE = #fileType#
+			]]>
+	</delete>
+	
+	<update id="documentFileDAO.updateAtchFileDetail">
+		<![CDATA[
+			UPDATE COMTNFILEDETAIL 
+			SET ATCH_FILE_ID=#orginFileId# , 
+				FILE_SN = (SELECT * FROM (SELECT count(FILE_SN) FROM COMTNFILEDETAIL where ATCH_FILE_ID=#orginFileId#) AS X)
+			WHERE ATCH_FILE_ID = #atchFileId#
+		]]>
+	
+	</update> 
+	
+	
+ 	<select id="documentFileDAO.selectDocumentArticle" resultClass="documentFileVO">
+			SELECT ATCH_FILE_ID AS atchFileId,
+				   EMPL_NO AS emplNo,
+				   CREATE_DT AS createDt,
+				   FILE_TYPE AS fileType
+			FROM tb_mobile_file
+			WHERE EMPL_NO = #emplNo# AND
+				  FILE_TYPE = #fileType#
+	</select>
+	
+  	<insert id="documentFileDAO.insertfile">
+			INSERT INTO tb_mobile_file
+				( 
+				ATCH_FILE_ID,
+				EMPL_NO,
+				CREATE_DT,
+				FILE_TYPE
+				)
+			VALUES 
+				(
+				#atchFileId#,
+				#emplNo#,
+				curdate(),
+				#fileType#
+				)
+	</insert>
+	
+</sqlMap>

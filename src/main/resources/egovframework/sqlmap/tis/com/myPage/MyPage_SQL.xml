@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="myPageDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="taskVO" type="tis.com.task.service.TaskVO"/>
+	<typeAlias  alias="IndvdlSchdulManageVO" type="egovframework.com.cop.smt.sim.service.IndvdlSchdulManageVO"/>
+	
+
+	<select id="myPageDAO.selectMyPageScheduler" resultClass="egovMap">
+	SELECT	  CONCAT(T.nm,'  ',REPLACE(T.st,'/','.'),' ~ ',REPLACE(T.en,'/','.')) nm
+			 ,T.st
+			 ,T.en
+			 ,T.gbn
+			 ,T.kValue
+			 ,T.code
+			 ,T.MAIN_DEPT 
+			 ,CASE 
+			  	WHEN T.GBN = 'schdul'
+			  		THEN T.GBN
+			  	ELSE
+			  		T.MAIN_DEPT
+			  	END type
+			  	,T.partici
+			  	,T.COMMON_AT
+			  	,T.TASK_ID
+			FROM 
+			
+			(
+	
+				SELECT TASK_NM nm
+				       ,CONCAT(TASK_SDATE,' 09:00') st
+				       ,CONCAT(TASK_EDATE,' 18:00') en
+				       ,'task'  gbn
+				       ,TASK_ID kValue
+				       ,EMPL_NO code
+				       ,MAIN_DEPT
+				       ,A.COMMON_AT
+				       ,(SELECT GROUP_CONCAT(EMPL_NO) FROM TB_TASK_PERSON B WHERE A.TASK_ID = B.TASK_ID) partici
+				       ,'' TASK_ID
+				FROM TB_SPMGTASK A 
+			
+				UNION
+				
+				SELECT CONCAT(A2.TASK_NM,' / ', A1.SCHDUL_NM)  nm
+					   ,A1.SCHDUL_SDT   st
+       				   ,A1.SCHDUL_EDT   en
+				       ,'schdul'  gbn
+				       ,A1.SCHDUL_ID kValue
+				       ,A1.FRST_REGISTER_ID code
+				       ,A2.MAIN_DEPT 
+				       ,'' partici
+				       ,'' COMMON_AT
+				       ,A1.TASK_ID
+				FROM COMTNSCHDULINFO A1 LEFT JOIN TB_SPMGTASK A2 ON A1.TASK_ID =A2.TASK_ID
+				where A1.SCHDUL_IPCR_CODE = 'Y'
+			
+			)T
+			WHERE 1=1 
+			<isEqual property="searchKeyword" compareValue="Y">
+					AND T.COMMON_AT = 'Y' AND T.MAIN_DEPT IN ($searchCondition$)
+			</isEqual>
+			<isNotEqual property="searchKeyword" compareValue="Y">			
+				AND (T.COMMON_AT = 'Y' or T.code = #emplyrId# or (T.COMMON_AT = 'N' and T.partici like concat('%',#emplyrId#,'%')))
+			    AND T.MAIN_DEPT IN ($searchCondition$)
+			</isNotEqual>	
+
+			
+	</select>
+	
+	<select id="myPageDAO.selectMySchduleList" resultClass="egovMap">
+			SELECT CONCAT(A2.TASK_NM,' / ', A1.SCHDUL_NM,'  ',REPLACE(A1.SCHDUL_SDT,'/','.'),' ~ ',REPLACE(A1.SCHDUL_EDT,'/','.'))  nm
+					   ,A1.SCHDUL_SDT   st
+       				   ,A1.SCHDUL_EDT   en
+				       ,'schdul'  gbn
+				       ,A1.SCHDUL_ID kValue
+				       ,A1.FRST_REGISTER_ID code
+				       ,A1.TASK_ID
+				       ,A2.MAIN_DEPT 
+				       ,CASE 
+				      	 WHEN  A1.SCHDUL_IPCR_CODE = 'Y' 
+				       		THEN 'schdul'
+				       	 ELSE A2.MAIN_DEPT 
+				       	 END type					       				        
+			FROM COMTNSCHDULINFO A1 LEFT JOIN TB_SPMGTASK A2 ON A1.TASK_ID =A2.TASK_ID
+			WHERE A1.FRST_REGISTER_ID = #searchCondition#
+	</select>
+	
+	<select id="myPageDAO.selectSchdulList" resultClass="egovMap">
+		SELECT T.nm
+		      ,T.st
+		      ,T.en
+		      ,T.kValue
+		      ,T.code
+		      ,T.MAIN_DEPT
+		      ,T.type
+		      ,T.SCHDUL_IPCR_CODE
+		      ,T.partici
+		      ,T.COMMON_AT
+		      ,T.TASK_ID
+		      ,T.SCHDUL_PRGRS_STTUS	 
+			FROM 
+		(	
+			SELECT CONCAT(A2.TASK_NM,' / ', A1.SCHDUL_NM)  nm
+					   ,A1.SCHDUL_SDT   st
+       				   ,A1.SCHDUL_EDT   en
+				       ,'schdul'  gbn
+				       ,A1.SCHDUL_ID kValue
+				       ,A1.FRST_REGISTER_ID code
+				       ,A2.MAIN_DEPT 
+				       ,CASE 
+				      	 WHEN  A1.SCHDUL_IPCR_CODE = 'Y' 
+				       		THEN 'schdul'
+				       	 ELSE A2.MAIN_DEPT 
+				       	 END type	
+						 ,A1.SCHDUL_IPCR_CODE	
+						 ,(select group_concat(EMPL_NO) from tb_task_person B where A2.TASK_ID = B.TASK_ID) partici	
+						 ,A2.COMMON_AT
+						 ,A2.TASK_ID
+						 ,A1.SCHDUL_PRGRS_STTUS	 	       				        
+			FROM COMTNSCHDULINFO A1 LEFT JOIN TB_SPMGTASK A2 ON A1.TASK_ID =A2.TASK_ID
+		 ) T
+		  WHERE ((DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(T.st,'%Y-%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL +30 DAY) ,'%Y-%m-%d') <![CDATA[ >=  ]]>date_format(T.st,'%Y-%m-%d'))
+		   OR (DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(T.en,'%Y-%m-%d') AND DATE_FORMAT(DATE_ADD(NOW(), INTERVAL +30 DAY) ,'%Y-%m-%d') <![CDATA[ >=  ]]>date_format(T.en,'%Y-%m-%d')))
+		    AND T.SCHDUL_PRGRS_STTUS NOT IN ('3','5','6')
+		  <isEqual property="searchCondition2" compareValue="Y">
+		  	AND T.code = #searchCondition#
+		  </isEqual>
+		  <isNotEqual property="searchCondition2" compareValue="Y">
+		  		<isEqual property="searchKeyword" compareValue="Y">
+		  			AND	T.COMMON_AT = 'Y' AND T.MAIN_DEPT IN ($searchCondition$)		  				
+		  		</isEqual>
+	  			<isNotEqual property="searchKeyword" compareValue="Y">
+	  					AND (T.COMMON_AT = 'Y' or T.code = #emplyrId# OR (T.COMMON_AT = 'N' and T.partici LIKE CONCAT('%',#emplyrId#,'%')))
+		  				AND T.MAIN_DEPT IN ($searchCondition$)	
+	  			</isNotEqual>		  
+		  </isNotEqual>		        
+			ORDER BY T.SCHDUL_IPCR_CODE DESC ,T.MAIN_DEPT,T.en 
+	</select>
+	
+ 	<select id="myPageDAO.selectPrgrsAllCnt" resultClass="egovMap">
+		SELECT
+		(
+			SELECT COUNT(*) 
+			FROM COMTNSCHDULINFO 
+			WHERE FRST_REGISTER_ID = #searchCondition#
+			AND DATE_FORMAT(SCHDUL_SDT,'%Y-%m-%d') <![CDATA[ <= ]]>DATE_FORMAT(NOW(),'%Y-%m-%d') AND DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(SCHDUL_EDT,'%Y-%m-%d')
+			AND SCHDUL_PRGRS_STTUS NOT IN ('3','5','6')
+		) prgsSchdul
+		,
+		(
+			SELECT COUNT(*)
+			from 
+			(
+				SELECT CONCAT(GROUP_CONCAT(IFNULL(A1.EMPL_NO,'')),',',A2.EMPL_NO) partici 
+				FROM TB_TASK_PERSON A1 LEFT JOIN TB_SPMGTASK A2 ON A1.TASK_ID = A2.TASK_ID 
+				WHERE DATE_FORMAT(TASK_SDATE,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(NOW(),'%Y-%m-%d') AND DATE_FORMAT(NOW(),'%Y-%m-%d') <![CDATA[ <= ]]>  DATE_FORMAT(TASK_EDATE,'%Y-%m-%d')
+					AND TASK_STATUS_CD NOT IN ('03','05','06')
+				GROUP BY A1.TASK_ID
+			)M
+			WHERE M.partici like CONCAT('%',#searchCondition#,'%')
+		) prgsTask
+		,
+		(
+			SELECT COUNT(A.APPR_STATE) 
+			FROM TB_APPR_HIST AS A 
+			LEFT JOIN TB_DRAFT_INFO AS B
+			ON (A.DRAFT_INFO_ID = B.DRAFT_INFO_ID)
+			WHERE A.APPR_STATE IS NOT NULL
+			AND A.APPR_STATE = '0'
+			AND A.EMPL_NO = #searchCondition#
+		) waitApproval
+		,
+		(
+			SELECT COUNT(*) 
+			FROM TB_DRAFT_INFO
+			WHERE APPR_STTUS = '0'
+			AND EMPL_NO = #searchCondition#
+	
+		) prgsDoc
+		FROM DUAL
+	</select> 
+</sqlMap>

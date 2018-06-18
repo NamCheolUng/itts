@@ -1,0 +1,166 @@
+#-----------------------------------------------------------------------
+#
+#   globals.properties : 시스템
+#
+#-----------------------------------------------------------------------
+#   1.  key = value 구조입니다.
+#   2.  key값은 공백문자를 포함불가, value값은 공백문자를 가능
+#   3.  key값으로 한글을 사용불가,   value값은 한글사용이 가능
+#   4.  줄을 바꿀 필요가 있으면 '\'를 라인의 끝에 추가(만약  '\'문자를 사용해야 하는 경우는 '\\'를 사용)
+#   5.  Windows에서의 디렉토리 표시 : '\\' or '/'  ('\' 사용하면 안됨)
+#   6.  Unix에서의 디렉토리 표시 : '/'
+#   7.  주석문 처리는  #사용
+#   8.  value값 뒤에 스페이스가 존재하는 경우 서블릿에서 참조할때는 에러발생할 수 있으므로 trim()하거나 마지막 공백없이 properties 값을 설정할것
+#-----------------------------------------------------------------------
+
+# 운영서버 타입(WINDOWS, UNIX)
+Globals.OsType =WINDOWS
+#Globals.OsType =UNIX
+
+# DB서버 타입(ORACLE, MYSQL) - datasource 및 sqlMap 파일 지정에 사용됨
+Globals.DbType =mysql
+
+# 위저드 사용시 데이터베이스 관련 설정을 불러옴
+#mysql
+Globals.DriverClassName=com.mysql.jdbc.Driver
+Globals.Url=jdbc:mysql://118.45.180.217:3306/tis?allowMultiQueries=true
+#Globals.Url=jdbc:mysql://172.16.1.199:3306/tis?allowMultiQueries=true
+
+#oracle
+#Globals.DriverClassName=oracle.jdbc.driver.OracleDriver
+#Globals.Url=jdbc:oracle:thin:@127.0.0.1:1521:egovfrm
+
+#Altibase
+#Globals.DriverClassName=Altibase.jdbc.driver.AltibaseDriver
+#Globals.Url=jdbc:Altibase://127.0.0.1:1721/egovfrm?encoding=UTF-8
+
+#Tibero
+#Globals.DriverClassName=com.tmax.tibero.jdbc.TbDriver
+#Globals.Url=jdbc:tibero:thin:@127.0.0.1:1821:egovfrm
+
+#cubrid
+#Globals.DriverClassName=cubrid.jdbc.driver.CUBRIDDriver
+#Globals.Url=jdbc:cubrid:127.0.0.1.22:1921:egovfrm:::?charset=utf-8
+
+#DB계정 ID/PW설정
+Globals.UserName =tis
+Globals.Password =12tis!@
+#Globals.UserName =tis
+#Globals.Password =tis0312!@db
+
+# MainPage Setting
+Globals.MainPage  =/EgovContent.do
+#통합메인메뉴
+#Globals.MainPage = /sym/mnu/mpm/EgovMainMenuHome.do
+
+# G4C 연결용 IP (localhost)
+#Globals.LocalIp = 127.0.0.2
+
+# 환경파일 위치
+Globals.ShellFilePath     =globals.properties
+Globals.ServerConfPath    =conf/server.properties
+Globals.ClientConfPath    =conf/client.properties
+Globals.FileFormatPath    =conf/format.properties
+Globals.GPKIConfPath      =conf/gpki.properties
+Globals.ConfPath          =conf
+Globals.MailRequestPath   =mail/request/
+Globals.MailRResponsePath =mail/response/
+Globals.SMEConfigPath     =conf/SMEConfig.properties
+
+# 환경파일 위치 (jeus)
+#Globals.ShellFilePath     = globals.properties
+#Globals.ServerConfPath    = conf/server.properties
+#Globals.ClientConfPath    = conf/client.properties
+#Globals.FileFormatPath    = conf/format.properties
+#Globals.GPKIConfPath      = conf/gpki.properties
+#Globals.ConfPath          = conf
+#Globals.fileStorePath     =
+#Globals.MailRequestPath   = mail/request/
+#Globals.MailRResponsePath = mail/response/
+#Globals.SMEConfigPath     = conf/SMEConfig.properties
+#Globals.SynchrnServerPath = tmp/upload/
+
+# WINDOWS용 쉘파일 정보
+SHELL.WINDOWS.getHostName      =prg/sh_001.bat
+SHELL.WINDOWS.getDrctryByOwner =prg/getDrctryByOwner.bat
+SHELL.WINDOWS.getDrctryOwner   =prg/getDrctryOwner.bat
+SHELL.WINDOWS.moveDrctry       =prg/moveDrctry.bat
+SHELL.WINDOWS.compileSchema    =prg/compileSchema.bat
+SHELL.WINDOWS.getDiskAttrb     =prg/getDiskAttrb.bat
+SHELL.WINDOWS.getDiskCpcty     =prg/getDiskCpcty.bat
+SHELL.WINDOWS.getDiskExst      =prg/getDiskExst.bat
+
+# UNIX용 쉘파일 정보 - 개발was jeus에서 사용할때 기준
+SHELL.UNIX.getHostName      =prg/sh_001.sh
+SHELL.UNIX.getDrctryByOwner =prg/getDrctryByOwner.sh
+SHELL.UNIX.getDrctryOwner   =prg/getDrctryOwner.sh
+SHELL.UNIX.getDrctryAccess  =prg/getDrctryAccess.sh
+SHELL.UNIX.getMountLc       =prg/getMountLc.sh
+SHELL.UNIX.getDiskName      =prg/getNetWorkInfo.sh
+SHELL.UNIX.moveDrctry       =prg/moveDrctry.sh
+SHELL.UNIX.compileSchema    =prg/compileSchema.sh
+SHELL.UNIX.getDiskAttrb     =prg/getDiskAttrb.sh
+SHELL.UNIX.getDiskCpcty     =prg/getDiskCpcty.sh
+SHELL.UNIX.getDiskExst      =prg/getDiskExst.sh
+SHELL.UNIX.getProcInfo      =prg/getProcInfo.sh
+
+# LINUX용 쉘파일 정보
+
+# 연계
+# 기관코드수신용(경로 설정은 반드시 절대경로를 사용해야함.)
+CNTC.INSTTCODE.DIR.rcv       =D:/tmp/test/rcv/
+CNTC.INSTTCODE.DIR.rcvold    =D:/tmp/test/rcvold/
+CNTC.INSTTCODE.DIR.bin       =D:/tmp/test/bin/
+
+CNTC.INSTTCODE.CMD.edircv    =gcc_edircv.bat
+CNTC.INSTTCODE.CMD.edircvmsg =gcc_edircvmsg.bat
+
+CNTC.INSTTCODE.INFO.userid   =USERID
+CNTC.INSTTCODE.INFO.userpw   =******
+
+# 파일 업로드 경로(경로 설정은 반드시 절대경로를 사용해야함, 경로 뒤에 /를 붙여 주어야함.)
+Globals.fileStorePath =C:/egovframework/upload/
+#업무일지
+Globals.fileStorePathSchdulDiary =C:/egovframework/upload/schdulDiary/     
+#증빙서류
+Globals.fileStorePathDocument =C:/egovframework/upload/document/
+#업체/기관 명함
+Globals.fileStorePathcallingCard =C:/egovframework/upload/callingCard/
+#영수증(지출명세서)
+Globals.fileStorePathcallingCard =C:/egovframework/upload/receipt/
+
+#서버
+#Globals.fileStorePath =/home/tis/upload/
+#업무일지
+#Globals.fileStorePathSchdulDiary =/home/tis/upload/schdulDiary/     
+#증빙서류
+#Globals.fileStorePathDocument =/home/tis/upload/document/
+#업체/기관 명함
+#Globals.fileStorePathcallingCard =/home/tis/upload/callingCard/
+#영수증(지출명세서)
+#Globals.fileStorePathcallingCard =/home/tis/upload/receipt/
+
+
+
+
+# 파일 동기화 컴포넌트에서 사용할 파일 업로드 경로(경로 설정은 반드시 절대경로를 사용해야함, 경로 뒤에 /를 붙여 주어야함.)
+Globals.SynchrnServerPath =C:/egovframework/upload/Synch/
+
+# for JFile properties
+system.uploadpath =C:/egovframework/upload/
+no.image.url =/resources/jfile/swfupload/images/no_img.gif
+ftp.server.ip =127.0.0.1
+ftp.user.id =test
+ftp.user.password =test
+
+# Social(Facebook, Oauth 컴포넌트 사용시 활용)
+facebook.appId         =
+facebook.appSecret     =
+twitter.consumerKey    =
+twitter.consumerSecret =
+
+#LDAP조직도관리 컴포넌트 사용시 LDAP서버설정정보 필요
+ldap.url =ldap://localhost:10389
+ldap.rootDn =c=kr
+ldap.username =uid=admin,ou=system
+ldap.password =secret

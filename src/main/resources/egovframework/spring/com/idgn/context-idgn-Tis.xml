@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+    <!-- 과제ID -->
+    <bean name="tisTaskIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="taskIdStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="TASK_ID"/>
+    </bean>
+    <bean name="taskIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="TASK_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+       <!-- 과제담당자ID -->
+    <bean name="tisTaskPerIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="taskPerIdStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="TASK_PER_ID"/>
+    </bean>
+    <bean name="taskPerIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="TPID_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 발주처담당자ID -->
+    <bean name="tisTaskDeptMngerGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="taskDeptMngerIdStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="ORGZT_PER_ID"/>
+    </bean>
+    <bean name="taskDeptMngerIdStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="ORGP_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+    <!-- 매출ID -->
+    <bean name="egovSalesIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="SalesStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="SALES_ID"/>
+    </bean>
+    <bean name="SalesStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="SALE_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+    <!-- 매출상세ID -->
+    <bean name="egovSalesDetailIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="SalesDetailStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="SALES_DETAIL_ID"/>
+    </bean>
+    <bean name="SalesDetailStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="SADTL_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+    <!-- 매입ID -->
+    <bean name="tisPurchaseIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="PurchaseStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="PURCHASE_ID"/>
+    </bean>
+    <bean name="PurchaseStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="PRCS_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+    <!-- 매입상세ID -->
+    <bean name="tisPurchaseDetailIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="PurchaseDetailStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="PURCHASE_DETAIL_ID"/>
+    </bean>
+    <bean name="PurchaseDetailStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="PRDTL_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+        <!-- 영업외이익ID -->
+    <bean name="nonOperIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="nonOperDetailStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="OTDEAL_ID"/>
+    </bean>
+    <bean name="nonOperDetailStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="OTDEAL_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+         <!-- 정기정산ID -->
+    <bean name="periodicSettleIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="periodicSettleDetailStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="CALCUL_ID"/>
+    </bean>
+    <bean name="periodicSettleDetailStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="PERSE_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+          <!-- 보증금ID -->
+    <bean name="depositIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="depositDetailStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="DEPOSIT_ID"/>
+    </bean>
+    <bean name="depositDetailStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="DPST_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+</beans>

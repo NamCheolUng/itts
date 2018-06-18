@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="Comthemplyrinfochangedtls">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="comthemplyrinfochangedtlsVO" type="tis.com.manager.personnelAppointment.service.ComthemplyrinfochangedtlsVO"/>
+	
+	<resultMap id="comthemplyrinfochangedtls" class="tis.com.manager.personnelAppointment.service.ComthemplyrinfochangedtlsVO">
+		<result property="emplNo" column="EMPL_NO" columnIndex="1"/>
+		<result property="changeDe" column="CHANGE_DE" columnIndex="2"/>
+		<result property="afOrgnztNm" column="AF_ORGNZT_NM" columnIndex="3"/>
+		<result property="afOrgnztId" column="AF_ORGNZT_ID" columnIndex="4"/>
+		<result property="afOfcpsNm" column="AF_OFCPS_NM" columnIndex="5"/>
+		<result property="rm" column="RM" columnIndex="6"/>
+		<result property="afOfcpsId" column="AF_OFCPS_ID" columnIndex="7"/>
+	</resultMap>
+	
+	<insert id="comthemplyrinfochangedtlsDAO.insertComthemplyrinfochangedtls_S">
+		<![CDATA[
+			INSERT INTO comthemplyrinfochangedtls 
+				( EMPL_NO
+				  , CHANGE_DE
+				  , AF_ORGNZT_NM
+				  , AF_ORGNZT_ID
+				  , AF_OFCPS_NM
+				  , RM
+				  , AF_OFCPS_ID )
+			VALUES ( #emplNo#
+				  , #changeDe#
+				  , #afOrgnztNm#
+				  , #afOrgnztId#
+				  , #afOfcpsNm#
+				  , #rm#
+				  , #afOfcpsId# )
+		]]>
+	</insert>
+	
+	<update id="comthemplyrinfochangedtlsDAO.updateComthemplyrinfochangedtls_S">
+		<![CDATA[
+			UPDATE comthemplyrinfochangedtls
+			SET EMPL_NO=#emplNo#
+				, CHANGE_DE=#changeDe#
+				, AF_ORGNZT_NM=#afOrgnztNm#
+				, AF_ORGNZT_ID=#afOrgnztId#
+				, AF_OFCPS_NM=#afOfcpsNm#
+				, RM=#rm#
+				, AF_OFCPS_ID=#afOfcpsId#
+						WHERE EMPL_NO=#emplNo#
+								AND CHANGE_DE=#changeDe#
+				]]>
+	</update>
+	
+	<update id="comthemplyrinfochangedtlsDAO.updateAppointmentChange" parameterClass="comthemplyrinfochangedtlsVO">
+		<![CDATA[
+			UPDATE comthemplyrinfochangedtls A, comtnemplyrinfo B
+			SET B.ORGNZT_ID = A.AF_ORGNZT_ID
+				, B.ORGNZT_NM = A.AF_ORGNZT_NM
+				, B.OFCPS_ID = A.AF_OFCPS_ID
+				, B.OFCPS_NM = A.AF_OFCPS_NM
+			WHERE A.EMPL_NO = B.EMPL_NO AND A.CHANGE_DE = #changeDe#;
+		]]>
+	</update>
+	
+	
+	<delete id="comthemplyrinfochangedtlsDAO.deleteComthemplyrinfochangedtls_S">
+		<![CDATA[
+			DELETE FROM comthemplyrinfochangedtls 
+						WHERE EMPL_NO=#emplNo#
+								AND CHANGE_DE=#changeDe#
+				]]>
+	</delete>
+	
+	<select id="comthemplyrinfochangedtlsDAO.selectComthemplyrinfochangedtls_S" resultMap="comthemplyrinfochangedtls">
+		<![CDATA[
+			SELECT
+				EMPL_NO
+				, CHANGE_DE
+				, AF_ORGNZT_NM
+				, AF_ORGNZT_ID
+				, AF_OFCPS_NM
+				, RM
+				, AF_OFCPS_ID
+			FROM comthemplyrinfochangedtls
+						WHERE EMPL_NO=#emplNo#
+								AND CHANGE_DE=#changeDe#
+				]]>
+	</select>
+	
+	<select id="comthemplyrinfochangedtlsDAO.selectComthemplyrinfochangedtlsList_D" parameterClass="comthemplyrinfochangedtlsVO" resultClass="egovMap">
+			SELECT
+								EMPL_NO
+								, CHANGE_DE
+								, AF_ORGNZT_NM
+								, AF_ORGNZT_ID
+								, AF_OFCPS_NM
+								, RM
+								, AF_OFCPS_ID
+					FROM comthemplyrinfochangedtls
+			WHERE 
+				EMPL_NO = #emplNo#
+			ORDER BY 
+				CHANGE_DE DESC				
+	</select>	
+	<select id="comthemplyrinfochangedtlsDAO.selectComthemplyrinfochangedtlsListTotCnt_S" parameterClass="comthemplyrinfochangedtlsVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM comthemplyrinfochangedtls
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				EMPL_NO = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				CHANGE_DE LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+
+</sqlMap>

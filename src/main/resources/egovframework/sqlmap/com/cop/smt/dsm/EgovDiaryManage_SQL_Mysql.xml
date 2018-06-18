@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	수정일                 수정자                          수정내용
+  =========     =======    =================================================						
+  2011.10.05    서준식               보안 취약점 점검사항 반영 $->#변경
+-->
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DiaryManage">
+
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="comDefaultVO" type="egovframework.com.cmm.ComDefaultVO"/>
+	<typeAlias  alias="DiaryManageVO" type="egovframework.com.cop.smt.dsm.service.DiaryManageVO"/>
+
+	<resultMap id="DiaryManage" class="egovframework.com.cop.smt.dsm.service.DiaryManageVO">
+		<result property="diaryId" column="DIARY_ID" columnIndex="1"/>
+		<result property="schdulId" column="SCHDUL_ID" columnIndex="2"/>
+		<result property="schdulCn" column="SCHDUL_CN" columnIndex="3"/>
+		<result property="diaryProcsPte" column="DIARY_PROGRSRT" columnIndex="4"/>
+		<result property="diaryNm" column="DIARY_NM" columnIndex="5"/>
+		<result property="drctMatter" column="DRCT_MATTER" columnIndex="6"/>
+		<result property="partclrMatter" column="PARTCLR_MATTER" columnIndex="7"/>
+		<result property="atchFileId" column="ATCH_FILE_ID" columnIndex="8"/>
+		<result property="frstRegisterPnttm" column="FRST_REGIST_PNTTM" columnIndex="9"/>
+		<result property="frstRegisterId" column="FRST_REGISTER_ID" columnIndex="10"/>
+		<result property="lastUpdusrPnttm" column="LAST_UPDT_PNTTM" columnIndex="11"/>
+		<result property="lastUpdusrId" column="LAST_UPDUSR_ID" columnIndex="12"/>
+	</resultMap>
+	
+	<resultMap id="DiaryList" class="egovframework.com.cop.smt.dsm.service.DiaryManageVO">
+		<result property="diaryId" column="DIARY_ID" columnIndex="1"/>
+		<result property="schdulId" column="SCHDUL_ID" columnIndex="2"/>
+		<result property="schdulCn" column="SCHDUL_CN" columnIndex="3"/>
+		<result property="diaryProcsPte" column="DIARY_PROGRSRT" columnIndex="4"/>
+		<result property="diaryNm" column="DIARY_NM" columnIndex="5"/>
+		<result property="drctMatter" column="DRCT_MATTER" columnIndex="6"/>
+		<result property="partclrMatter" column="PARTCLR_MATTER" columnIndex="7"/>
+		<result property="atchFileId" column="ATCH_FILE_ID" columnIndex="8"/>
+		<result property="frstRegisterPnttm" column="FRST_REGIST_PNTTM" columnIndex="9"/>
+		<result property="frstRegisterId" column="FRST_REGISTER_ID" columnIndex="10"/>
+		<result property="lastUpdusrPnttm" column="LAST_UPDT_PNTTM" columnIndex="11"/>
+		<result property="lastUpdusrId" column="LAST_UPDUSR_ID" columnIndex="12"/>
+		<result property="diarySection" column="DIARY_SECTION" columnIndex="13"/>
+		<result property="diaryContens" column="DIARY_CONTENS" columnIndex="14"/>
+		<result property="cnt" column="cnt" columnIndex="15"/>	
+	</resultMap>
+	<!-- 일지정보::삭제  -->
+	<delete id="DiaryManage.deleteDiaryManage">
+		<![CDATA[
+			DELETE FROM COMTNDIARYINFO 
+			WHERE 1=1 
+			AND DIARY_ID = #diaryId#
+		]]>
+	</delete>
+
+	<!-- 일지정보::수정  -->
+	<update id="DiaryManage.updateDiaryManage">
+		UPDATE COMTNDIARYINFO 
+		SET  
+			DIARY_PROGRSRT=#diaryProcsPte#,
+			DIARY_NM=#diaryNm#,
+			DRCT_MATTER=#drctMatter#,
+			PARTCLR_MATTER=#partclrMatter#,
+			ATCH_FILE_ID=#atchFileId#,
+			LAST_UPDT_PNTTM = sysdate(),
+			LAST_UPDUSR_ID = #lastUpdusrId#,
+			DIARY_SECTION  = #diarySection#,
+			DIARY_CONTENS = #diaryContens#
+		WHERE 1=1 
+			AND DIARY_ID = #diaryId# 
+	</update>
+	
+	<!-- 일지정보::상세보기 -->
+	<select id="DiaryManage.selectDiaryManageDetail" resultMap="DiaryManage">
+		SELECT 
+		A.DIARY_ID,
+		A.SCHDUL_ID,
+		(SELECT SCHDUL_NM FROM COMTNSCHDULINFO WHERE SCHDUL_ID = A.SCHDUL_ID) SCHDUL_CN,
+		A.DIARY_PROGRSRT,
+		A.DIARY_NM,
+		A.DRCT_MATTER,
+		A.PARTCLR_MATTER,
+		A.ATCH_FILE_ID,
+		A.FRST_REGIST_PNTTM,
+		A.FRST_REGISTER_ID,
+		A.LAST_UPDT_PNTTM,
+		A.LAST_UPDUSR_ID
+		FROM COMTNDIARYINFO A 
+		WHERE 1=1
+			AND A.DIARY_ID = #diaryId#  
+
+	</select>
+	
+	<!-- 일지정보::목록조회_게시물정보 -->
+	<select id="DiaryManage.selectDiaryManage" parameterClass="comDefaultVO" resultMap="DiaryList">
+	 <![CDATA[
+		SELECT 
+			A.DIARY_ID,
+			A.SCHDUL_ID,
+			(SELECT SCHDUL_CN FROM COMTNSCHDULINFO WHERE SCHDUL_ID = A.SCHDUL_ID) SCHDUL_CN,
+			A.DIARY_PROGRSRT,
+			A.DIARY_NM,
+			A.DRCT_MATTER,
+			A.PARTCLR_MATTER,
+			A.ATCH_FILE_ID,
+			A.FRST_REGIST_PNTTM,
+			A.FRST_REGISTER_ID,
+			(SELECT USER_NM FROM COMTNEMPLYRINFO WHERE EMPL_NO = A.FRST_REGISTER_ID) FRST_REGISTER_NM,
+			A.LAST_UPDT_PNTTM,
+			A.LAST_UPDUSR_ID,
+			A.DIARY_SECTION,
+			A.DIARY_CONTENS,
+			(SELECT COUNT(*) FROM COMTNFILEDETAIL B WHERE A.ATCH_FILE_ID = B.ATCH_FILE_ID) cnt
+		FROM COMTNDIARYINFO A 
+		WHERE 1=1 AND
+		A.SCHDUL_ID = #searchKeyword#
+	 ]]>
+<!-- 	 <isNotEmpty property="searchKeyword">
+	 	<isNotEqual property="searchKeyword" compareValue="">
+	 		<isNotEqual property="searchCondition" compareValue="">
+	 			<isEqual property="searchCondition" compareValue="DIARY_NM">
+	 				AND DIARY_NM LIKE CONCAT ('%', #searchKeyword#,'%')
+	 			</isEqual>
+	 			<isEqual property="searchCondition" compareValue="DRCT_MATTER">
+	 				AND DRCT_MATTER LIKE  CONCAT ('%', #searchKeyword#,'%')
+	 			</isEqual>
+	 			<isEqual property="searchCondition" compareValue="PARTCLR_MATTER">
+	 				AND PARTCLR_MATTER LIKE  CONCAT ('%', #searchKeyword#,'%')
+	 			</isEqual>
+	 		</isNotEqual>
+	 	</isNotEqual>
+	 </isNotEmpty> -->
+	 <![CDATA[
+		ORDER BY A.FRST_REGIST_PNTTM DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	]]>
+	</select>
+	
+	<!-- 일지정보::목록조회_게시물 총갯수  -->
+	<select id="DiaryManage.selectDiaryManageCnt" parameterClass="comDefaultVO" resultClass="int">
+		SELECT 
+		COUNT(*) totcnt
+		FROM COMTNDIARYINFO 
+		WHERE 1=1 AND
+		SCHDUL_ID = #searchKeyword#
+<!-- 	 <isNotEmpty property="searchKeyword">
+	 	<isNotEqual property="searchKeyword" compareValue="">
+	 		<isNotEqual property="searchCondition" compareValue="">
+	 			<isEqual property="searchCondition" compareValue="DIARY_NM">
+	 				AND DIARY_NM LIKE CONCAT ('%', #searchKeyword#,'%')
+	 			</isEqual>
+	 			<isEqual property="searchCondition" compareValue="DRCT_MATTER">
+	 				AND DRCT_MATTER LIKE  CONCAT ('%', #searchKeyword#,'%')
+	 			</isEqual>
+	 			<isEqual property="searchCondition" compareValue="PARTCLR_MATTER">
+	 				AND PARTCLR_MATTER LIKE  CONCAT ('%', #searchKeyword#,'%')
+	 			</isEqual>
+	 		</isNotEqual>
+	 	</isNotEqual>
+	 </isNotEmpty> -->
+	</select>
+	
+	<!-- 일지정보::입력  -->
+	<insert id="DiaryManage.insertDiaryManage">
+	 <![CDATA[
+		INSERT INTO COMTNDIARYINFO ( 
+		DIARY_ID,
+		SCHDUL_ID,
+		DIARY_PROGRSRT,
+		DIARY_NM,
+		DRCT_MATTER,
+		PARTCLR_MATTER,
+		ATCH_FILE_ID,
+		FRST_REGIST_PNTTM,
+		FRST_REGISTER_ID,
+		LAST_UPDT_PNTTM,
+		LAST_UPDUSR_ID,
+		TASK_ID,
+		TASK_STEP_ID,
+		DIARY_SECTION,
+		DIARY_CONTENS
+		)VALUES( 
+		#diaryId#,
+		#schdulId#,
+		#diaryProcsPte#,
+		#diaryNm#,
+		#drctMatter#,
+		#partclrMatter#,
+		#atchFileId#,
+		sysdate(),
+		#frstRegisterId#,
+		sysdate(),
+		#lastUpdusrId#,
+		#taskId#,
+		#taskStepId#,
+		#diarySection#,
+		#diaryContens#
+		)
+
+	 ]]>
+	</insert>
+	
+	<select id="DiaryManage.selectDiarySection2or3" resultMap="DiaryList">
+		SELECT A.DIARY_ID,
+			   A.SCHDUL_ID,
+			   (SELECT SCHDUL_CN FROM COMTNSCHDULINFO WHERE SCHDUL_ID = A.SCHDUL_ID) SCHDUL_CN,
+			   A.DIARY_PROGRSRT,
+			   A.DIARY_NM,
+			   A.DRCT_MATTER,
+			   A.PARTCLR_MATTER,
+			   A.ATCH_FILE_ID,
+			   A.FRST_REGIST_PNTTM,
+			   A.FRST_REGISTER_ID,
+			  (SELECT USER_NM FROM COMTNEMPLYRINFO WHERE EMPL_NO = A.FRST_REGISTER_ID) FRST_REGISTER_NM,
+			   A.LAST_UPDT_PNTTM,
+			   A.LAST_UPDUSR_ID,
+			   A.DIARY_SECTION,
+			   A.DIARY_CONTENS,
+			   (SELECT COUNT(*) FROM COMTNFILEDETAIL B WHERE A.ATCH_FILE_ID = B.ATCH_FILE_ID) cnt
+	    FROM  COMTNDIARYINFO A
+	    WHERE TASK_ID = #taskId# 
+	    	 <isNotEmpty prepend="AND" property="diarySection">
+	    	 	 DIARY_SECTION = #diarySection#
+	    	 </isNotEmpty>
+	    	 <isNotEmpty prepend="AND" property="frstRegisterId">
+	    	 	 A.FRST_REGISTER_ID = #frstRegisterId#
+	    	 </isNotEmpty>
+	    	  <isNotEmpty  property="searchStdt">
+	      		<isNotEmpty prepend="AND"  property="searchEndt">
+	      			(date_format(#searchStdt#,'%Y%m%d') <![CDATA[ <= ]]> date_format(A.FRST_REGIST_PNTTM,'%Y%m%d')
+	      			AND date_format(#searchEndt#,'%Y%m%d') <![CDATA[ >= ]]> date_format(A.FRST_REGIST_PNTTM,'%Y%m%d'))
+	      		</isNotEmpty>
+      		</isNotEmpty>
+      		ORDER BY  A.FRST_REGIST_PNTTM DESC	 	          
+	</select>
+	
+	<select id="DiaryManage.selectDiaryCmng" resultClass="egovMap">
+		select A.DIARY_ID,
+			   A.SCHDUL_ID,
+			   (SELECT SCHDUL_CN FROM COMTNSCHDULINFO WHERE SCHDUL_ID = A.SCHDUL_ID) SCHDUL_CN,
+			   A.DIARY_PROGRSRT,
+			   A.DIARY_NM,
+			   A.DRCT_MATTER,
+			   A.PARTCLR_MATTER,
+			   A.ATCH_FILE_ID,
+			   A.FRST_REGIST_PNTTM,
+			   A.FRST_REGISTER_ID,
+			  (SELECT USER_NM FROM COMTNEMPLYRINFO WHERE EMPL_NO = A.FRST_REGISTER_ID) FRST_REGISTER_NM,
+			   A.LAST_UPDT_PNTTM,
+			   A.LAST_UPDUSR_ID,
+			   A.DIARY_SECTION,
+			   A.DIARY_CONTENS,
+			   (SELECT COUNT(*) FROM COMTNFILEDETAIL  WHERE A.ATCH_FILE_ID = ATCH_FILE_ID) cnt,
+			    (select task_nm from tb_spmgtask where A.TASK_ID = TASK_ID) taskNm
+		FROM COMTNDIARYINFO A LEFT JOIN TB_RELA_CMNG B ON A.SCHDUL_ID=B.SCHDUL_ID
+      	WHERE B.NCRD_ID = #ncrdId#
+      	<isNotEmpty prepend="AND" property="diarySection">
+      		A.DIARY_SECTION = #diarySection#
+      	</isNotEmpty>
+      	<isNotEmpty  property="searchStdt">
+      		<isNotEmpty prepend="AND"  property="searchEndt">
+      			(date_format(#searchStdt#,'%Y%m%d') <![CDATA[ <= ]]> date_format(A.FRST_REGIST_PNTTM,'%Y%m%d')
+      			AND date_format(#searchEndt#,'%Y%m%d') <![CDATA[ >= ]]> date_format(A.FRST_REGIST_PNTTM,'%Y%m%d'))
+      		</isNotEmpty>
+      	</isNotEmpty>
+      
+	</select>
+
+</sqlMap>

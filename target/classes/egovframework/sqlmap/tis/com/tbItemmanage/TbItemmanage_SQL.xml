@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TbItemmanage">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="tbItemmanageSerarchVO" type="tis.com.business.item.service.TbItemmanageDefaultVO"/>
+	
+	<resultMap id="tbItemmanage" class="tis.com.business.item.service.TbItemmanageVO">
+		<result property="itemCode" column="ITEM_CODE" columnIndex="1"/>
+		<result property="emplyrNo" column="EMPLYR_NO" columnIndex="2"/>
+		<result property="itemName" column="ITEM_NAME" columnIndex="3"/>
+		<result property="insertDt" column="INSERT_DT" columnIndex="4"/>
+		<result property="location" column="LOCATION" columnIndex="5"/>
+		<result property="rm" column="RM" columnIndex="6"/>
+	</resultMap>
+	
+	<insert id="tbItemmanageDAO.insertTbItemmanage_S">
+		<![CDATA[
+			INSERT INTO tb_itemmanage 
+				( ITEM_CODE
+				  , EMPLYR_NO
+				  , ITEM_NAME
+				  , INSERT_DT
+				  , LOCATION
+				  , RM )
+			VALUES ( #itemCode#
+				  , #emplyrNo#
+				  , #itemName#
+				  , NOW()
+				  , #location#
+				  , #rm# )
+		]]>
+	</insert>
+	
+	<update id="tbItemmanageDAO.updateTbItemmanage_S">
+		<![CDATA[
+			UPDATE tb_itemmanage
+			SET 
+				EMPLYR_NO=#emplyrNo#
+				, ITEM_NAME=#itemName#				
+				, LOCATION=#location#
+				, RM=#rm#
+			WHERE ITEM_CODE=#itemCode#	
+			]]>
+	</update>
+	
+	<delete id="tbItemmanageDAO.deleteTbItemmanage_S">
+		<![CDATA[
+			DELETE FROM tb_itemmanage 
+			WHERE ITEM_CODE=#itemCode#
+			]]>
+	</delete>
+	
+	<select id="tbItemmanageDAO.selectTbItemmanage_S" resultMap="tbItemmanage">
+		<![CDATA[
+			SELECT
+				ITEM_CODE
+				, EMPLYR_NO
+				, ITEM_NAME
+				, INSERT_DT
+				, LOCATION
+				, RM
+			FROM tb_itemmanage
+			WHERE ITEM_CODE = #itemCode#
+			]]>
+	</select>
+	
+	<select id="tbItemmanageDAO.selectTbItemmanageList_D" parameterClass="tbItemmanageSerarchVO" resultClass="egovMap">
+			SELECT
+								ITEM_CODE
+								, EMPLYR_NO
+								, ITEM_NAME
+								, INSERT_DT
+								, LOCATION
+								, RM
+					FROM tb_itemmanage
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ITEM_NAME LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				ITEM_CODE LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+			<isNotEmpty property="bgndt">
+				AND INSERT_DT BETWEEN #bgndt# AND #enddt#
+			</isNotEmpty>
+				ORDER BY INSERT_DT DESC
+				LIMIT #recordCountPerPage# OFFSET #firstIndex#	
+	</select>	
+	<select id="tbItemmanageDAO.selectTbItemmanageListTotCnt_S" parameterClass="tbItemmanageSerarchVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM tb_itemmanage
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				ITEM_CODE = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				EMPLYR_NO LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+			<isNotNull prepend="AND" property="bgndt">
+				INSERT_DT BETWEEN #bgndt# AND #enddt#
+			</isNotNull>
+	</select>
+	
+	<select id ="tbItemmanageDAO.selectGetItemID" resultClass="String">
+		<![CDATA[
+            SELECT CONCAT(DATE_FORMAT(now(), '%y%m%d'), LPAD(COUNT(ITEM_CODE) + 1,2,0)) AS itemid
+            FROM tb_itemmanage
+            WHERE DATE_FORMAT(INSERT_DT, '%Y%m%d') = DATE_FORMAT(NOW(), '%Y%m%d');
+        ]]>    
+    </select>
+
+	<select id="tbItemmanageDAO.selectTbItemNameList" resultClass="egovMap">
+			SELECT
+								ITEM_CODE
+								, EMPLYR_NO
+								, ITEM_NAME
+								, INSERT_DT
+								, LOCATION
+								, RM
+					FROM tb_itemmanage
+			GROUP BY ITEM_NAME	
+	</select>	
+</sqlMap>

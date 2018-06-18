@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="excelZipService" class="egovframework.rte.fdl.excel.impl.EgovExcelServiceImpl">
+		<property name="mapClass" value="egovframework.com.sym.ccm.zip.service.impl.EgovCcmExcelZipMapping" />
+		<property name="sqlMapClient" ref="egov.sqlMapClient" />
+	</bean>
+	
+	<bean id="excelRdnmadZipService" class="egovframework.rte.fdl.excel.impl.EgovExcelServiceImpl">
+		<property name="mapClass" value="egovframework.com.sym.ccm.zip.service.impl.EgovCcmExcelRdnmadZipMapping" />
+		<property name="sqlMapClient" ref="egov.sqlMapClient" />
+	</bean>
+	
+	<bean id="epayExpCorHistView" class="tis.com.epay.service.epayExpCorHistView" />
+	
+	<bean id="salesManageListExcelDownloadView" class="tis.com.financial.sales.service.SalesManageListExcelDownloadView" />
+	<bean id="purchaseManageListExcelDownloadView" class="tis.com.financial.purchase.service.PurchaseManageListExcelDownloadView" />
+	<bean id="purchaseManageApprovalListExcelDownloadView" class="tis.com.financial.purchase.service.PurchaseManageApprovalListExcelDownloadView" />
+	<bean id="costManageListExcelDownloadView" class="tis.com.financial.cost.service.CostManageListExcelDownloadView" />
+	<bean id="costManageApprovalListExcelDownloadView" class="tis.com.financial.cost.service.CostManageApprovalListExcelDownloadView" />
+	<bean id="salaryDownload" class="tis.com.financial.salary.service.SalaryDownload" />
+	<bean id="salaryDetailDownload" class="tis.com.financial.salary.service.SalaryDetailDownload" />
+	<bean id="salaryDetailEmplDownload" class="tis.com.financial.salary.service.SalaryDetailEmplDownload" />
+	<bean id="salaryFormDownload" class="tis.com.financial.salary.service.SalaryFormDownload" />
+	<bean id="salaryMonthDownload" class="tis.com.financial.salary.service.SalaryMonthDownload" />
+	<bean id="laterSettleFoodDownload" class="tis.com.financial.laterSettle.service.LaterSettleFoodDownload" />
+	<bean id="laterSettleParkingDownload" class="tis.com.financial.laterSettle.service.LaterSettleParkingDownload" />
+</beans>

@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PurchaseDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="purchaseDAO.selectPurchaseManageList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  P.PURCHASE_ID
+			       ,P.ORDER_DT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = T.MAIN_DEPT) AS DEPT_NM
+			       ,T.TASK_NM
+			       ,P.PRDT_NM
+			       /*,C.CMPNY_NM*/
+			       ,P.PRCS_PLACE
+			       ,P.PRCS_PLAN_PRICE
+			       ,P.PRCS_PLAN_SURTAX
+			       ,P.PRCS_PLAN_TOT_PRICE
+			       ,IFNULL(P.PRCS_EXEC_PRICE,0) AS PRCS_EXEC_PRICE
+			       ,IFNULL(P.PRCS_EXEC_SURTAX,0) AS PRCS_EXEC_SURTAX
+			       ,IFNULL(P.PRCS_EXEC_TOT_PRICE,0) AS PRCS_EXEC_TOT_PRICE
+			       ,IFNULL(P.PAY_PLAN_DATE,'-') AS PAY_PLAN_DATE
+			       ,IFNULL(P.PAY_DATE,'-') AS PAY_DATE
+			       ,(CASE P.PAY_AT WHEN '1' THEN '미수' WHEN '2' THEN '완료' END) AS PAY_AT
+			       ,IFNULL(P.TAX_PLAN_DATE,'-') AS TAX_PLAN_DATE
+			       ,IFNULL((SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM502' AND CODE = P.TRADE_SEPT),'-')  AS TRADE_SEPT_NM
+			FROM
+				TB_PURCHASE P
+			LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = P.TASK_ID
+			/*LEFT JOIN comtnadbk C ON C.ADBK_ID = P.ADBK_ID*/
+			WHERE 1=1
+				AND P.PAY_APPR_AT = 'Y'
+		]]>
+		<isEqual prepend="AND" property="searchCondition" compareValue="taskNm">
+			<![CDATA[	T.TASK_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="prdtNm">
+			<![CDATA[	P.PRDT_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="prcsPlace">
+			<![CDATA[	P.PRCS_PLACE LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isNotEmpty prepend="AND" property="searchDeptCode">
+			<![CDATA[	T.DEPT_CODE = '$searchDeptCode$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchPrcsPlace">
+			<![CDATA[	P.PRCS_PLACE = '$searchPrcsPlace$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchPayAt">
+			<![CDATA[	P.PAY_AT = '$searchPayAt$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchTaskId">
+			<![CDATA[	P.TASK_ID = '$searchTaskId$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchOrderSdate">
+			<isNotEmpty property="searchOrderEdate">
+				<![CDATA[	P.ORDER_DT >= '$searchOrderSdate$' AND P.ORDER_DT <= '$searchOrderEdate$'	]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	P.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+		ORDER BY P.ORDER_DT ASC
+	</select>
+
+	<select id="purchaseDAO.selectDraftPurchaseList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  P.PURCHASE_ID
+			       ,P.ORDER_DT
+			       ,P.PRDT_NM
+			       ,(SELECT CMPNY_NM FROM comtnadbk WHERE ADBK_ID = P.ADBK_ID) AS CMPNY_NM
+			       ,P.PRCS_PLAN_TOT_PRICE
+			       ,P.PAY_PLAN_DATE
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM502' AND CODE = P.TRADE_SEPT) AS TRADE_SEPT_NM
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM505' AND CODE = P.PAY_POINT) AS PAY_POINT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM506' AND CODE = P.PAY_WAY) AS PAY_WAY
+			FROM
+				TB_PURCHASE P
+			WHERE
+				P.DRAFT_INFO_ID = '$draftInfoId$'
+			ORDER BY P.ORDER_DT ASC
+		]]>
+	</select>
+		
+	<select id="purchaseDAO.selectPurchase" resultClass="egovMap">
+		<![CDATA[
+			SELECT  P.PURCHASE_ID
+			       ,P.AFFILIATION_ID
+			       ,P.ORDER_DT
+			       ,P.PRDT_NM
+			       ,P.ADBK_ID
+			       ,(SELECT CMPNY_NM FROM comtnadbk WHERE ADBK_ID = P.ADBK_ID) AS CMPNY_NM
+			       ,P.PRCS_PLACE
+			       ,P.PRCS_PLAN_TOT_PRICE
+			       ,P.PRCS_EXEC_PRICE
+			       ,P.PRCS_EXEC_SURTAX
+			       ,P.PRCS_EXEC_TOT_PRICE
+			       ,P.PAY_PLAN_DATE
+			       ,P.PAY_DATE
+			       ,P.TAX_PLAN_DATE
+			       ,P.TRADE_SEPT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM502' AND CODE = P.TRADE_SEPT) AS TRADE_SEPT_NM
+			       ,P.PAY_POINT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM505' AND CODE = P.PAY_POINT) AS PAY_POINT_NM
+			       ,P.PAY_WAY
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM506' AND CODE = P.PAY_WAY) AS PAY_WAY_NM
+			       ,P.PAY_AT
+			       ,P.ATCH_FILE_ID
+			FROM
+				TB_PURCHASE P
+			WHERE
+				P.PURCHASE_ID = '$purchaseId$'
+		]]>
+	</select>
+		
+	<select id="purchaseDAO.selectPurchaseDetailList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  PURCHASE_DETAIL_ID
+			       ,ITEM_NM
+			       ,QTY
+			       ,PRICE
+			       ,SPLY_PRICE
+			       ,SURTAX
+			FROM
+				TB_PURCHASE_DETAIL
+			WHERE
+				PURCHASE_ID = '$purchaseId$'
+		]]>
+	</select>
+	
+	<insert id="purchaseDAO.insertPurchase">
+INSERT into TB_PURCHASE
+					( PURCHASE_ID
+					,TASK_ID
+					,TASK_STEP_ID
+					,DRAFT_INFO_ID
+					,ORDER_DT
+					,ADBK_ID
+					,PRDT_NM
+					,PAY_PLAN_DATE
+					,TRADE_SEPT
+					,PAY_POINT
+					,PAY_WAY
+					,PAY_AT
+					,PRCS_PLAN_PRICE
+					,PRCS_PLAN_SURTAX
+					,PRCS_PLAN_TOT_PRICE
+					,PAY_APPR_AT
+					,ATCH_FILE_ID
+		<isNotEmpty prepend="," property="prcsExecPrice">
+				PRCS_EXEC_PRICE
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="prcsExecSurtax">
+				PRCS_EXEC_SURTAX	
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="prcsExecTotPrice">
+				PRCS_EXEC_TOT_PRICE
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="affiliationId">
+				AFFILIATION_ID
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="prcsPlace">
+				PRCS_PLACE
+		</isNotEmpty>
+					)
+			VALUES(
+			        #purchaseId#
+			       ,#taskId#
+			       ,#taskStepId#
+			       ,#draftInfoId#
+			       ,#orderDt#
+			       ,#adbkId#
+			       ,'$prdtNm$'
+			       ,#payPlanDate#
+			       ,#tradeSept#
+			       ,#payPoint#
+			       ,#payWay#
+			       ,'1' /* 미수 */
+			       ,#prcsPlanPrice#
+			       ,#prcsPlanSurtax#
+			       ,#prcsPlanTotPrice#
+			       ,#payApprAt# /* 품의결제 */
+			       ,'$atchFileId$'
+		<isNotEmpty prepend="," property="prcsExecPrice">
+				#prcsExecPrice#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="prcsExecSurtax">
+				#prcsExecSurtax#	
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="prcsExecTotPrice">
+				#prcsExecTotPrice#	
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="affiliationId">
+				#affiliationId#	
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="prcsPlace">
+				#prcsPlace#	
+		</isNotEmpty>
+			)
+</insert>
+		
+	<insert id="purchaseDAO.insertPurchaseDetail">
+		<![CDATA[
+			INSERT into TB_PURCHASE_DETAIL
+					( PURCHASE_DETAIL_ID
+					,PURCHASE_ID
+					,ITEM_NM
+					,QTY
+					,PRICE
+					,SPLY_PRICE
+					,SURTAX
+					)
+			VALUES(
+			        '$purchaseDetailId$'
+			       ,'$purchaseId$'
+			       ,'$itemNm$'
+			       ,$qty$
+			       ,$price$
+			       ,$splyPrice$
+			       ,$surtax$
+			)
+		]]>
+	</insert>
+		
+	<update id="purchaseDAO.updatePurchase">
+		UPDATE TB_PURCHASE SET
+			PURCHASE_ID = '$purchaseId$'
+			<isNotNull property="orderDt">,ORDER_DT = '$orderDt$'</isNotNull>
+			<isNotNull property="adbkId">,ADBK_ID = '$adbkId$'</isNotNull>
+			<isNotNull property="prcsPlace">,PRCS_PLACE = '$prcsPlace$'</isNotNull>
+			<isNotNull property="prdtNm">,PRDT_NM = <![CDATA['$prdtNm$']]></isNotNull>
+			<isNotNull property="payPlanDate">,PAY_PLAN_DATE = '$payPlanDate$'</isNotNull>
+			<isNotNull property="payDate">,PAY_DATE = '$payDate$'</isNotNull>
+			<isNotNull property="taxPlanDate">,TAX_PLAN_DATE = '$taxPlanDate$'</isNotNull>
+			<isNotNull property="tradeSept">,TRADE_SEPT = '$tradeSept$'</isNotNull>
+			<isNotNull property="payPoint">,PAY_POINT = '$payPoint$'</isNotNull> 
+			<isNotNull property="payWay">,PAY_WAY = '$payWay$'</isNotNull>
+			<isNotNull property="payAt">,PAY_AT = '$payAt$'</isNotNull>
+			<isNotNull property="prcsPlanPrice">,PRCS_PLAN_PRICE = $prcsPlanPrice$</isNotNull>
+			<isNotNull property="prcsPlanSurtax">,PRCS_PLAN_SURTAX = $prcsPlanSurtax$</isNotNull>
+			<isNotNull property="prcsPlanTotPrice">,PRCS_PLAN_TOT_PRICE = $prcsPlanTotPrice$</isNotNull>
+			<isNotNull property="prcsExecPrice">,PRCS_EXEC_PRICE = $prcsExecPrice$</isNotNull>
+			<isNotNull property="prcsExecSurtax">,PRCS_EXEC_SURTAX = $prcsExecSurtax$</isNotNull>
+			<isNotNull property="prcsExecTotPrice">,PRCS_EXEC_TOT_PRICE = $prcsExecTotPrice$</isNotNull>
+			<isNotNull property="atchFileId">,ATCH_FILE_ID = '$atchFileId$'</isNotNull>
+			<isNotNull property="payApprAt">,PAY_APPR_AT = '$payApprAt$'</isNotNull>
+		WHERE
+			PURCHASE_ID = '$purchaseId$'
+	</update>
+	
+	<update id="purchaseDAO.updatePurchaseFinancialRegistration">
+		UPDATE TB_PURCHASE P SET
+			AFFILIATION_ID = '$affiliationId$'
+			,PRCS_PLACE = (SELECT CMPNY_NM FROM comtnadbk C WHERE C.ADBK_ID = P.ADBK_ID)
+			,PAY_APPR_AT = 'Y'
+		WHERE
+			DRAFT_INFO_ID = '$draftInfoId$'
+	</update>
+		
+	<delete id="purchaseDAO.deletePurchaseDetail">
+		<![CDATA[
+			DELETE FROM TB_PURCHASE_DETAIL
+			WHERE
+				PURCHASE_ID = '$purchaseId$'
+		]]>
+	</delete>
+	
+	<select id="purchaseDAO.selectPurchaseManageApprovalList" resultClass="egovMap">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+			(
+				/* 총계 */
+				SELECT  0 AS LIST_ORDER
+				       ,'' AS PURCHASE_ID
+				       ,'9999/99/99' AS ORDER_DT
+				       ,'' AS MAIN_DEPT
+				       ,'' AS DEPT_NM
+				       ,'' AS TASK_ID
+				       ,'' AS TASK_NM
+				       ,'' AS PRDT_NM
+				       ,'' AS ADBK_ID
+				       ,'' AS PRCS_PLACE
+				       ,SUM(P.PRCS_PLAN_PRICE) AS PRCS_PLAN_PRICE
+				       ,SUM(P.PRCS_PLAN_SURTAX) AS PRCS_PLAN_SURTAX
+				       ,SUM(P.PRCS_PLAN_TOT_PRICE) AS PRCS_PLAN_TOT_PRICE
+				       ,SUM(P.PRCS_EXEC_PRICE) AS PRCS_EXEC_PRICE
+				       ,SUM(P.PRCS_EXEC_SURTAX) AS PRCS_EXEC_SURTAX
+				       ,SUM(P.PRCS_EXEC_TOT_PRICE) AS PRCS_EXEC_TOT_PRICE
+				       ,'' AS PAY_PLAN_DATE
+				       ,'' AS PAY_DATE
+				       ,'' AS PAY_APPROVAL
+				FROM
+					TB_PURCHASE P
+				LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = P.TASK_ID
+				WHERE 1=1
+					AND P.PAY_APPR_AT = 'Y'
+					AND P.AFFILIATION_ID = 'I'
+				
+			UNION ALL
+			
+				/* Group 목록 */
+				SELECT  1 AS LIST_ORDER
+				       ,'' AS PURCHASE_ID
+				       ,'0000/00/00' AS ORDER_DT
+				       ,T.MAIN_DEPT
+				       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = T.MAIN_DEPT) AS DEPT_NM
+				       ,P.TASK_ID
+				       ,T.TASK_NM
+				       ,'-' AS PRDT_NM
+				       ,P.ADBK_ID
+				       ,P.PRCS_PLACE
+				       ,SUM(P.PRCS_PLAN_PRICE) AS PRCS_PLAN_PRICE
+				       ,SUM(P.PRCS_PLAN_SURTAX) AS PRCS_PLAN_SURTAX
+				       ,SUM(P.PRCS_PLAN_TOT_PRICE) AS PRCS_PLAN_TOT_PRICE
+				       ,SUM(P.PRCS_EXEC_PRICE) AS PRCS_EXEC_PRICE
+				       ,SUM(P.PRCS_EXEC_SURTAX) AS PRCS_EXEC_SURTAX
+				       ,SUM(P.PRCS_EXEC_TOT_PRICE) AS PRCS_EXEC_TOT_PRICE
+				       ,'-' AS PAY_PLAN_DATE
+				       ,'-' AS PAY_DATE
+				       ,'' AS PAY_APPROVAL
+				FROM
+					TB_PURCHASE P
+				LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = P.TASK_ID
+				WHERE 1=1
+					AND P.PAY_APPR_AT = 'Y'
+		]]>
+		<isNotEmpty prepend="AND" property="searchOrderSdate">
+			<isNotEmpty property="searchOrderEdate">
+				<![CDATA[ P.ORDER_DT >= '$searchOrderSdate$' AND P.ORDER_DT <= '$searchOrderEdate$' ]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	P.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+				GROUP BY <![CDATA[$searchCondition$]]>
+		<![CDATA[
+				
+			UNION ALL
+				
+				/* 목록 */
+				SELECT  1 AS LIST_ORDER
+				       ,P.PURCHASE_ID
+				       ,P.ORDER_DT
+				       ,T.MAIN_DEPT
+				       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = T.MAIN_DEPT) AS DEPT_NM
+				       ,P.TASK_ID
+				       ,T.TASK_NM
+				       ,P.PRDT_NM
+				       ,P.ADBK_ID
+				       ,P.PRCS_PLACE
+				       ,IFNULL(P.PRCS_PLAN_PRICE,0) AS PRCS_PLAN_PRICE
+				       ,IFNULL(P.PRCS_PLAN_SURTAX,0) AS PRCS_PLAN_SURTAX
+				       ,IFNULL(P.PRCS_PLAN_TOT_PRICE,0) AS PRCS_PLAN_TOT_PRICE
+				       ,IFNULL(P.PRCS_EXEC_PRICE,0) AS PRCS_EXEC_PRICE
+				       ,IFNULL(P.PRCS_EXEC_SURTAX,0) AS PRCS_EXEC_SURTAX
+				       ,IFNULL(P.PRCS_EXEC_TOT_PRICE,0) AS PRCS_EXEC_TOT_PRICE
+				       ,IFNULL(P.PAY_PLAN_DATE,'-') AS PAY_PLAN_DATE
+				       ,IFNULL(P.PAY_DATE,'-') AS PAY_DATE
+				       ,P.PAY_APPROVAL
+				FROM
+					TB_PURCHASE P
+				LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = P.TASK_ID
+				WHERE 1=1
+					AND P.PAY_APPR_AT = 'Y'
+		]]>
+		<isNotEmpty prepend="AND" property="searchOrderSdate">
+			<isNotEmpty property="searchOrderEdate">
+				<![CDATA[ P.ORDER_DT >= '$searchOrderSdate$' AND P.ORDER_DT <= '$searchOrderEdate$' ]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	P.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+			) X
+			ORDER BY LIST_ORDER ASC, <![CDATA[$searchCondition$]]> ASC, ORDER_DT ASC
+	</select>
+		
+	<update id="purchaseDAO.updatePurchasePayApproval">
+		<![CDATA[
+			UPDATE TB_PURCHASE SET
+					PAY_APPROVAL = '$payApproval$'
+			WHERE
+				PURCHASE_ID IN ($purchaseId$)
+		]]>
+	</update>
+	
+	<delete id="purchaseDAO.deletePurchase">
+	<![CDATA[
+					DELETE FROM TB_PURCHASE
+					WHERE
+						PURCHASE_ID = '$purchaseId$'
+				]]>
+	</delete>
+</sqlMap>

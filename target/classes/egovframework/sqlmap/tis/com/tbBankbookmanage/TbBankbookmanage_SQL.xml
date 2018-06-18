@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TbBankbookmanage">
+	
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="tbBankbookmanageVO" type="tis.com.financial.bankBook.service.TbBankbookmanageVO"/>
+	
+	<resultMap id="tbBankbookmanage" class="tis.com.financial.bankBook.service.TbBankbookmanageVO">
+		<result property="bankNm" column="BANK_NM" columnIndex="1"/>
+		<result property="bankAccountNum" column="BANK_ACCOUNT_NUM" columnIndex="2"/>
+		<result property="depositorNm" column="DEPOSITOR_NM" columnIndex="3"/>
+		<result property="balance" column="BALANCE" columnIndex="4"/>
+		<result property="updtPnttm" column="UPDT_PNTTM" columnIndex="5"/>
+		<result property="division" column="DIVISION" columnIndex="6"/>
+		<result property="useAt" column="USE_AT" columnIndex="7"/>
+		<result property="rm" column="RM" columnIndex="8"/>
+		<result property="cpCode" column="CP_CODE" columnIndex="9"/>
+	</resultMap>
+	
+	<insert id="tbBankbookmanageDAO.insertTbBankbookmanage_S">
+		<![CDATA[
+			INSERT INTO tb_bankbookmanage 
+				( BANK_NM
+				  , BANK_ACCOUNT_NUM
+				  , DEPOSITOR_NM
+				  , BALANCE
+				  , UPDT_PNTTM
+				  , DIVISION
+				  , USE_AT
+				  , RM
+				  , CP_CODE )
+			VALUES ( #bankNm#
+				  , #bankAccountNum#
+				  , #depositorNm#
+				  , #balance#
+				  , now()
+				  , #division#
+				  , #useAt#
+				  , #rm#
+				  , #cpCode# )
+		]]>
+	</insert>
+	
+	<update id="tbBankbookmanageDAO.updateTbBankbookmanage_S">
+		<![CDATA[
+			UPDATE tb_bankbookmanage
+			SET DEPOSITOR_NM=#depositorNm#
+				, BALANCE=#balance#
+				, UPDT_PNTTM= now()
+				, DIVISION=#division#
+				, USE_AT=#useAt#
+				, RM=#rm#
+				, CP_CODE=#cpCode#
+			WHERE BANK_ACCOUNT_NUM=#bankAccountNum#
+				AND BANK_NM=#bankNm#	
+			]]>
+	</update>
+	
+	<delete id="tbBankbookmanageDAO.deleteTbBankbookmanage_S">
+		<![CDATA[
+			DELETE FROM tb_bankbookmanage 
+			WHERE BANK_ACCOUNT_NUM=#bankAccountNum#
+				AND BANK_NM=#bankNm#
+			]]>
+	</delete>
+	
+	<select id="tbBankbookmanageDAO.selectTbBankbookmanage_S" resultMap="tbBankbookmanage">
+		<![CDATA[
+			SELECT
+				BANK_NM
+				, BANK_ACCOUNT_NUM
+				, DEPOSITOR_NM
+				, BALANCE
+				, UPDT_PNTTM
+				, DIVISION
+				, USE_AT
+				, RM
+				, CP_CODE
+			FROM tb_bankbookmanage
+			WHERE BANK_ACCOUNT_NUM = #bankAccountNum# AND BANK_NM = #bankNm#
+			]]>
+	</select>
+	
+	<select id="tbBankbookmanageDAO.selectTbBankbookmanageList_D" parameterClass="tbBankbookmanageVO" resultClass="egovMap">
+			SELECT
+								BANK_NM
+								, BANK_ACCOUNT_NUM
+								, DEPOSITOR_NM
+								, BALANCE
+								, UPDT_PNTTM
+								, DIVISION
+								, USE_AT
+								, RM
+								, CP_CODE
+					FROM tb_bankbookmanage
+					WHERE CP_CODE = #cpCode#
+	</select>	
+	<select id="tbBankbookmanageDAO.selectTbBankbookmanageListTotCnt_S" parameterClass="tbBankbookmanageVO" resultClass="int">
+			SELECT COUNT(*) totcnt
+			FROM tb_bankbookmanage
+			WHERE 1=1
+			<isEqual prepend="AND" property="searchCondition" compareValue="0">
+				BANK_NM = #searchKeyword#
+			</isEqual>
+			<isEqual prepend="AND" property="searchCondition" compareValue="1">
+				BANK_ACCOUNT_NUM LIKE CONCAT('%',#searchKeyword#,'%')
+			</isEqual>
+	</select>
+	
+	<select id="tbBankbookmanageDAO.selectTbBankbookUseList" resultClass="egovMap">
+			SELECT
+								BANK_NM
+								, BANK_ACCOUNT_NUM
+								, DEPOSITOR_NM
+								, BALANCE
+								, UPDT_PNTTM
+								, DIVISION
+								, USE_AT
+								, RM
+								, CP_CODE
+					FROM tb_bankbookmanage
+					WHERE USE_AT = 'Y'
+	</select>	
+
+	<select id="tbBankbookmanageDAO.selectTbBankbookmanageByCpCode" parameterClass="java.lang.String" resultClass="int">
+			SELECT
+								SUM(BALANCE)
+					FROM tb_bankbookmanage
+					WHERE CP_CODE = '$cpCode$'
+	</select>	
+
+</sqlMap>

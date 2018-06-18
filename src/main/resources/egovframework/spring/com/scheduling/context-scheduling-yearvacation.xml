@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+<!-- /** -->
+<!--  * 스케쥴링 -->
+<!-- 	초 0-59 , - * / -->
+<!-- 	분 0-59 , - * /  -->
+<!-- 	시 0-23 , - * /  -->
+<!-- 	일 1-31 , - * ? / L W -->
+<!-- 	월 1-12 or JAN-DEC , - * /  -->
+<!-- 	요일 1-7 or SUN-SAT , - * ? / L #  -->
+<!-- 	년(옵션) 1970-2099 , - * / -->
+<!-- 	* : 모든 값 -->
+<!-- 	? : 특정 값 없음 -->
+<!-- 	- : 범위 지정에 사용 -->
+<!-- 	, : 여러 값 지정 구분에 사용 -->
+<!-- 	/ : 초기값과 증가치 설정에 사용 -->
+<!-- 	L : 지정할 수 있는 범위의 마지막 값 -->
+<!-- 	W : 월~금요일 또는 가장 가까운 월/금요일 -->
+<!-- 	# : 몇 번째 무슨 요일 2#1 => 첫 번째 월요일 -->
+<!--  * -->
+<!--  */ -->
+	
+	<!-- 연차 스케줄러 -->
+	<bean id="yearVacation" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="yearVacationScheduling" />
+		<property name="targetMethod" value="main" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+	<bean id="yearVacationTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="yearVacation" />
+		<!-- 매년 1일 2시 -->
+   		<property name="cronExpression" value="0 0 2 1 1 ?" />
+	</bean>
+
+	<bean id="yearVacationScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="yearVacationTrigger" />
+			</list>
+		</property>
+	</bean>
+
+</beans>

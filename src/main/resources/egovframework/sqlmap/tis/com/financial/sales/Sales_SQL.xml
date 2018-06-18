@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SalesDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="salesDAO.selectSalesManageList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  S.SALES_ID
+			       ,S.ORDER_DT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = T.MAIN_DEPT) AS DEPT_NM
+			       ,T.TASK_NM
+			       ,S.PRDT_NM
+			       ,C.CMPNY_NM
+			       ,IFNULL(S.SALES_PLAN_PRICE, 0) AS SALES_PLAN_PRICE
+			       ,IFNULL(S.SALES_PLAN_SURTAX, 0) AS SALES_PLAN_SURTAX
+			       ,IFNULL(S.SALES_PLAN_TOT_PRICE, 0) AS SALES_PLAN_TOT_PRICE
+			       ,IFNULL(S.SALES_EXEC_PRICE, 0) AS SALES_EXEC_PRICE
+			       ,IFNULL(S.SALES_EXEC_SURTAX, 0) AS SALES_EXEC_SURTAX
+			       ,IFNULL(S.SALES_EXEC_TOT_PRICE, 0) AS SALES_EXEC_TOT_PRICE
+			       ,S.PAY_PLAN_DATE
+			       ,S.PAY_DATE
+			       ,(CASE S.PAY_AT WHEN '1' THEN '미수' WHEN '2' THEN '완료' END) AS PAY_AT
+			       ,S.TAX_PLAN_DATE
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM502' AND CODE = S.TRADE_SEPT) AS TRADE_SEPT_NM
+			FROM
+				TB_SALES S
+			LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = S.TASK_ID
+			LEFT JOIN comtnadbk C ON C.ADBK_ID = T.ADBK_ID
+			WHERE 1=1
+				AND PAY_APPR_AT = 'Y'
+		]]>
+		<isEqual prepend="AND" property="searchCondition" compareValue="taskNm">
+			<![CDATA[	T.TASK_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="prdtNm">
+			<![CDATA[	S.PRDT_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="cmpnyNm">
+			<![CDATA[	C.CMPNY_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isNotEmpty prepend="AND" property="searchDeptCode">
+			<![CDATA[	T.DEPT_CODE = '$searchDeptCode$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchAdbkId">
+			<![CDATA[	T.ADBK_ID = '$searchAdbkId$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchPayAt">
+			<![CDATA[	S.PAY_AT = '$searchPayAt$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchTaskId">
+			<![CDATA[	S.TASK_ID = '$searchTaskId$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchOrderSdate">
+			<isNotEmpty property="searchOrderEdate">
+				<![CDATA[	S.ORDER_DT >= '$searchOrderSdate$' AND S.ORDER_DT <= '$searchOrderEdate$'	]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	S.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+		ORDER BY S.ORDER_DT ASC
+	</select>
+	
+	<select id="salesDAO.selectDraftSalesList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  S.SALES_ID
+			       ,S.ORDER_DT
+			       ,S.PRDT_NM
+			       ,(SELECT CMPNY_NM FROM comtnadbk WHERE ADBK_ID = S.ADBK_ID) AS CMPNY_NM
+			       ,S.SALES_PLAN_TOT_PRICE
+			       ,S.PAY_PLAN_DATE
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM502' AND CODE = S.TRADE_SEPT) AS TRADE_SEPT_NM
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM505' AND CODE = S.PAY_POINT) AS PAY_POINT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM506' AND CODE = S.PAY_WAY) AS PAY_WAY
+			       , ATCH_FILE_ID
+			FROM
+				TB_SALES S
+			WHERE
+				S.DRAFT_INFO_ID = '$draftInfoId$'
+			ORDER BY S.ORDER_DT ASC
+		]]>
+	</select>
+	
+	<select id="salesDAO.selectSales" resultClass="egovMap">
+		<![CDATA[
+			SELECT  S.SALES_ID
+			       ,S.AFFILIATION_ID
+			       ,S.ORDER_DT
+			       ,S.PRDT_NM
+			       ,S.ADBK_ID
+			       ,(SELECT CMPNY_NM FROM comtnadbk WHERE ADBK_ID = S.ADBK_ID) AS CMPNY_NM
+			       ,S.SALES_PLAN_TOT_PRICE
+			       ,S.SALES_EXEC_PRICE
+			       ,S.SALES_EXEC_SURTAX
+			       ,S.SALES_EXEC_TOT_PRICE
+			       ,S.PAY_PLAN_DATE
+			       ,S.TRADE_SEPT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM502' AND CODE = S.TRADE_SEPT) AS TRADE_SEPT_NM
+			       ,S.PAY_POINT
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM505' AND CODE = S.PAY_POINT) AS PAY_POINT_NM
+			       ,S.PAY_WAY
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM506' AND CODE = S.PAY_WAY) AS PAY_WAY_NM
+			       ,S.ATCH_FILE_ID
+			FROM
+				TB_SALES S
+			WHERE
+				S.SALES_ID = '$draftInfoId$'
+		]]>
+	</select>
+		
+	<select id="salesDAO.selectSalesDetailList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  SALES_DETAIL_ID
+			       ,ITEM_NM
+			       ,QTY
+			       ,PRICE
+			       ,SPLY_PRICE
+			       ,SURTAX
+			FROM
+				TB_SALES_DETAIL
+			WHERE
+				SALES_ID = '$salesId$'
+		]]>
+	</select>
+
+	<insert id="salesDAO.insertSales">
+		<![CDATA[
+			INSERT into TB_SALES
+					( SALES_ID
+					,TASK_ID
+					,TASK_STEP_ID
+					,DRAFT_INFO_ID
+					,ORDER_DT
+					,ADBK_ID
+					,PRDT_NM
+					,PAY_PLAN_DATE
+					,TRADE_SEPT
+					,PAY_POINT
+					,PAY_WAY
+					,PAY_AT
+					,SALES_PLAN_PRICE
+					,SALES_PLAN_SURTAX
+					,SALES_PLAN_TOT_PRICE
+					,PAY_APPR_AT
+					,ATCH_FILE_ID
+					)
+			VALUES(
+			        #salesId#
+			       ,#taskId#
+			       ,#taskStepId#
+			       ,#draftInfoId#
+			       ,#orderDt#
+			       ,#adbkId#
+			       ,'$prdtNm$'
+			       ,#payPlanDate#
+			       ,#tradeSept#
+			       ,#payPoint#
+			       ,#payWay#
+			       ,'1' /* 미수 */
+			       ,#salesPlanPrice#
+			       ,#salesPlanSurtax#
+			       ,#salesPlanTotPrice#
+			       ,'N' /* 품의결제 */
+			       ,'$atchFileId$'
+			)
+		]]>
+	</insert>
+	
+	<insert id="salesDAO.insertSalesDetail">
+		<![CDATA[
+			INSERT into TB_SALES_DETAIL
+					( SALES_DETAIL_ID
+					,SALES_ID
+					,ITEM_NM
+					,QTY
+					,PRICE
+					,SPLY_PRICE
+					,SURTAX
+					)
+			VALUES(
+			        '$salesDetailId$'
+			       ,'$salesId$'
+			       ,'$itemNm$'
+			       ,$qty$
+			       ,$price$
+			       ,$splyPrice$
+			       ,$surtax$
+			)
+		]]>
+	</insert>
+	
+	<update id="salesDAO.updateSales">
+		UPDATE TB_SALES SET
+			<isNotNull property="orderDt">ORDER_DT = '$orderDt$'</isNotNull>
+			<isNotNull property="adbkId">,ADBK_ID = '$adbkId$'</isNotNull>
+			<isNotNull property="prdtNm">,PRDT_NM = <![CDATA['$prdtNm$']]></isNotNull>
+			<isNotNull property="payPlanDate">,PAY_PLAN_DATE = '$payPlanDate$'</isNotNull>
+			<isNotNull property="tradeSept">,TRADE_SEPT = '$tradeSept$'</isNotNull>
+			<isNotNull property="payPoint">,PAY_POINT = '$payPoint$'</isNotNull> 
+			<isNotNull property="payWay">,PAY_WAY = '$payWay$'</isNotNull>
+			<isNotNull property="payAt">,PAY_AT = '$payAt$'</isNotNull>
+			<isNotNull property="salesPlanPrice">,SALES_PLAN_PRICE = $salesPlanPrice$</isNotNull>
+			<isNotNull property="salesPlanSurtax">,SALES_PLAN_SURTAX = $salesPlanSurtax$</isNotNull>
+			<isNotNull property="salesPlanTotPrice">,SALES_PLAN_TOT_PRICE = $salesPlanTotPrice$</isNotNull>
+			<isNotNull property="salesExecPrice">,SALES_EXEC_PRICE = $salesExecPrice$</isNotNull>
+			<isNotNull property="salesExecSurtax">,SALES_EXEC_SURTAX = $salesExecSurtax$</isNotNull>
+			<isNotNull property="salesExecTotPrice">,SALES_EXEC_TOT_PRICE = $salesExecTotPrice$</isNotNull>
+			<isNotNull property="atchFileId">,ATCH_FILE_ID = '$atchFileId$'</isNotNull>
+			<isNotNull property="payApprAt">,PAY_APPR_AT = '$payApprAt$'</isNotNull>
+		WHERE
+			SALES_ID = '$salesId$'
+	</update>
+	
+	<update id="salesDAO.updateSalesFinancialRegistration">
+		UPDATE TB_SALES S SET
+			AFFILIATION_ID = '$affiliationId$'
+			,SALES_PLACE = (SELECT CMPNY_NM FROM comtnadbk C WHERE C.ADBK_ID = S.ADBK_ID)
+			,PAY_APPR_AT = 'Y'
+		WHERE
+			DRAFT_INFO_ID = '$draftInfoId$'
+	</update>
+		
+	<delete id="salesDAO.deleteSalesDetail">
+		<![CDATA[
+			DELETE FROM TB_SALES_DETAIL
+			WHERE
+				SALES_ID = '$salesId$'
+		]]>
+	</delete>
+	<delete id="salesDAO.deleteSales">
+	<![CDATA[
+				DELETE FROM TB_SALES
+				WHERE
+					SALES_ID = '$salesId$'
+			]]>
+	</delete>
+	<delete id="salesDAO.deleteSalesByDraftInfoId">
+	<![CDATA[
+				DELETE FROM TB_SALES
+				WHERE
+					DRAFT_INFO_ID = '$draftInfoId$'
+			]]>
+	</delete>
+</sqlMap>

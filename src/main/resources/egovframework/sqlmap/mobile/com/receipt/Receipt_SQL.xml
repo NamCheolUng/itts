@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ReceiptDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="ReceiptVO" type="mobile.com.receipt.service.ReceiptVO"/>
+	
+	<resultMap id="ReceiptDetail" class="mobile.com.receipt.service.ReceiptVO">
+		<result property="expHistId" column="EXP_HIST_ID" columnIndex="1"/>
+		<result property="taskId" column="TASK_ID" columnIndex="2"/>
+		<result property="expDate" column="EXP_DATE" columnIndex="3"/>
+		<result property="expSubj" column="EXP_SUBJ" columnIndex="4"/>
+		<result property="expPlace" column="EXP_PLACE" columnIndex="5"/>
+		<result property="rm" column="RM" columnIndex="6"/>
+		<result property="price" column="PRICE" columnIndex="7"/>
+		<result property="atchFileId" column="ATCH_FILE_ID" columnIndex="8"/>
+		<result property="emplNo" column="EMPL_NO" columnIndex="9"/>
+	</resultMap>
+	
+	<select id="receiptDAO.selectReceiptArticle" resultClass="egovMap">
+			SELECT	EXP_HIST_ID,
+					TASK_ID,
+					EXP_DATE,
+					EXP_SUBJ,
+					EXP_PLACE,
+					RM,
+					PRICE,
+					ATCH_FILE_ID,
+					EMPL_NO
+					
+			FROM 	tb_exp_hist
+			WHERE 	EMPL_NO = #emplNo#
+			<isEqual prepend="AND" property="dateDiv" compareValue="1">
+				 	EXP_DATE between subdate(now(), interval 7 DAY) and now()
+			</isEqual>
+			<isEqual prepend="AND" property="dateDiv" compareValue="2">
+				 	EXP_DATE between subdate(now(), interval 30 DAY) and now()
+			</isEqual>
+			<isEqual prepend="AND" property="dateDiv" compareValue="3">
+				 	EXP_DATE between subdate(now(), interval 90 DAY) and now()
+			</isEqual>
+			ORDER BY EXP_DATE DESC
+	</select>
+	
+  	<insert id="receiptDAO.insertReceipt">
+			INSERT INTO tb_exp_hist
+				( 
+				EXP_HIST_ID,
+				TASK_ID,
+				EXP_DATE,
+				EXP_SUBJ,
+				EXP_PLACE,
+				RM,
+				PRICE,
+				ATCH_FILE_ID,
+				EMPL_NO
+				)
+			VALUES 
+				(
+				#expHistId#,
+				#taskId#,
+				#expDate#,
+				#expSubj#,
+				#expPlace#,
+				#rm#,
+				#price#,
+				#atchFileId#,
+				#emplNo#
+				)
+	</insert>
+	
+	<select id="receiptDAO.receiptView" resultClass="egovMap" parameterClass="ReceiptVO" resultMap="ReceiptDetail">
+			SELECT	EXP_HIST_ID,
+					TASK_ID,
+					EXP_DATE,
+					EXP_SUBJ,
+					EXP_PLACE,
+					RM,
+					PRICE,
+					ATCH_FILE_ID,
+					EMPL_NO
+					
+			FROM 	tb_exp_hist
+			
+			WHERE	EXP_HIST_ID = #expHistId#
+	</select>
+	
+	<update id="receiptDAO.updateReceiptArticle" parameterClass="ReceiptVO">
+			UPDATE  tb_exp_hist SET 
+					EXP_HIST_ID = #expHistId#,
+					TASK_ID = #taskId#,
+					EXP_DATE = #expDate#,
+					EXP_SUBJ = #expSubj#,
+					EXP_PLACE = #expPlace#,
+					RM = #rm#,
+					PRICE = #price#,
+					ATCH_FILE_ID = #atchFileId#,
+					EMPL_NO = #emplNo#
+			
+			WHERE	EXP_HIST_ID = #expHistId#
+	</update>
+	
+	<delete id="receiptDAO.deleteAtchFileDetail" parameterClass="ReceiptVO">
+			DELETE FROM comtnfiledetail
+			WHERE ATCH_FILE_ID = #atchFileId#
+	</delete>
+	
+	<delete id="receiptDAO.deleteAtchFile" parameterClass="ReceiptVO">
+			DELETE FROM comtnfile
+			WHERE ATCH_FILE_ID = #atchFileId#
+	</delete>
+	
+	<delete id="receiptDAO.deleteReceipt" parameterClass="ReceiptVO">
+			DELETE FROM tb_exp_hist
+			WHERE EXP_HIST_ID = #expHistId#
+	</delete>
+	
+	<update id="receiptDAO.deleteAtchFileId">
+			UPDATE tb_exp_hist SET
+				   ATCH_FILE_ID = null
+			WHERE  ATCH_FILE_ID = #atchFileId#
+	</update>
+</sqlMap>

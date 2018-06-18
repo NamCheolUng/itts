@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="costDAO">
+    <typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>                
+	<typeAlias  alias="costVO" type="tis.com.financial.cost.service.CostVO"/>
+
+	<select id="costDAO.selectCostManageList" resultClass="egovMap">
+		<![CDATA[
+			SELECT  C.COST_ID
+			       ,C.EXP_DATE
+			       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = C.DEPT_CODE) AS DEPT_NM
+			       ,T.TASK_NM
+			       ,(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = C.EMPL_NO) AS USER_NM
+			       ,C.PRDT_NM
+			       ,C.PRCS_PLACE
+			       ,IFNULL(C.EXP_TOT_PRICE,0) AS EXP_TOT_PRICE
+			       ,IFNULL(C.PAY_PLAN_DATE,'-') AS PAY_PLAN_DATE
+			       ,IFNULL(C.PAY_DATE,'-') AS PAY_DATE
+			       ,(CASE C.PAY_AT WHEN '1' THEN '미수' WHEN '2' THEN '완료' END) AS PAY_AT
+			FROM
+				TB_COST C
+			LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = C.TASK_ID
+			WHERE 1=1
+		]]>
+		<isEqual prepend="AND" property="searchCondition" compareValue="taskNm">
+			<![CDATA[	T.TASK_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="prdtNm">
+			<![CDATA[	C.PRDT_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="prcsPlace">
+			<![CDATA[	C.PRCS_PLACE LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isNotEmpty prepend="AND" property="searchDeptCode">
+			<![CDATA[	C.DEPT_CODE = '$searchDeptCode$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchPayAt">
+			<![CDATA[	C.PAY_AT = '$searchPayAt$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchExpSdate">
+			<isNotEmpty property="searchExpEdate">
+				<![CDATA[	C.EXP_DATE >= '$searchExpSdate$' AND C.EXP_DATE <= '$searchExpEdate$'	]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchTaskId">
+			<![CDATA[	T.TASK_ID = '$searchTaskId$'	]]>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	C.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+		ORDER BY C.EXP_DATE ASC
+	</select>
+	
+	<insert id="costDAO.insertCost">
+		INSERT INTO TB_COST
+					(
+					  COST_ID
+					 ,EXP_DATE
+					 ,TASK_ID
+					 ,DEPT_CODE
+					 ,EMPL_NO
+					 ,PRDT_NM
+					 ,PRCS_PLACE
+					 ,EXP_TOT_PRICE
+					 ,PAY_PLAN_DATE
+					 ,PAY_AT
+					 ,AFFILIATION_ID
+
+					)
+			VALUES(
+					#costId#
+				   ,#expDate#
+				   ,#taskId#
+				   ,#deptCode#
+				   ,#emplNo#
+				   ,#prdtNm#
+				   ,#prcsPlace#
+				   ,#expTotPrice#
+				   ,#payPlanDate#
+				   ,#payAt#
+				   ,#affiliationId#
+
+				  )		
+	</insert>
+	
+	<select id="costDAO.selectCost" resultClass="egovMap">
+		<![CDATA[
+			SELECT  C.COST_ID
+			       ,C.EXP_DATE
+			       ,C.DEPT_CODE
+			       ,(SELECT TASK_NM FROM TB_SPMGTASK WHERE TASK_ID = C.TASK_ID) AS TASK_NM
+			       ,(SELECT USER_NM FROM comtnemplyrinfo WHERE EMPL_NO = C.EMPL_NO) AS USER_NM
+			       ,C.AFFILIATION_ID
+			       ,C.PRDT_NM
+			       ,C.PRCS_PLACE
+			       ,C.EXP_TOT_PRICE
+			       ,C.PAY_PLAN_DATE
+			       ,C.PAY_DATE
+			       ,C.PAY_AT
+			FROM
+				TB_COST C
+			WHERE
+				C.COST_ID = '$costId$'
+		]]>
+	</select>
+	
+	<update id="costDAO.updateCost">
+		UPDATE TB_COST SET
+			COST_ID = '$costId$'
+			<isNotNull property="expDate">,EXP_DATE = '$expDate$'</isNotNull>
+			<isNotNull property="deptCode">,DEPT_CODE = '$deptCode$'</isNotNull>
+			<isNotNull property="prdtNm">,PRDT_NM = '$prdtNm$'</isNotNull>
+			<isNotNull property="prcsPlace">,PRCS_PLACE = '$prcsPlace$'</isNotNull>
+			<isNotNull property="payPlanDate">,PAY_PLAN_DATE = '$payPlanDate$'</isNotNull>
+			<isNotNull property="payDate">,PAY_DATE = '$payDate$'</isNotNull>
+			<isNotNull property="expTotPrice">,EXP_TOT_PRICE = $expTotPrice$</isNotNull>
+			<isNotNull property="payAt">,PAY_AT = '$payAt$'</isNotNull>
+		WHERE COST_ID = '$costId$'
+	</update>
+	
+	<select id="costDAO.selectCostManageApprovalList" resultClass="egovMap">
+		<![CDATA[
+			SELECT
+				*
+			FROM
+			(
+				/* 총계 */
+				SELECT  0 AS LIST_ORDER
+				       ,'' AS COST_ID
+				       ,'9999/99/99' AS EXP_DATE
+				       ,'' AS DEPT_CODE
+				       ,'' AS DEPT_NM
+				       ,'' AS TASK_ID
+				       ,'' AS TASK_NM
+				       ,'' AS USER_NM
+				       ,'' AS AFFILIATION_ID
+				       ,'' AS PRDT_NM
+				       ,'' AS PRCS_PLACE
+				       ,SUM(C.EXP_TOT_PRICE) AS EXP_TOT_PRICE
+				       ,'' AS PAY_PLAN_DATE
+				       ,'' AS PAY_DATE
+				       ,'' AS PAY_APPROVAL
+				FROM
+					TB_COST C
+				LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = C.TASK_ID
+				LEFT JOIN comtnemplyrinfo E ON E.EMPL_NO = C.EMPL_NO
+				WHERE 1=1
+					AND C.AFFILIATION_ID = 'I'
+				GROUP BY DEPT_CODE
+				
+			UNION ALL
+				
+				/* Group 목록 */
+				SELECT  1 AS LIST_ORDER
+				       ,'' AS COST_ID
+				       ,'0000/00/00' AS EXP_DATE
+				       ,C.DEPT_CODE
+				       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = C.DEPT_CODE) AS DEPT_NM
+				       ,C.TASK_ID
+				       ,T.TASK_NM
+				       ,E.USER_NM
+				       ,C.AFFILIATION_ID
+				       ,'-' AS PRDT_NM
+				       ,C.PRCS_PLACE
+				       ,SUM(C.EXP_TOT_PRICE) AS EXP_TOT_PRICE
+				       ,'-' AS PAY_PLAN_DATE
+				       ,'-' AS PAY_DATE
+				       ,'' AS PAY_APPROVAL
+				FROM
+					TB_COST C
+				LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = C.TASK_ID
+				LEFT JOIN comtnemplyrinfo E ON E.EMPL_NO = C.EMPL_NO
+				WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="searchExpSdate">
+			<isNotEmpty property="searchExpEdate">
+				<![CDATA[ C.EXP_DATE >= '$searchExpSdate$' AND C.EXP_DATE <= '$searchExpEdate$' ]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	C.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+				GROUP BY <![CDATA[$searchCondition$]]>
+		<![CDATA[
+				
+			UNION ALL
+				
+				/* 목록 */
+				SELECT  1 AS LIST_ORDER
+				       ,C.COST_ID
+				       ,C.EXP_DATE
+				       ,C.DEPT_CODE
+				       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = C.DEPT_CODE) AS DEPT_NM
+				       ,C.TASK_ID
+				       ,T.TASK_NM
+				       ,E.USER_NM
+				       ,C.AFFILIATION_ID
+				       ,C.PRDT_NM
+				       ,C.PRCS_PLACE
+				       ,C.EXP_TOT_PRICE
+				       ,IFNULL(C.PAY_PLAN_DATE,'-') AS PAY_PLAN_DATE
+				       ,IFNULL(C.PAY_DATE,'-') AS PAY_DATE
+				       ,C.PAY_APPROVAL
+				       
+				FROM
+					TB_COST C
+				LEFT JOIN TB_SPMGTASK T ON T.TASK_ID = C.TASK_ID
+				LEFT JOIN comtnemplyrinfo E ON E.EMPL_NO = C.EMPL_NO
+				WHERE 1=1
+		]]>
+		<isNotEmpty prepend="AND" property="searchExpSdate">
+			<isNotEmpty property="searchExpEdate">
+				<![CDATA[ C.EXP_DATE >= '$searchExpSdate$' AND C.EXP_DATE <= '$searchExpEdate$' ]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="affiliationId">
+			<![CDATA[	C.AFFILIATION_ID = '$affiliationId$'	]]>
+		</isNotEmpty>
+			) X
+			ORDER BY <![CDATA[$searchCondition$]]> ASC, EXP_DATE ASC
+	</select>
+		
+	<update id="costDAO.updateCostPayApproval">
+		<![CDATA[
+			UPDATE TB_COST SET
+					PAY_APPROVAL = '$payApproval$'
+			WHERE
+				COST_ID IN ($costId$)
+		]]>
+	</update>
+</sqlMap>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="DepositDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="depositDAO.loadData" resultClass="egovMap">
+		SELECT 
+				PAY_DT,
+				REFUND_DT,
+				DEPOSIT_NM,
+				COST,
+				REFUND_COST,
+				RM,
+				DEPOSIT_ID
+				
+		FROM	tb_depositmanage
+		WHERE   AFFILIATION_ID = #affiliationId#
+		ORDER BY PAY_DT DESC
+	</select>
+	
+	<update id="depositDAO.updateData">
+	    UPDATE tb_depositmanage  SET
+	   	       PAY_DT = #payDt#,
+	    	   DEPOSIT_NM = #depositNm#,
+	    	   COST = #cost#,
+	    	   REFUND_COST = #refundCost#,
+	    	   REFUND_DT = #refundDt#,
+	    	   RM = #rm#
+	    WHERE  DEPOSIT_ID = #depositId# AND
+	    	   AFFILIATION_ID = #affiliationId#   
+	</update>
+	
+	<insert id="depositDAO.insertData">
+	    insert into tb_depositmanage
+	    	( 
+	    	   DEPOSIT_ID,
+	   	       PAY_DT,
+	    	   DEPOSIT_NM,
+	    	   COST,
+	    	   REFUND_COST,
+	    	   REFUND_DT,
+	    	   RM,
+	    	   AFFILIATION_ID
+			)
+		VALUES 
+			(
+				#depositId#,
+				#payDt#,
+				#depositNm#,
+				#cost#,
+				#refundCost#,
+				#refundDt#,
+				#rm#,
+				#affiliationId#
+			)
+	</insert>
+	
+	<delete id="depositDAO.deleteData">
+	    delete from tb_depositmanage
+	    where DEPOSIT_ID = #depositId# AND
+	          AFFILIATION_ID = #affiliationId#
+	</delete>
+	
+	<insert id="depositDAO.addDefauitData">
+	    insert into tb_depositmanage
+	    	( 
+	    	   DEPOSIT_ID,
+	   	       PAY_DT,
+	    	   DEPOSIT_NM,
+	    	   COST,
+	    	   REFUND_COST,
+	    	   REFUND_DT,
+	    	   RM,
+	    	   AFFILIATION_ID
+			)
+		VALUES 
+			(
+				#depositId#,
+				#payDt#,
+				#depositNm#,
+				0,
+				0,
+				#refundDt#,
+				#rm#,
+				#affiliationId#
+			)
+	</insert>
+</sqlMap>

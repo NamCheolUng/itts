@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN"
+    "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+		<!-- 증빙서류  -->
+		<sqlMap resource="egovframework/sqlmap/mobile/com/document/Document_SQL.xml"/>	
+		<!-- 명함  -->
+		<sqlMap resource="egovframework/sqlmap/mobile/com/callingCard/CallingCard_SQL.xml"/>	
+		<!-- 영수증  -->
+		<sqlMap resource="egovframework/sqlmap/mobile/com/receipt/Receipt_SQL.xml"/>
+</sqlMapConfig>

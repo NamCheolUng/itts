@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="TaskDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="taskVO" type="tis.com.task.service.TaskVO"/>
+	<typeAlias  alias="taskStepVO" type="tis.com.task.service.TaskStepVO"/>
+	<typeAlias  alias="IndvdlSchdulManageVO" type="egovframework.com.cop.smt.sim.service.IndvdlSchdulManageVO"/>
+	
+	<select id="taskDAO.selectTaskList" resultClass="egovMap">
+	
+	SELECT  M.TASK_ID                                                                                                        
+		   ,M.TASK_STEP_ID                                                                                                   
+		   ,M.TASK_NM                                                                                                        
+		   ,M.TASK_STATUS_CD                                                                                                 
+		   ,M.ADBK_ID		                                                                                                 
+		   ,M.CHARGER_NM                                                                                                     
+		   ,M.CHARGER_EMP                                                                                                    
+		   ,M.TASK_SDATE                                                                                                     
+		   ,M.TASK_EDATE                                                                                                     
+		   ,M.SPEC_REQMNT                                                                                                    
+		   ,M.KEYWORD                                                                                                        
+		   ,M.COMMON_AT                                                                                                      
+		   ,M.REG_DT                                                                                                         
+		   ,M.EMPL_NO                                                                                                        
+		   ,M.DEPT_CODE		       		                                                                                     
+		   ,M.DEL_AT                                                                                                         
+		   ,M.MAIN_DEPT                                                                                                      
+		   ,M.totSale	                         
+		   ,M.totPrcs	                     
+		   ,M.CMPNY_NM                                                                                                       
+		   ,M.orgnztNm                                                                                               
+		   ,M.mngNm   
+		   ,M.partiCnt                     
+		   ,M.partiNo                                                                                  
+		
+		FROM	
+		(
+			SELECT  A.TASK_ID
+			       ,A.TASK_STEP_ID
+			       ,A.TASK_NM
+			       ,A.TASK_STATUS_CD
+			       ,A.ADBK_ID		    
+			       ,A.CHARGER_NM
+			       ,A.CHARGER_EMP
+			       ,A.TASK_SDATE
+			       ,A.TASK_EDATE
+			       ,A.SPEC_REQMNT
+			       ,A.KEYWORD
+			       ,A.COMMON_AT
+			       ,A.REG_DT
+			       ,A.EMPL_NO 
+			       ,A.DEPT_CODE		       		       
+			       ,A.DEL_AT
+			       ,A.MAIN_DEPT
+			       ,(SELECT SUM(SALES_PLAN_TOT_PRICE) FROM TB_SALES E WHERE E.TASK_ID = A.TASK_ID)  totSale	
+			       ,(SELECT SUM(PRCS_PLAN_TOT_PRICE) FROM TB_PURCHASE F WHERE F.TASK_ID = A.TASK_ID)  totPrcs	
+			       ,B.CMPNY_NM
+			       ,C.CODE_NM orgnztNm
+			       ,fn_selectManagerNm((select empl_no from TB_TASK_PERSON H where A.TASK_ID = H.TASK_ID and H.ROLE = 'M'))  mngNm
+				   ,(SELECT COUNT(*) FROM TB_TASK_PERSON G WHERE  G.TASK_ID = A.TASK_ID AND ROLE = 'P') partiCnt
+				   ,GROUP_CONCAT(D.EMPL_NO) partiNo     
+			FROM   TB_SPMGTASK A LEFT JOIN COMTNADBK B on A.ADBK_ID = B.ADBK_ID
+			        LEFT JOIN comtccmmndetailcode C on C.CODE_ID = 'COM101' AND A.MAIN_DEPT = C.CODE
+			        LEFT JOIN TB_TASK_PERSON D on A.TASK_ID = D.TASK_ID		       		       
+			WHERE 1=1  AND A.DEL_AT = 'N' 
+			GROUP by A.TASK_ID
+		) M
+		WHERE 1=1
+		<isNotEmpty prepend="AND" property="myTaskChk">
+			(M.EMPL_NO = #emplNo# or M.partiNo LIKE CONCAT ('%',#emplNo#,'%')) 
+		</isNotEmpty>
+		<isEmpty prepend="AND" property="myTaskChk">
+			(M.COMMON_AT = 'Y' or M.EMPL_NO = #emplNo# or M.partiNo LIKE CONCAT ('%',#emplNo#,'%')) 
+		</isEmpty>
+		<isEqual prepend="AND" property="searchCondition" compareValue="00">
+			(
+				M.TASK_NM LIKE CONCAT('%',#searchKeyword#,'%')  or 
+				M.CMPNY_NM LIKE CONCAT('%',#searchKeyword#,'%') or
+				M.KEYWORD LIKE CONCAT('%',#searchKeyword#,'%') 
+			)
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="01">
+			M.TASK_NM LIKE CONCAT('%',#searchKeyword#,'%') 
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="02">
+			M.CMPNY_NM LIKE CONCAT('%',#searchKeyword#,'%') 
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="03">
+			M.KEYWORD LIKE CONCAT('%',#searchKeyword#,'%') 
+		</isEqual>
+		<isNotEmpty  prepend="AND" property="taskSdate">
+			<isNotEmpty  property="taskEdate">
+				((DATE_FORMAT(#taskSdate#,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(M.TASK_SDATE,'%Y-%m-%d'))
+				and
+				(DATE_FORMAT(M.TASK_SDATE,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(#taskEdate#,'%Y-%m-%d')))
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="deptCode">				
+			M.MAIN_DEPT IN ($deptCode$)
+		 </isNotEmpty> 
+		<isNotEmpty prepend="AND" property="taskStatusCd">
+			M.TASK_STATUS_CD IN ($taskStatusCd$)
+		</isNotEmpty>		
+		ORDER BY M.REG_DT DESC
+		LIMIT #recordCountPerPage# OFFSET #firstIndex#
+	</select>
+	
+	<select id="taskDAO.selectTaskListCnt" resultClass="int">
+		SELECT count(*)
+		FROM 
+		(
+			SELECT  A.TASK_ID
+			       ,A.TASK_STEP_ID
+			       ,A.TASK_NM
+			       ,A.TASK_STATUS_CD
+			       ,A.ADBK_ID		    
+			       ,A.CHARGER_NM
+			       ,A.CHARGER_EMP
+			       ,A.TASK_SDATE
+			       ,A.TASK_EDATE
+			       ,A.SPEC_REQMNT
+			       ,A.KEYWORD
+			       ,A.COMMON_AT
+			       ,A.REG_DT
+			       ,A.EMPL_NO 
+			       ,A.DEPT_CODE		       		       
+			       ,A.DEL_AT
+			       ,A.MAIN_DEPT
+			       ,(SELECT SUM(SALES_PLAN_TOT_PRICE) FROM TB_SALES E WHERE E.TASK_ID = A.TASK_ID)  totSale	
+			       ,(SELECT SUM(PRCS_PLAN_TOT_PRICE) FROM TB_PURCHASE F WHERE F.TASK_ID = A.TASK_ID)  totPrcs	
+			       ,B.CMPNY_NM
+			       ,C.CODE_NM orgnztNm
+			       ,fn_selectManagerNm((select empl_no from TB_TASK_PERSON H where A.TASK_ID = H.TASK_ID and H.ROLE = 'M'))  mngNm
+				   ,(SELECT COUNT(*) FROM TB_TASK_PERSON G WHERE  G.TASK_ID = A.TASK_ID AND ROLE = 'P') partiCnt
+				   ,GROUP_CONCAT(D.EMPL_NO) partiNo     
+			FROM   TB_SPMGTASK A LEFT JOIN COMTNADBK B on A.ADBK_ID = B.ADBK_ID
+			        LEFT JOIN comtccmmndetailcode C on C.CODE_ID = 'COM101' AND A.MAIN_DEPT = C.CODE
+			        LEFT JOIN TB_TASK_PERSON D on A.TASK_ID = D.TASK_ID		       		       
+			WHERE 1=1  AND A.DEL_AT = 'N' 
+			GROUP by A.TASK_ID
+		) M
+		WHERE 1=1
+		<isNotEmpty prepend="AND" property="myTaskChk">
+			(M.EMPL_NO = #emplNo# or M.partiNo LIKE CONCAT ('%',#emplNo#,'%')) 
+		</isNotEmpty>
+		<isEmpty prepend="AND" property="myTaskChk">
+			(M.COMMON_AT = 'Y' or M.EMPL_NO = #emplNo# or M.partiNo LIKE CONCAT ('%',#emplNo#,'%')) 
+		</isEmpty>
+		<isEqual prepend="AND" property="searchCondition" compareValue="00">
+			(
+				M.TASK_NM LIKE CONCAT('%',#searchKeyword#,'%')  or 
+				M.CMPNY_NM LIKE CONCAT('%',#searchKeyword#,'%') or
+				M.KEYWORD LIKE CONCAT('%',#searchKeyword#,'%') 
+			)
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="01">
+			M.TASK_NM LIKE CONCAT('%',#searchKeyword#,'%') 
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="02">
+			M.CMPNY_NM LIKE CONCAT('%',#searchKeyword#,'%') 
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="03">
+			M.KEYWORD LIKE CONCAT('%',#searchKeyword#,'%') 
+		</isEqual>
+		<isNotEmpty  prepend="AND" property="taskSdate">
+			<isNotEmpty  property="taskEdate">
+				((DATE_FORMAT(#taskSdate#,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(M.TASK_SDATE,'%Y-%m-%d'))
+				and
+				(DATE_FORMAT(M.TASK_SDATE,'%Y-%m-%d') <![CDATA[ <= ]]> DATE_FORMAT(#taskEdate#,'%Y-%m-%d')))
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="deptCode">						
+				M.MAIN_DEPT IN ($deptCode$)
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="taskStatusCd">
+			M.TASK_STATUS_CD IN ($taskStatusCd$)
+		</isNotEmpty>		
+		
+	</select>
+	
+	<insert id="taskDAO.insertTask">
+		INSERT into TB_SPMGTASK
+				( TASK_ID         
+				,TASK_STEP_ID    
+				,TASK_NM         
+				,TASK_STATUS_CD  
+				,ADBK_ID 
+				,CHARGER_NM      
+				,CHARGER_EMP     
+				,TASK_SDATE      
+				,TASK_EDATE      
+				,SPEC_REQMNT     
+				,KEYWORD         
+				,COMMON_AT       
+				,REG_DT          
+				,EMPL_NO         
+				,DEPT_CODE      
+				,DEL_AT
+				,MAIN_DEPT
+				)
+		VALUES(
+		        #taskId#         
+		       ,#taskStepId#    
+		       ,#taskNm#         
+		       ,#taskStatusCd#  
+		       ,#adbkId# 
+		       ,#chargerNm#      
+		       ,#chargerEmp#     
+		       ,#taskSdate#      
+		       ,#taskEdate#      
+		       ,#specReqmnt#     
+		       ,#keyword#         
+		       ,#commonAt#       
+		       ,NOW()          
+		       ,#emplNo#         
+		       ,#deptCode#      
+		       ,#delAt#  
+		       ,#mainDept#        
+		)
+		          
+				
+				
+	</insert>
+	
+	<update id="taskDAO.updateTask">
+		UPDATE TB_SPMGTASK 
+			SET       
+		       TASK_ID             =    #taskId#        
+		     , TASK_STEP_ID        =    #taskStepId#    
+		     , TASK_NM             =    #taskNm#        
+		     , TASK_STATUS_CD      =    #taskStatusCd#  
+		     , ADBK_ID    		   =    #adbkId#		    
+		     , CHARGER_NM          =    #chargerNm#     
+		     , CHARGER_EMP         =    #chargerEmp#    
+		     , TASK_SDATE          =    #taskSdate#     
+		     , TASK_EDATE          =    #taskEdate#     
+		     , SPEC_REQMNT         =    #specReqmnt#    
+		     , KEYWORD             =    #keyword#       
+		     , COMMON_AT           =    #commonAt#      		             
+		     , DEPT_CODE           =    #deptCode#     
+		     , DEL_AT              =    #delAt# 
+		     , MAIN_DEPT           =    #mainDept# 
+		WHERE TASK_ID = #taskId#        
+		
+		
+	</update>
+	
+	<delete id="taskDAO.deleteTask">
+		DELETE FROM TB_SPMGTASK
+		WHERE TASK_ID = #taskId#
+	</delete>
+	
+	<select id="taskDAO.selectTaskDetail" resultClass="egovMap">
+	  SELECT   A.TASK_ID         
+	         , A.TASK_STEP_ID    
+	         , A.TASK_NM         
+	         , A.TASK_STATUS_CD  
+	         , A.ADBK_ID
+	         , A.CHARGER_NM      
+	         , A.CHARGER_EMP     
+	         , A.TASK_SDATE      
+	         , A.TASK_EDATE      
+	         , A.SPEC_REQMNT     
+	         , A.KEYWORD         
+	         , A.COMMON_AT       
+	         , A.REG_DT          
+	         , A.EMPL_NO         
+	         , A.DEPT_CODE      
+	         , A.DEL_AT
+	         , B.CMPNY_NM
+	         , A.MAIN_DEPT
+	  FROM   TB_SPMGTASK A LEFT JOIN COMTNADBK B on A.ADBK_ID = B.ADBK_ID       
+	  WHERE TASK_ID = #taskId#      
+			
+	</select>
+	
+	<select id="taskDAO.taskNmCompare" resultClass="int">
+		SELECT COUNT(*)
+		FROM TB_SPMGTASK
+		WHERE TASK_NM = #taskNm#
+	</select>
+	
+	<insert id="taskDAO.insertRelatedTask">
+		INSERT INTO TB_RELATED_TASK
+					(
+						RELA_TASK_ID,
+						TASK_ID
+					)
+					VALUES
+					(
+						#relaTaskId#,
+						#taskId#
+					)
+					
+	</insert>
+	
+	<delete id="taskDAO.deleteRelatedTask">
+		DELETE FROM  TB_RELATED_TASK
+		WHERE TASK_ID = #taskId#
+	
+	</delete>
+	
+	<select id="taskDAO.selectRelatedTaskList" resultClass="egovMap">
+		SELECT A.RELA_TASK_ID,
+			   A.TASK_ID,
+			   B.TASK_NM
+	    FROM TB_RELATED_TASK A LEFT JOIN TB_SPMGTASK B ON A.RELA_TASK_ID = B.TASK_ID
+	    WHERE A.TASK_ID = #taskId#
+	</select>
+	
+	<select id="taskDAO.selectTaskEnv" resultClass="egovMap">
+		SELECT TASK_ID
+		      ,OS
+		      ,LANG
+		      ,RM
+		      FROM TB_TASK_ENV
+		WHERE TASK_ID = #taskId#		      
+	</select>
+	
+	<insert id="taskDAO.insertTaskEnv">
+		INSERT INTO TB_TASK_ENV
+		(	
+			TASK_ID
+		   ,OS
+		   ,LANG
+		   ,RM
+		)
+		VALUES
+		(
+			#taskId#
+		   ,#os#
+		   ,#lang#
+		   ,#rm#	
+		)
+	</insert>
+	
+	<update id="taskDAO.updateTaskEnv">
+		UPDATE TB_TASK_ENV
+		SET OS = #os#
+		   ,LANG = #lang#
+		   ,RM = #rm#
+		WHERE TASK_ID = #taskId#   
+	</update>
+	
+	<select id="taskDAO.selectTaskSubEnvList" resultClass="egovMap">
+		SELECT TB_TASK_SUBENV_ID
+		      ,TASK_ID
+		      ,SEPT
+		      ,NM
+		      ,EXPLN
+		      ,RM
+	    FROM TB_TASK_SUBENV
+	    WHERE TASK_ID = #taskId#
+	</select>
+	
+	<insert id="taskDAO.insertTaskSubEnv">
+		INSERT INTO TB_TASK_SUBENV
+		      (
+		      	TB_TASK_SUBENV_ID
+		       ,TASK_ID
+		       ,SEPT
+		       ,NM
+		       ,EXPLN
+		       ,RM
+		      )
+	   VALUES(
+			    (select ifnull(max(TB_TASK_SUBENV_ID*1),0)+1 from TB_TASK_SUBENV A  )
+			   ,#taskId#
+			   ,#sept#
+			   ,#nm#
+			   ,#expln#
+			   ,#rm#
+			  )
+	</insert>
+	
+	<delete id="taskDAO.deleteTaskSubEnv">
+		DELETE FROM TB_TASK_SUBENV
+		WHERE TASK_ID = #taskId# and TB_TASK_SUBENV_ID = #tbTaskSubenvId#
+	</delete>
+	
+	<select id="taskDAO.selectTaskStepTemplate" resultClass="egovMap">
+			SELECT TASK_STEP_ID
+			      ,TASK_STEP
+			      ,STEP_NM
+			      ,PLAN_SDT
+			      ,PLAN_EDT
+			      ,PTASK_STEP_ID
+			      ,ORDR
+		FROM TB_TASK_STEPITM    
+		WHERE TASK_STEP_ID = #taskStepId#
+		ORDER BY TASK_STEP*1 ,PTASK_STEP_ID*1, ORDR*1	      
+	
+	</select>
+	
+	<insert id="taskDAO.insertTaskStep">
+		INSERT INTO TB_TASK_STEP_REAL
+				(
+					TASK_STEP_ID
+				   ,TASK_STEP
+				   ,TASK_ID
+				   ,STEP_NM
+				   ,PLAN_SDT
+				   ,PLAN_EDT
+				   ,PTASK_STEP_ID
+				   ,ORDR				   
+				)
+		VALUES  (
+					#taskStepId#
+				   ,#taskStep#
+				   ,#taskId#
+				   ,#stepNm#
+				   ,#planSdt#
+				   ,#planEdt#
+				   ,#ptaskStepId#
+				   ,#ordr#	
+				)
+	</insert>
+	
+	<update id="taskDAO.updateTaskStep">
+		UPDATE TB_TASK_STEP_REAL
+		SET  
+		      PLAN_SDT       =    #planSdt#    
+		    , PLAN_EDT       =    #planEdt#    
+        WHERE TASK_STEP_ID = #taskStepId#
+          AND TASK_ID = #taskId#
+          AND TASK_STEP = #taskStep#
+	</update>	
+	
+	<update id="taskDAO.updateTaskStepId">
+		UPDATE TB_SPMGTASK
+		SET TASK_STEP_ID = #taskStepId#
+		WHERE TASK_ID = #taskId#
+	</update>
+	
+	<select id="taskDAO.selectTaskStep" resultClass="EgovMap">
+		SELECT A.TASK_STEP_ID
+		          ,A.TASK_ID
+			      ,A.TASK_STEP
+			      ,A.STEP_NM
+			      ,A.PLAN_SDT
+			      ,A.PLAN_EDT
+			      ,A.PTASK_STEP_ID
+			      ,A.ORDR
+			      ,B.TASK_SDATE
+			      ,B.TASK_EDATE
+			      ,B.TASK_NM
+			      ,(SELECT COUNT(*) FROM TB_TASK_STEP_REAL C WHERE A.TASK_STEP = C.PTASK_STEP_ID AND TASK_ID = #taskId#) cnt
+		FROM TB_TASK_STEP_REAL A  join TB_SPMGTASK B on A.TASK_ID = B.TASK_ID 
+		WHERE A.TASK_ID = #taskId#
+		ORDER BY TASK_STEP*1 ,PTASK_STEP_ID*1, ORDR*1	
+	</select>
+	
+	
+	<select id="taskDAO.selectTaskSchduleList" resultClass="egovMap">
+		
+		SELECT  T.TASK_STEP 
+		       ,T.CNT
+		       ,T.TASK_STEP_ID
+		       ,T.TASK_ID
+		       ,T.STEP_NM
+		       ,T.PLAN_SDT
+		       ,T.PLAN_EDT
+		       ,T.PTASK_STEP_ID
+		       ,T.ORDR
+		       ,T.SCHDUL_ID
+		       ,T.MNG_NM 
+		       ,CASE
+				 WHEN T.1DT != 'X' AND T.PTASK_STEP_ID = '0'
+				 	THEN ROUND(IFNULL(T.1DT/T.CNT,0),2)
+				 ELSE
+				 	T.PERCENT
+				 END PERCENT
+		FROM 
+			(SELECT        A2.TASK_STEP 
+					      ,A1.CNT
+					      ,A2.TASK_STEP_ID
+					      ,A2.TASK_ID
+					      ,A2.STEP_NM
+					      ,A2.PLAN_SDT
+					      ,A2.PLAN_EDT
+					      ,A2.PTASK_STEP_ID
+					      ,A2.ORDR
+					      ,A2.SCHDUL_ID
+					      ,A2.MNG_NM
+						  ,CASE
+							 WHEN A2.SCHDUL_ID != ''
+							 	THEN ROUND(IFNULL(A2.SCHDUL_PRGRS,0)/100,2)
+							 WHEN A2.SCHDUL_ID = '' AND A2.PTASK_STEP_ID !=0
+							 	THEN  IFNULL(ROUND(A3.PERCENT/A3.DIVCNT/100,2),0)
+							 ELSE 	 
+							 	IFNULL(ROUND(A3.PERCENT/A3.DIVCNT/100,2),0)
+							 END PERCENT							 
+						  ,IFNULL(A4.PERCENT,'X') 1DT
+			
+					FROM 
+				(
+						SELECT A.TASK_STEP
+					      , COUNT(*) CNT
+							FROM
+							(SELECT TASK_STEP_ID
+									,TASK_ID
+								    ,TASK_STEP
+						    	    ,STEP_NM
+								    ,PLAN_SDT
+								    ,PLAN_EDT
+								    ,PTASK_STEP_ID
+								    ,ORDR
+								    , '' SCHDUL_ID
+							 FROM TB_TASK_STEP_REAL 
+							 WHERE TASK_ID =#taskId#
+								
+							UNION
+							SELECT   TASK_STEP_ID
+							         ,TASK_ID
+								      ,'X' TASK_STEP
+								      ,SCHDUL_NM STEP_NM
+								      ,SCHDUL_SDT PLAN_SDT
+								      ,SCHDUL_EDT PLAN_EDT
+								      ,TASK_STEP PTASK_STEP_ID
+								      ,'' ORDR
+								      ,SCHDUL_ID
+					      FROM	COMTNSCHDULINFO
+					      WHERE TASK_ID = #taskId#) A  JOIN
+							 
+					     (SELECT TASK_STEP_ID
+							          ,TASK_ID
+								      ,TASK_STEP
+								      ,STEP_NM
+								      ,PLAN_SDT
+								      ,PLAN_EDT
+								      ,PTASK_STEP_ID
+								      ,ORDR
+								      , '' SCHDUL_ID
+							FROM TB_TASK_STEP_REAL 
+							WHERE TASK_ID = #taskId#
+						
+							UNION
+							SELECT   TASK_STEP_ID
+							          , TASK_ID
+								      ,'X'TASK_STEP
+								      ,SCHDUL_NM STEP_NM
+								      ,SCHDUL_SDT PLAN_SDT
+								      ,SCHDUL_EDT PLAN_EDT
+								      ,TASK_STEP PTASK_STEP_ID
+								      ,'' ORDR
+								      ,SCHDUL_ID
+					      FROM	COMTNSCHDULINFO
+					     WHERE TASK_ID = #taskId#) B 
+					         ON A.TASK_STEP = B.PTASK_STEP_ID
+					     GROUP BY A.TASK_STEP
+				     ) A1
+			  RIGHT JOIN
+					     
+				   (  
+				    SELECT TASK_STEP_ID
+						          ,TASK_ID
+							      ,TASK_STEP
+							      ,STEP_NM
+							      ,PLAN_SDT
+							      ,PLAN_EDT
+							      ,PTASK_STEP_ID
+							      ,ORDR
+							      , '' SCHDUL_ID
+							      , '' MNG_NM
+							      , '' SCHDUL_PRGRS
+						FROM TB_TASK_STEP_REAL 
+						WHERE TASK_ID = #taskId#
+					
+						UNION
+						SELECT   TASK_STEP_ID
+						         ,TASK_ID
+							      ,TASK_STEP
+							      ,SCHDUL_NM STEP_NM
+							      ,SCHDUL_SDT PLAN_SDT
+							      ,SCHDUL_EDT PLAN_EDT
+							      ,TASK_STEP PTASK_STEP_ID
+							      ,'' ORDR
+							      ,SCHDUL_ID
+							      ,fn_selectManagerNm(FRST_REGISTER_ID) MNG_NM
+							      ,SCHDUL_PRGRS
+				      FROM	COMTNSCHDULINFO
+				     WHERE TASK_ID = #taskId# 
+				     
+				    ) A2
+				     ON A1.TASK_STEP = A2.TASK_STEP 
+					LEFT JOIN	   
+						  (
+						  	SELECT TASK_STEP 
+							      ,SUM(SCHDUL_PRGRS) PERCENT
+									,COUNT(TASK_STEP) DIVCNT	
+									FROM COMTNSCHDULINFO 
+									WHERE TASK_ID =  #taskId# 
+									GROUP BY TASK_STEP
+							
+						 ) A3 ON A2.TASK_STEP = A3.TASK_STEP
+							
+							LEFT JOIN 
+						
+							(	
+								SELECT PTASK_STEP_ID 
+								      ,SUM(PERCENT) PERCENT
+							    FROM 
+							     (SELECT A1.TASK_STEP 
+							            ,A1.SCHDUL_ID
+							            ,A1.PTASK_STEP_ID
+									    ,
+											CASE
+											 WHEN A1.SCHDUL_ID != ''
+											 	THEN ROUND(IFNULL(A1.SCHDUL_PRGRS,0)/100,2)
+											 WHEN A1.SCHDUL_ID = '' AND A1.PTASK_STEP_ID !=0
+											 	THEN  IFNULL(ROUND(A2.PERCENT/A2.DIVCNT/100,2),0)
+											 ELSE
+												''	 			 
+											 END PERCENT
+											 			
+									FROM 
+							
+								       ( 
+											SELECT TASK_STEP_ID
+										          ,TASK_ID
+											      ,TASK_STEP
+											      ,STEP_NM
+											      ,PLAN_SDT
+											      ,PLAN_EDT
+											      ,PTASK_STEP_ID
+											      ,ORDR
+											      , '' SCHDUL_ID
+											      , '' MNG_NM
+											      , '' SCHDUL_PRGRS
+											FROM TB_TASK_STEP_REAL 
+											WHERE TASK_ID = #taskId#
+										
+											UNION
+											SELECT   TASK_STEP_ID
+											         ,TASK_ID
+												      ,TASK_STEP
+												      ,SCHDUL_NM STEP_NM
+												      ,SCHDUL_SDT PLAN_SDT
+												      ,SCHDUL_EDT PLAN_EDT
+												      ,TASK_STEP PTASK_STEP_ID
+												      ,'' ORDR
+												      ,SCHDUL_ID
+												      ,fn_selectManagerNm(FRST_REGISTER_ID) MNG_NM
+												      ,SCHDUL_PRGRS
+									      FROM	COMTNSCHDULINFO
+									     WHERE TASK_ID = #taskId#
+									) A1
+									LEFT JOIN
+									  (
+									  	SELECT TASK_STEP 
+										      ,SUM(SCHDUL_PRGRS) PERCENT
+												,COUNT(TASK_STEP) DIVCNT	
+												FROM COMTNSCHDULINFO 
+												WHERE TASK_ID =  #taskId#
+												GROUP BY TASK_STEP
+										) A2 
+								
+										on A1.TASK_STEP = A2.task_step
+									) M
+									WHERE TASK_STEP != PTASK_STEP_ID
+									GROUP BY PTASK_STEP_ID
+					
+							) A4 ON A2.TASK_STEP = A4.PTASK_STEP_ID
+	    
+				) T
+				ORDER BY T.TASK_STEP*1 ,T.PTASK_STEP_ID*1, T.ORDR*1
+
+	</select>
+	
+	<select id="taskDAO.selectUserList_task" resultClass="egovMap">
+		 SELECT EMPL_NO	,			
+    		    IHIDNUM	,			
+    		    ORGNZT_NM,			
+    		    OFCPS_NM	,		
+    		    EMPLYR_BNGDE,		
+    		    BANK_ACCOUNT_NUM,	
+    		    EMAIL_ADRES,			
+    		    EMPLYR_ENDDE,		
+    		    ESNTL_ID,         
+                EMPLYR_ID,        
+                USER_NM,          
+                MBTLNUM,
+                ORGNZT_ID
+                <isNotEmpty property="taskId">                 
+			 	   ,(SELECT COUNT(*) FROM TB_TASK_PERSON B WHERE A.EMPL_NO = B.EMPL_NO AND TASK_ID=#taskId#) cnt
+			   </isNotEmpty>
+       FROM   COMTNEMPLYRINFO A
+       where 1=1
+		<isNotEmpty prepend="AND" property="orgnztId">
+			ORGNZT_ID = #orgnztId#
+		</isNotEmpty>
+	</select>
+	
+	<select id="taskDAO.selectTaskPersonList" resultClass="egovMap">
+	   SELECT A.TASK_PER_ID
+	         ,A.EMPL_NO
+	         ,A.TASK_ID
+	         ,A.ROLE
+	         ,A.RATE
+	         ,A.REG_DT
+	         ,A.REGSTR_NM
+	         ,A.STTUS
+	         ,A.STTUS_CHNG_DATE	 
+	         ,B.ORGNZT_ID   
+	         ,B.ORGNZT_NM
+	         ,B.USER_NM   
+	         ,B.OFCPS_NM
+	         ,B.OFCPS_ID
+	         ,B.EMAIL_ADRES
+	         ,IFNULL((SELECT SUM(C.SCHDUL_TIME) from comtnschdulinfo C where C.SCHDUL_TYPE = '1' AND A.EMPL_NO = C.FRST_REGISTER_ID AND A.TASK_ID = C.TASK_ID),0) nomalWork
+	         ,IFNULL((SELECT SUM(C.SCHDUL_TIME) from comtnschdulinfo C where C.SCHDUL_TYPE = '2' AND A.EMPL_NO = C.FRST_REGISTER_ID AND A.TASK_ID = C.TASK_ID),0) nightWork
+	         ,IFNULL((SELECT SUM(D.SCHDUL_TIME) from comtnschdulinfo D where D.SCHDUL_TYPE = '3' AND A.EMPL_NO = D.FRST_REGISTER_ID AND A.TASK_ID = D.TASK_ID),0) weekWork
+	         ,IFNULL((SELECT SUM(E.SCHDUL_EARLYDELAY_TIME) from comtnschdulinfo E where A.EMPL_NO = E.FRST_REGISTER_ID AND A.TASK_ID = E.TASK_ID),0) delay  
+       FROM   TB_TASK_PERSON A LEFT JOIN COMTNEMPLYRINFO B 
+            	ON A.EMPL_NO = B.EMPL_NO
+       WHERE TASK_ID = #taskId#        
+	</select>
+	
+	<insert id="taskDAO.insertTaskPerson">
+		INSERT INTO TB_TASK_PERSON
+		(    TASK_PER_ID     
+			,EMPL_NO         
+			,TASK_ID         
+			,ROLE            
+			,RATE            
+			,REG_DT          
+			,REGSTR_NM       
+			,STTUS           
+			,STTUS_CHNG_DATE						
+		)
+		values
+		(
+			#taskPerId#
+		   ,#emplNo#
+		   ,#taskId#
+		   ,#role#
+		   ,#rate#
+		   ,NOW()
+		   ,#regstrNm#
+		   ,#sttus#
+		   ,NOW()
+		)
+	
+	</insert>
+	
+	<update id="taskDAO.updateTaskPerson">
+		UPDATE TB_TASK_PERSON
+		SET   ROLE    = #role#  ,       
+		      RATE    = #rate#   ,   	
+		      STTUS   = #sttus#   ,    
+		      STTUS_CHNG_DATE = now() 
+		WHERE TASK_PER_ID = #taskPerId# 
+	</update>
+	
+	<select id="taskDAO.selectCompanyList" resultClass="egovMap">
+		SELECT ADBK_ID
+		      ,CMPNY_NM
+		      ,ENTRPRS_SE_CODE
+		      ,BIZRNO
+		      ,EMAIL_ADRES
+		      ,HOUSE_TELNO
+		      ,FXNUM
+		      ,BANK_ACCOUNT_NUM
+		      ,BANK_NM
+		      ,DEPOSITOR_NM
+		      ,RM
+		      ,ATCH_FILE_ID
+		      ,FRST_REGIST_PNTTM
+		      ,LAST_UPDT_PNTTM
+		      ,FRST_REGISTER_ID
+		      ,LAST_UPDUSR_ID
+	   FROM COMTNADBK
+	   where 1=1
+	   <isEqual prepend="AND" property="searchCondition"  compareValue="1">
+	   		CMPNY_NM LIKE CONCAT('%',#searchKeyword#,'%')
+	   </isEqual>
+	    <isEqual prepend="AND" property="searchCondition"  compareValue="2">
+	    	BIZRNO LIKE CONCAT('%',#searchKeyword#,'%')
+	   </isEqual>
+	   ORDER BY FRST_REGIST_PNTTM DESC
+	</select>
+	
+	<select id="taskDAO.selectCompanyManagerList" resultClass="egovMap">
+		SELECT A.NCRD_ID
+		      ,A.ADBK_ID
+		      ,A.IDNTFC_NO
+		      ,A.DEPT_NM
+		      ,A.OFCPS_NM
+		      ,A.NM
+		      ,A.SEXDSTN_CODE
+		      ,A.TELNO
+		      ,A.MBTLNUM
+		      ,A.FXNUM
+		      ,A.EMAIL_ADRES
+		      ,A.RM
+		      ,A.OTHBC_AT
+		      ,A.ATCH_FILE_ID
+		      ,A.FRST_REGIST_PNTTM
+		      ,A.FRST_REGISTER_ID
+		      ,A.LAST_UPDT_PNTTM
+		      ,A.LAST_UPDUSR_ID
+		      ,B.CMPNY_NM
+		      <isNotEmpty property="taskId">
+		      		,(SELECT COUNT(*) FROM TB_ORGZT_PERSON C WHERE A.NCRD_ID = C.NCRD_ID AND C.TASK_ID=#taskId# and C.sept = #sept#) cnt
+		      </isNotEmpty>
+		FROM COMTNNCRD A left join COMTNADBK B on A.ADBK_ID = B.ADBK_ID
+		WHERE 1=1
+		<isNotEmpty prepend="AND"  property="adbkId" >
+			 A.ADBK_ID = #adbkId#
+		</isNotEmpty>
+		<isEqual prepend="AND" property="searchCondition" compareValue="1">
+			B.CMPNY_NM LIKE CONCAT('%',#searchKeyword#,'%')
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="2">
+			A.NM LIKE CONCAT('%',#searchKeyword#,'%')
+		</isEqual>
+		ORDER BY FRST_REGIST_PNTTM DESC
+	</select>
+	
+	<select id="taskDAO.selectTbOrgztPersonList" resultClass="egovMap">
+		SELECT     A.ORGZT_PER_ID
+			      ,A.NCRD_ID
+			      ,A.TASK_ID
+			      ,A.SEPT
+			      ,A.REG_DATE
+			      ,A.REGSTR
+			      ,A.ROLE
+			      ,A.RM
+			      ,A.STTUS
+			      ,A.STTUS_CHNG_DATE
+			      ,B.DEPT_NM
+			      ,B.OFCPS_NM
+			      ,B.NM
+			      ,C.CMPNY_NM
+	 FROM TB_ORGZT_PERSON A LEFT JOIN COMTNNCRD B ON A.NCRD_ID = B.NCRD_ID
+	 LEFT JOIN COMTNADBK C ON B.ADBK_ID = C.ADBK_ID
+	 WHERE A.TASK_ID = #taskId# 
+	 <isNotEmpty property="sept">
+	 	AND A.SEPT = #sept#
+	 </isNotEmpty>
+	 ORDER BY A.REG_DATE DESC
+	</select>
+	
+	<insert id="taskDAO.insertTaskDeptMnger">
+		INSERT INTO TB_ORGZT_PERSON
+			(
+				ORGZT_PER_ID
+			   ,NCRD_ID
+			   ,TASK_ID
+			   ,SEPT
+			   ,REG_DATE
+			   ,REGSTR
+			   ,ROLE
+			   ,RM
+			   ,STTUS
+			   ,STTUS_CHNG_DATE
+			)
+			values
+			(
+				#orgztPerId#
+			   ,#ncrdId#
+			   ,#taskId#
+			   ,#sept#
+			   ,now()
+			   ,#regstr#
+			   ,#role#
+			   ,#rm#
+			   ,#sttus#
+			   ,now()
+			)
+	</insert>
+	
+	<update id="taskDAO.updateTaskDeptMnger">
+		UPDATE TB_ORGZT_PERSON
+		SET  		            		                  		            
+		     ROLE                =    #role#          
+		   , RM                  =    #rm#            
+		   , STTUS               =    #sttus#         
+		   , STTUS_CHNG_DATE     =    now()	
+		WHERE ORGZT_PER_ID = #orgztPerId#
+	</update>
+	
+	<select id="taskDAO.selectMajorSchedule" resultClass="egovMap">
+		SELECT T1.ROLE
+		      ,T1.STTUS
+		      ,T2.SCHDUL_NM
+		      ,T2.SCHDUL_SDT
+		      ,T2.SCHDUL_EDT
+		      ,T3.TASK_NM
+		      ,T4.USER_NM
+		      ,T4.EMAIL_ADRES
+		      ,T4.PUSH_TOKEN_ID
+		      ,T3.TASK_ID
+		      ,T4.USER_NM			 		      
+		FROM TB_TASK_PERSON T1 LEFT JOIN COMTNSCHDULINFO T2 ON T1.TASK_ID =  T2.TASK_ID  AND T1.EMPL_NO = T2.FRST_REGISTER_ID
+		     LEFT JOIN TB_SPMGTASK T3 ON T3.TASK_ID = T1.TASK_ID 
+		     LEFT JOIN COMTNEMPLYRINFO T4 ON T4.EMPL_NO = T1.EMPL_NO
+		WHERE T2.SCHDUL_IPCR_CODE = 'Y'  
+		      AND DATE_FORMAT(DATE_ADD(T2.SCHDUL_SDT,INTERVAL -1 DAY),'%Y%M%D') = DATE_FORMAT(NOW(),'%Y%M%D')
+	</select>
+	
+	<select id="taskDAO.selectDelaySchdulList" resultClass="egovMap">
+		SELECT SCHDUL_ID
+		      ,SCHDUL_SDT
+		      ,SCHDUL_EDT
+		      ,SCHDUL_PRGRS_STTUS
+		FROM   COMTNSCHDULINFO
+		WHERE TASK_ID = #taskId#
+		  AND SCHDUL_PRGRS_STTUS IN ('1','2','4')
+		  AND date_format(now(),"%Y-%m-%d %T") > date_format(SCHDUL_EDT,"%Y-%m-%d %T")
+	</select>
+	
+	<update id="taskDAO.updateSchdulPrgrSttusAndTime" parameterClass="IndvdlSchdulManageVO">
+		UPDATE COMTNSCHDULINFO
+		   SET SCHDUL_EARLYDELAY_TIME = #schdulEarlydelayTime#
+		   		<isNotEmpty property="schdulPrgrsSttus" >
+		   			,SCHDUL_PRGRS_STTUS = #schdulPrgrsSttus#
+		   		</isNotEmpty>
+		 WHERE SCHDUL_ID = #schdulId#
+		      
+	</update>
+	
+	<select id="taskDAO.selectParticiEmplNo" resultClass="egovMap">
+		SELECT CONCAT(A.EMPL_NO,',',IFNULL(GROUP_CONCAT(B.EMPL_NO),'')) PARTIEMPLNO 
+		FROM TB_SPMGTASK A LEFT JOIN TB_TASK_PERSON B ON A.TASK_ID = B.TASK_ID  
+		WHERE A.TASK_ID = #taskId#
+	</select>
+	
+	<select id="taskDAO.selectTaskSetpMaster" resultClass="egovMap">
+		SELECT TASK_STEP_NM 
+		      ,TASK_STEP_ID
+		FROM TB_TASK_STEP
+	</select>
+</sqlMap>

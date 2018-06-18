@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="NonOperProfitDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="nonOperProfitDAO.loadData" resultClass="egovMap">
+		SELECT  OTDEAL_DT,
+				OTDEAL_NM,
+				AMOUNT,
+				RM,
+				OTDEAL_ID
+				
+		FROM	tb_othersprofitmanage
+		WHERE   AFFILIATION_ID = #affiliationId#
+		ORDER BY OTDEAL_DT DESC
+	</select>
+	
+	<update id="nonOperProfitDAO.updateData">
+	    UPDATE tb_othersprofitmanage  SET
+	   	       OTDEAL_DT = #otdealDt#,
+	    	   OTDEAL_NM = #otdealNm#,
+	    	   AMOUNT = #amount#,
+	    	   RM = #rm#
+	    WHERE  OTDEAL_ID = #otdealId# AND
+	    	   AFFILIATION_ID = #affiliationId#   
+	</update>
+	
+	<insert id="nonOperProfitDAO.insertData">
+	    insert into tb_othersprofitmanage
+	    	( 
+				OTDEAL_DT,
+				OTDEAL_NM,
+				AMOUNT,
+				RM,
+				OTDEAL_ID,
+				AFFILIATION_ID
+			)
+		VALUES 
+			(
+				#otdealDt#,
+				#otdealNm#,
+				#amount#,
+				#rm#,
+				#otdealId#,
+				#affiliationId#
+			)
+	</insert>
+	
+	<delete id="nonOperProfitDAO.deleteData">
+	    delete from tb_othersprofitmanage
+	    where OTDEAL_ID =#otdealId# AND
+	          AFFILIATION_ID = #affiliationId#
+	</delete>
+	
+	<insert id="nonOperProfitDAO.addDefauitData">
+	    insert into tb_othersprofitmanage
+	    	( 
+				OTDEAL_DT,
+				OTDEAL_NM,
+				AMOUNT,
+				RM,
+				OTDEAL_ID,
+				AFFILIATION_ID
+			)
+		VALUES 
+			(
+				#otdealDt#,
+				#otdealNm#,
+				0,
+				#rm#,
+				#otdealId#,
+				#affiliationId#
+			)
+	</insert>
+</sqlMap>

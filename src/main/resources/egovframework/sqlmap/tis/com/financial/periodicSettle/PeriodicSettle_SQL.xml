@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="PeriodicSettleDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="periodicSettleDAO.loadData_E" resultClass="egovMap">
+		SELECT 
+				DIV_NM,
+				CALCUL_DE,
+				CALCUL_NM,
+				CMPNY_NM,
+				COST,
+				PAYMENT_SC_DT,
+				RM,
+				CALCUL_ID
+				
+		FROM	tb_calculation
+		WHERE   AFFILIATION_ID = #affiliationId# AND
+				TYPE_AT = #typeAt#
+		ORDER BY PAYMENT_SC_DT DESC
+	</select>
+	
+	<select id="periodicSettleDAO.loadData_P" resultClass="egovMap">
+		SELECT 
+				DIV_NM,
+				CALCUL_DE,
+				CALCUL_NM,
+				CMPNY_NM,
+				ORGNZT_NM,
+				COST,
+				PAYMENT_SC_DT,
+				RM,
+				CALCUL_ID
+				
+		FROM	tb_calculation
+		WHERE   AFFILIATION_ID = #affiliationId# AND
+				TYPE_AT = #typeAt#
+		ORDER BY PAYMENT_SC_DT DESC
+	</select>
+	
+	<update id="periodicSettleDAO.updateData">
+	    UPDATE tb_calculation  SET
+				DIV_NM = #divNm#,
+				CALCUL_DE = #calculDe#,
+				CALCUL_NM = #calculNm#,
+				CMPNY_NM = #cmpnyNm#,
+				COST = #cost#,
+				PAYMENT_SC_DT = #paymentScDt#,
+				RM = #rm#,
+				ORGNZT_NM = #orgnztNm#
+	    WHERE  CALCUL_ID = #calculId#		    AND
+	   		   TYPE_AT = #typeAt#				AND
+	    	   AFFILIATION_ID = #affiliationId#   
+	</update>
+	
+	<insert id="periodicSettleDAO.insertData">
+	    insert into tb_calculation
+	    	( 
+	    		CALCUL_ID,
+				DIV_NM,
+				CALCUL_DE,
+				CALCUL_NM,
+				CMPNY_NM,
+				COST,
+				PAYMENT_SC_DT,
+				RM,
+				AFFILIATION_ID,
+				TYPE_AT,
+				ORGNZT_NM
+			)
+		VALUES 
+			(
+				#calculId#,
+				#divNm#,
+				#calculDe#,
+				#calculNm#,
+				#cmpnyNm#,
+				#cost#,
+				#paymentScDt#,
+				#rm#,
+				#affiliationId#,
+				#typeAt#,
+				#orgnztNm#
+			)
+	</insert>
+	
+	<delete id="periodicSettleDAO.deleteData">
+	    DELETE FROM tb_calculation
+	    where CALCUL_ID =#calculId# AND
+	          AFFILIATION_ID = #affiliationId# AND
+	          TYPE_AT = #typeAt#
+	</delete>
+	
+	<insert id="periodicSettleDAO.addDefauitData">
+	    insert into tb_calculation
+	    	( 
+	    		CALCUL_ID,
+				DIV_NM,
+				CALCUL_DE,
+				CALCUL_NM,
+				CMPNY_NM,
+				COST,
+				PAYMENT_SC_DT,
+				RM,
+				AFFILIATION_ID,
+				TYPE_AT,
+				ORGNZT_NM
+			)
+		VALUES 
+			(
+				#calculId#,
+				#divNm#,
+				#calculDe#,
+				#calculNm#,
+				#cmpnyNm#,
+				0,
+				#paymentScDt#,
+				#rm#,
+				#affiliationId#,
+				#typeAt#,
+				#orgnztNm#
+			)
+	</insert>
+</sqlMap>

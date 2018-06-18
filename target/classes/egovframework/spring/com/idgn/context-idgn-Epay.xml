@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<!-- 문서양식 -->
+    <bean name="egovEpayDocFormIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayDocFormStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="DOC_FORM_ID"/>
+    </bean>
+    <bean name="EpayDocFormStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="DOCFRM_" />
+        <property name="cipers"   value="13" />
+        <property name="fillChar" value="0" />
+    </bean>
+    <!-- 기안서 -->
+    <bean name="egovEpayDraftIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayDraftStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="DRAFT_ID"/>
+    </bean>
+    <bean name="EpayDraftStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="DRAFT_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+    <!-- 품의서 -->
+    <bean name="egovEpayCnsulIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayCnsulStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="CNSUL_ID"/>
+    </bean>
+    <bean name="EpayCnsulStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="CNSUL_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 지출명세서(개인) -->
+    <bean name="egovEpayExpIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayExpStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="EXP_ID"/>
+    </bean>
+    <bean name="EpayExpStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="EXP_" />
+        <property name="cipers"   value="16" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 지출명세서(법인) -->
+    <bean name="egovEpayExpCorIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayExpCorStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="EXPCOR_ID"/>
+    </bean>
+    <bean name="EpayExpCorStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="EXPC_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 지출명세서(법인) 지출내역-->
+    <bean name="egovEpayExpCorHistIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayExpCorHistStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="EXPCOR_HIST_ID"/>
+    </bean>
+    <bean name="EpayExpCorHistStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="EXPCH_" />
+        <property name="cipers"   value="14" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 휴가원-->
+    <bean name="egovEpayHolidayIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayHolidayStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="HOL_ID"/>
+    </bean>
+    <bean name="EpayHolidayStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="HOL_" />
+        <property name="cipers"   value="16" />
+        <property name="fillChar" value="0" />
+    </bean>
+
+    <!-- 기안정보 -->
+    <bean name="egovEpayDraftInfoIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayDraftInfoStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="DRAFT_INFO_ID"/>
+    </bean>
+    <bean name="EpayDraftInfoStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="DRPTIN_" />
+        <property name="cipers"   value="13" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 기안이력 -->
+    <bean name="egovEpayApprHistIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayApprHistStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="APPR_HIST_ID"/>
+    </bean>
+    <bean name="EpayApprHistStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="APPH_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!--경비관리ID -->
+    <bean name="tisCostIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="CostStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="COST_ID"/>
+    </bean>
+    <bean name="CostStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="COST_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 결재라인 -->
+    <bean name="egovEpayApprLineIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayApprLineStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="APPR_ID"/>
+    </bean>
+    <bean name="EpayApprLineStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="APPR_" />
+        <property name="cipers"   value="15" />
+        <property name="fillChar" value="0" />
+    </bean>
+    
+    <!-- 결재라인구성 -->
+    <bean name="egovEpayApprLnCfgIdGnrService" class="egovframework.rte.fdl.idgnr.impl.EgovTableIdGnrServiceImpl" destroy-method="destroy">
+        <property name="dataSource" ref="egov.dataSource" />
+        <property name="strategy"   ref="EpayApprLnCfgStrategy" />
+        <property name="blockSize"  value="10"/>
+        <property name="table"      value="COMTECOPSEQ"/>
+        <property name="tableName"  value="APPRLN_ID"/>
+    </bean>
+    <bean name="EpayApprLnCfgStrategy" class="egovframework.rte.fdl.idgnr.impl.strategy.EgovIdGnrStrategyImpl">
+        <property name="prefix"   value="APPRLN_" />
+        <property name="cipers"   value="13" />
+        <property name="fillChar" value="0" />
+    </bean>
+</beans>

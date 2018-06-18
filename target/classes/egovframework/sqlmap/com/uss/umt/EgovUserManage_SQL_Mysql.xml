@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="User">
+
+    <typeAlias  alias="egovMap"      type = "egovframework.rte.psl.dataaccess.util.EgovMap"/>
+    <typeAlias  alias="userSearchVO" type = "egovframework.com.uss.umt.service.UserDefaultVO"/>
+    <typeAlias  alias="userSearchVO" type = "egovframework.com.uss.umt.service.UserDefaultVO"/>
+    <typeAlias  alias="userVO"       type = "egovframework.com.uss.umt.service.UserManageVO"/>
+
+    <select id="userManageDAO.selectUserList_S" parameterClass="userSearchVO" resultClass="egovMap">
+SELECT 
+    emplNo, ihidnum, orgnztNm, ofcpsNm, emplyrBngde, bankAccountNum, emailAdres, emplyrEndde, uniqId, userId , userNm, moblphonNo, orgnztId, affiliationId, ofcpsId
+FROM(
+    SELECT
+    	EMPL_NO					emplNo,
+    	IHIDNUM					ihidnum,
+    	ORGNZT_NM				orgnztNm,
+    	OFCPS_NM                ofcpsNm,
+        EMPLYR_BNGDE			emplyrBngde,
+    	BANK_ACCOUNT_NUM		bankAccountNum,
+    	EMAIL_ADRES				emailAdres,
+    	EMPLYR_ENDDE			emplyrEndde,
+        ESNTL_ID                uniqId,        
+        EMPLYR_ID               userId,
+        USER_NM                 userNm,
+        MBTLNUM                 moblphonNo,
+        ORGNZT_ID			    orgnztId,
+        AFFILIATION_ID          affiliationId ,
+        OFCPS_ID				ofcpsId
+        FROM    COMTNEMPLYRINFO
+    ) A
+        WHERE 1=1
+        <isEqual prepend="AND" property="searchCondition1" compareValue="0">
+            emplyrEndde IS NULL
+        </isEqual>
+        <isEqual prepend="AND" property="searchCondition1" compareValue="1">
+            emplyrEndde IS NOT NULL
+        </isEqual>
+        <isNotEmpty property="searchCondition" >
+         	AND	orgnztId = #searchCondition#
+        </isNotEmpty>
+        ORDER BY emplyrEndde ASC, affiliationId ASC, orgnztNm ASC, ofcpsId DESC, emplyrBngde ASC      
+        LIMIT #recordCountPerPage# OFFSET #firstIndex#
+    </select>
+    
+    <select id="userManageDAO.selectUserListTotCnt_S" parameterClass="userSearchVO" resultClass="int">
+            SELECT COUNT(1) totcnt   
+            FROM    COMTNEMPLYRINFO
+       		 WHERE 1=1
+            <isEqual prepend="AND" property="searchCondition1" compareValue="0">
+	            EMPLYR_ENDDE IS NULL
+	        </isEqual>
+	        <isEqual prepend="AND" property="searchCondition1" compareValue="1">
+	            EMPLYR_ENDDE IS NOT NULL
+	        </isEqual>
+	        <isNotEmpty property="searchCondition" >
+	         	AND	ORGNZT_ID = #searchCondition#
+	        </isNotEmpty>
+    </select>
+    
+    <select id ="userManageDAO.selectGetEmplNo" parameterClass="userVO" resultClass="int">
+		<![CDATA[
+            SELECT COUNT(EMPL_NO) + 1
+               FROM    COMTNEMPLYRINFO
+            WHERE ((EMPLYR_BNGDE DIV 10000) = (#emplyrBngde# DIV 10000)) AND AFFILIATION_ID = #affiliationId#
+        ]]>    
+    </select>
+    
+    <insert id="userManageDAO.insertUser_S">
+        <![CDATA[
+            INSERT INTO COMTNEMPLYRINFO 
+                (   ESNTL_ID             ,
+                    EMPLYR_ID           ,
+                    USER_NM           ,
+                    PASSWORD            ,
+                    EMPL_NO             ,
+                    IHIDNUM             ,
+                    HOUSE_ADRES           ,
+                    MBTLNUM         ,
+                    EMAIL_ADRES         ,
+                    OFCPS_NM            ,
+                    OFCPS_ID			,
+                    ORGNZT_NM			,
+                    EMPLYR_BNGDE		,
+                    EMPLYR_ENDDE		,
+                    EMPLYR_NM_EN		,
+                    EMPLYR_NM_CN		,
+                    MANAGE_AT			,
+                    BANK_ACCOUNT_NUM	,
+                    BANK_NM				,
+                    DEPOSITOR_NM		,
+                    AFFILIATION_ID		,
+                    EXTERNAL_ACCESS		,
+                    HMTLNUM				,
+                    ATCH_FILE_ID		,
+                    ORGNZT_ID           )
+            VALUES (
+                    #uniqId#            ,
+                    #emplyrId#          ,
+                    #emplyrNm#          ,
+                    #password#          ,              
+                    #emplNo#            ,
+                    #ihidnum#           ,
+                    #homeadres#         ,
+                    #moblphonNo#        ,
+                    #emailAdres#        ,
+                    #ofcpsNm#           ,
+                    #ofcpsId#        	,
+                    #orgnztNm#			,
+                    #emplyrBngde#		,
+                    #emplyrEndde#		,
+                    #emplyrNmEn#		,
+                    #emplyrNmCn#		,
+                    #manageAt#			,
+                    #bankAccountNum#	,
+                    #bankNm#			,
+                    #depositorNm#		,
+                    #affiliationId#		,
+                    #externalAccess#	,
+                    #hmtlnum#			,
+                    #atchFileId#		,
+                    #orgnztId#          )
+        ]]>
+    </insert>
+    
+    <delete id="userManageDAO.deleteUser_S">
+        <![CDATA[
+            DELETE FROM COMTNEMPLYRINFO 
+            WHERE ESNTL_ID=#delId#
+        ]]>
+    </delete>
+    
+    <select id="userManageDAO.selectUser_S" resultClass="userVO">
+        <![CDATA[
+            SELECT
+                ESNTL_ID           uniqId            ,
+                EMPLYR_ID          emplyrId          ,
+                EMPL_NO            emplNo 			 ,
+                PASSWORD           password			 ,
+                USER_NM            emplyrNm          ,
+                IHIDNUM            ihidnum           , 
+                EMAIL_ADRES		   emailAdres        ,
+                HMTLNUM			   hmtlnum			 ,
+                MBTLNUM			   moblphonNo        ,
+                HOUSE_ADRES        homeadres         ,
+                EMPLYR_BNGDE       emplyrBngde       ,
+                EMPLYR_ENDDE       emplyrEndde       ,
+                EMPLYR_NM_EN       emplyrNmEn        ,
+                EMPLYR_NM_CN       emplyrNmCn        ,
+                OFCPS_ID		   ofcpsId			 ,
+                OFCPS_NM		   ofcpsNm			 ,
+                ORGNZT_ID		   orgnztId			 ,
+                ORGNZT_NM		   orgnztNm			 ,
+                AFFILIATION_ID	   affiliationId	 ,
+                MANAGE_AT          manageAt			 ,
+                BANK_ACCOUNT_NUM   bankAccountNum	 ,
+                BANK_NM            bankNm			 ,
+                DEPOSITOR_NM       depositorNm		 ,
+                EXTERNAL_ACCESS    externalAccess	 ,
+                ATCH_FILE_ID       atchFileId
+        FROM COMTNEMPLYRINFO
+            WHERE ESNTL_ID=#uniqId#
+        ]]>
+    </select>
+    
+    <select id="userManageDAO.selectEmpNo" resultClass="userVO">
+        <![CDATA[
+            SELECT
+                ESNTL_ID           uniqId            ,
+                EMPLYR_ID          emplyrId          ,
+                EMPL_NO            emplNo 			 ,
+                PASSWORD           password			 ,
+                USER_NM            emplyrNm          ,
+                IHIDNUM            ihidnum           , 
+                EMAIL_ADRES		   emailAdres        ,
+                HMTLNUM			   hmtlnum			 ,
+                MBTLNUM			   moblphonNo        ,
+                HOUSE_ADRES        homeadres         ,
+                EMPLYR_BNGDE       emplyrBngde       ,
+                EMPLYR_ENDDE       emplyrEndde       ,
+                EMPLYR_NM_EN       emplyrNmEn        ,
+                EMPLYR_NM_CN       emplyrNmCn        ,
+                OFCPS_ID		   ofcpsId			 ,
+                OFCPS_NM		   ofcpsNm			 ,
+                ORGNZT_ID		   orgnztId			 ,
+                ORGNZT_NM		   orgnztNm			 ,
+                AFFILIATION_ID	   affiliationId	 ,
+                MANAGE_AT          manageAt			 ,
+                BANK_ACCOUNT_NUM   bankAccountNum	 ,
+                BANK_NM            bankNm			 ,
+                DEPOSITOR_NM       depositorNm		 ,
+                ATCH_FILE_ID       atchFileId
+        FROM COMTNEMPLYRINFO
+            WHERE EMPL_NO=#emplNo#
+        ]]>
+    </select>
+    
+    <update id="userManageDAO.updateAtchFileId">
+    <![CDATA[
+            UPDATE COMTNEMPLYRINFO 
+            SET                 
+                ATCH_FILE_ID  =  #atchFileId#
+             WHERE EMPL_NO=#emplNo#    
+     ]]>
+    </update>
+    
+    <update id="userManageDAO.updateUser_S">
+            UPDATE COMTNEMPLYRINFO 
+            SET                 
+                USER_NM            =      #emplyrNm#          ,
+                <isNotEqual property="password" compareValue="">
+				 PASSWORD           =      #password#		  ,
+				</isNotEqual>
+                IHIDNUM            =      #ihidnum#           , 
+                EMAIL_ADRES		   =      #emailAdres#        ,
+                HMTLNUM			   =      #hmtlnum#			  ,
+                MBTLNUM			   =      #moblphonNo#        ,
+                HOUSE_ADRES        =      #homeadres#         ,
+                EMPLYR_BNGDE       =      #emplyrBngde#       ,
+                EMPLYR_ENDDE       =      #emplyrEndde#       ,
+                EMPLYR_NM_EN       =      #emplyrNmEn#        ,
+                EMPLYR_NM_CN       =      #emplyrNmCn#        ,
+                OFCPS_ID		   =      #ofcpsId#			  ,
+                OFCPS_NM		   =      #ofcpsNm#			  ,
+                ORGNZT_ID		   =      #orgnztId#		  ,
+                ORGNZT_NM		   =      #orgnztNm#		  ,
+                AFFILIATION_ID	   =      #affiliationId#	  ,
+                MANAGE_AT          =      #manageAt#		  ,
+                BANK_ACCOUNT_NUM   =      #bankAccountNum#	  ,
+                BANK_NM            =      #bankNm#			  ,
+                DEPOSITOR_NM       =      #depositorNm#		  ,
+                EXTERNAL_ACCESS    =      #externalAccess#	  ,
+                ATCH_FILE_ID       =      #atchFileId#
+            WHERE ESNTL_ID = #uniqId#
+    </update>
+    
+    <update id="userManageDAO.updateFoodEmail">
+            UPDATE tb_foodexpenses
+            SET                 
+                EMAIL_ADRES		   =      #emailAdres#
+            WHERE EMPL_NO = #emplNo# AND
+            	  EMPL_NM = #emplyrNm#
+    </update>
+       
+    <update id="userManageDAO.updateParkingEmail">
+            UPDATE tb_parkingstub
+            SET                 
+                EMAIL_ADRES		   =      #emailAdres#
+            WHERE EMPL_NO = #emplNo# AND
+            	  EMPL_NM = #emplyrNm#
+    </update>
+    
+    <insert id="userManageDAO.insertUserHistory_S">
+        <![CDATA[
+            INSERT INTO COMTHEMPLYRINFOCHANGEDTLS 
+                (   
+                    EMPL_NO             ,                    
+                    AF_ORGNZT_ID           ,
+                    AF_ORGNZT_NM		,
+                    AF_OFCPS_NM			,
+                    AF_OFCPS_ID			,
+                    CHANGE_DE           ,
+                    RM					)
+            SELECT                     
+                    EMPL_NO             ,                    
+                    ORGNZT_ID           ,
+                    ORGNZT_NM          ,
+                    OFCPS_NM             ,
+                    OFCPS_ID			,
+                    EMPLYR_BNGDE		,
+                    #rm#
+            FROM COMTNEMPLYRINFO
+            WHERE EMPL_NO = #emplNo#
+        ]]>
+    </insert>
+    
+    <insert id="userManageDAO.insertLeavingUserHistory">
+        <![CDATA[
+            INSERT INTO COMTHEMPLYRINFOCHANGEDTLS 
+                (   
+                    EMPL_NO             ,                    
+                    AF_ORGNZT_ID           ,
+                    AF_ORGNZT_NM		,
+                    AF_OFCPS_NM			,
+                    AF_OFCPS_ID			,
+                    CHANGE_DE           ,
+                    RM					)
+            SELECT                     
+                    EMPL_NO             ,                    
+                    ORGNZT_ID           ,
+                    ORGNZT_NM          ,
+                    OFCPS_NM             ,
+                    OFCPS_ID			,
+                    EMPLYR_ENDDE		,
+                    #rm#
+            FROM COMTNEMPLYRINFO
+            WHERE EMPL_NO = #emplNo#
+        ]]>
+    </insert>
+    
+    <select id="userManageDAO.checkIdDplct_S" resultClass="int">
+        <![CDATA[
+            SELECT COUNT(1) usedCnt
+                FROM(
+                SELECT
+                    EMPLYR_ID             userId
+                FROM    COMTNEMPLYRINFO
+                UNION ALL
+                SELECT
+                    ENTRPRS_MBER_ID        userId
+                FROM    COMTNENTRPRSMBER
+                UNION ALL
+                SELECT
+                    MBER_ID               userId
+                FROM    COMTNGNRLMBER
+                ) A
+            WHERE userId = #checkId#
+        ]]>
+    </select>
+    
+    <update id="userManageDAO.updatePassword_S">
+        <![CDATA[
+            UPDATE COMTNEMPLYRINFO 
+            SET 
+                   PASSWORD   =  #password#
+            WHERE  ESNTL_ID  = #uniqId#
+        ]]>
+    </update>
+    
+    <select id="userManageDAO.selectPassword_S" resultClass="userVO">
+        <![CDATA[
+            SELECT
+                    PASSWORD          password 
+            FROM    COMTNEMPLYRINFO
+            WHERE   ESNTL_ID=#uniqId#
+        ]]>
+    </select>
+    
+    <select id="userManageDAO.searchId_S" resultClass="int">
+    	SELECT COUNT(*) FROM COMTNEMPLYRINFO WHERE EMPLYR_ID = #checkId#
+    </select>
+    
+        <update id="userManageDAO.updateUserFileId">
+            UPDATE COMTNEMPLYRINFO 
+            SET                 
+                ATCH_FILE_ID       =      #atchFileId#
+            WHERE ESNTL_ID = #uniqId#
+    </update>
+</sqlMap>

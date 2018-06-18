@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="ProfitLossDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="profitLossDAO.selectProfitLossList" resultClass="egovMap">
+		<![CDATA[
+			SELECT
+				*
+				,(SALES_EXEC_TOT_PRICE + SALES_OTHERS_PRICE) AS PROFIT_TOT_PRICE /*이익합계*/
+				,(PRCS_EXEC_TOT_PRICE + LABOR_EXEC_PRICE + OUTGOINGS_PRICE) AS OUTGOINGS_TOT_PRICE /*지출합계*/
+				,(SALES_EXEC_TOT_PRICE + SALES_OTHERS_PRICE - PRCS_EXEC_TOT_PRICE - LABOR_EXEC_PRICE - OUTGOINGS_PRICE) AS BUSINESS_PROFIT /*영업이익*/
+			FROM
+			(
+				SELECT  T.TASK_ID
+				       ,T.TASK_STEP_ID
+				       ,T.TASK_NM
+				       ,(SELECT CODE_NM FROM comtccmmndetailcode WHERE CODE_ID = 'COM101' AND CODE = T.MAIN_DEPT) AS DEPT_NM
+				       ,T.TASK_SDATE
+				       ,T.TASK_EDATE
+				       ,C.CMPNY_NM
+				       ,IFNULL(S.SALES_PLAN_TOT_PRICE,0) AS SALES_PLAN_TOT_PRICE /*매출계획금액*/
+				       ,IFNULL(S.SALES_EXEC_TOT_PRICE,0) AS SALES_EXEC_TOT_PRICE /*매출집행금액*/
+				       ,IFNULL(O.AMOUNT,0) AS SALES_OTHERS_PRICE /*영업외이익*/
+				       ,IFNULL(P.PRCS_PLAN_TOT_PRICE,0) AS PRCS_PLAN_TOT_PRICE /*매입계획금액*/
+				       ,IFNULL(P.PRCS_EXEC_TOT_PRICE,0) AS PRCS_EXEC_TOT_PRICE /*매입집행금액*/
+				       ,0 AS LABOR_EXEC_PRICE /*인건비-Controller에서 계산*/
+				       ,IFNULL(C.EXP_TOT_PRICE,0) AS OUTGOINGS_PRICE /*경비*/
+				FROM
+					TB_SPMGTASK T
+				LEFT JOIN (SELECT TASK_ID,
+							SUM(SALES_PLAN_TOT_PRICE) AS SALES_PLAN_TOT_PRICE,
+							SUM(SALES_EXEC_TOT_PRICE) AS SALES_EXEC_TOT_PRICE
+							FROM TB_SALES
+							WHERE PAY_APPR_AT = 'Y'
+							GROUP BY TASK_ID) S ON S.TASK_ID = T.TASK_ID
+				LEFT JOIN (SELECT TASK_ID, SUM(AMOUNT) AS AMOUNT FROM TB_OTHERSPROFITMANAGE GROUP BY TASK_ID) O ON O.TASK_ID = T.TASK_ID
+				LEFT JOIN (SELECT TASK_ID,
+							SUM(PRCS_PLAN_TOT_PRICE) AS PRCS_PLAN_TOT_PRICE,
+							SUM(PRCS_EXEC_TOT_PRICE) AS PRCS_EXEC_TOT_PRICE
+							FROM TB_PURCHASE
+							WHERE PAY_APPR_AT = 'Y'
+							GROUP BY TASK_ID) P ON P.TASK_ID = T.TASK_ID
+				LEFT JOIN (SELECT TASK_ID, SUM(EXP_TOT_PRICE) AS EXP_TOT_PRICE FROM TB_COST GROUP BY TASK_ID) C ON C.TASK_ID = T.TASK_ID
+				LEFT JOIN comtnadbk C ON C.ADBK_ID = T.ADBK_ID
+				WHERE 1=1
+		]]>
+		<isEqual prepend="AND" property="searchCondition" compareValue="taskNm">
+			<![CDATA[	T.TASK_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="cmpnyNm">
+			<![CDATA[	C.CMPNY_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual property="searchCondition" compareValue="">
+			<isNotEmpty prepend="AND" property="searchKeyword">
+				<![CDATA[	(T.TASK_NM LIKE '%$searchKeyword$%' OR C.CMPNY_NM LIKE '%$searchKeyword$%')		]]>
+			</isNotEmpty>
+		</isEqual>
+		<isNotEmpty prepend="AND" property="searchMainDept">
+			<![CDATA[	T.MAIN_DEPT = '$searchMainDept$'	]]>
+		</isNotEmpty>
+		<isNotEmpty property="searchTaskSdate">
+			<isNotEmpty prepend="AND" property="searchTaskEdate">
+				<![CDATA[	T.TASK_SDATE >= '$searchTaskSdate$' AND T.TASK_SDATE <= '$searchTaskEdate$'	]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchTaskId">
+			<![CDATA[	T.TASK_ID = '$searchTaskId$'	]]>
+		</isNotEmpty>
+				GROUP BY T.TASK_ID
+			) X
+		<isGreaterThan property="recordCountPerPage" compareValue="-1">
+			<![CDATA[	LIMIT $recordCountPerPage$ OFFSET $firstIndex$	]]>
+		</isGreaterThan>
+	</select>
+	
+	<select id="profitLossDAO.selectProfitLossListCount" resultClass="java.lang.Integer">
+		<![CDATA[
+			SELECT  COUNT(*)
+			FROM
+			(
+				SELECT  COUNT(T.TASK_ID)
+				FROM
+					TB_SPMGTASK T
+				LEFT JOIN TB_SALES S ON S.TASK_ID = T.TASK_ID
+				LEFT JOIN TB_PURCHASE P ON P.TASK_ID = T.TASK_ID
+				LEFT JOIN comtnadbk C ON C.ADBK_ID = T.ADBK_ID
+				WHERE 1=1
+		]]>
+		<isEqual prepend="AND" property="searchCondition" compareValue="taskNm">
+			<![CDATA[	T.TASK_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual prepend="AND" property="searchCondition" compareValue="cmpnyNm">
+			<![CDATA[	C.CMPNY_NM LIKE '%$searchKeyword$%'	]]>
+		</isEqual>
+		<isEqual property="searchCondition" compareValue="">
+			<isNotEmpty prepend="AND" property="searchKeyword">
+				<![CDATA[	(T.TASK_NM LIKE '%$searchKeyword$%' OR C.CMPNY_NM LIKE '%$searchKeyword$%')		]]>
+			</isNotEmpty>
+		</isEqual>
+		<isNotEmpty prepend="AND" property="searchMainDept">
+			<![CDATA[	T.MAIN_DEPT = '$searchMainDept$'	]]>
+		</isNotEmpty>
+		<isNotEmpty property="searchTaskSdate">
+			<isNotEmpty prepend="AND" property="searchTaskEdate">
+				<![CDATA[	T.TASK_SDATE <= '$searchTaskSdate$' AND T.TASK_EDATE >= '$searchTaskEdate$'	]]>
+			</isNotEmpty>
+		</isNotEmpty>
+		<isNotEmpty prepend="AND" property="searchTaskId">
+			<![CDATA[	T.TASK_ID = '$searchTaskId$'	]]>
+		</isNotEmpty>
+			GROUP BY T.TASK_ID
+			) X
+	</select>
+	
+	<select id="profitLossDAO.selectLaborCostByTask" resultClass="egovMap">
+		<![CDATA[
+		   SELECT A.TASK_PER_ID
+		         ,A.EMPL_NO
+		         ,A.TASK_ID
+		         ,A.ROLE
+		         ,A.RATE
+		         ,A.REG_DT
+		         ,A.REGSTR_NM
+		         ,A.STTUS
+		         ,A.STTUS_CHNG_DATE	 
+		         ,B.ORGNZT_ID   
+		         ,B.ORGNZT_NM
+		         ,B.USER_NM   
+		         ,B.OFCPS_NM
+		         ,B.OFCPS_ID
+		         ,IFNULL((SELECT SUM(C.SCHDUL_TIME) from comtnschdulinfo C where C.SCHDUL_TYPE = '2' AND A.EMPL_NO = C.FRST_REGISTER_ID AND A.TASK_ID = C.TASK_ID),0) AS NIGHT_WORK
+		         ,IFNULL((SELECT SUM(D.SCHDUL_TIME) from comtnschdulinfo D where D.SCHDUL_TYPE = '3' AND A.EMPL_NO = D.FRST_REGISTER_ID AND A.TASK_ID = D.TASK_ID),0) AS WEEK_WORK
+		         ,IFNULL((SELECT SUM(E.SCHDUL_EARLYDELAY_TIME) from comtnschdulinfo E where A.EMPL_NO = E.FRST_REGISTER_ID AND A.TASK_ID = E.TASK_ID),0) AS DELAY
+		         ,(SELECT IFNULL(SUM(SCHDUL_TIME),0) FROM COMTNSCHDULINFO WHERE SCHDUL_TYPE = '1' AND FRST_REGISTER_ID = A.EMPL_NO AND TASK_ID = '$taskId$') AS WORK_HOUR
+	       FROM   TB_TASK_PERSON A LEFT JOIN COMTNEMPLYRINFO B 
+	            	ON A.EMPL_NO = B.EMPL_NO
+	       WHERE TASK_ID = '$taskId$'
+       ]]>
+	</select>
+	
+	<select id="profitLossDAO.selectSalaryDuringTask" resultClass="java.lang.Integer">
+		<![CDATA[
+			/*emplNo의 task 기간 동안 전체 인건비*/
+			
+			SET @taskSdate = REPLACE('$taskSdate$','/',''); /*yyyy/MM/dd*/
+			SET @taskEdate = REPLACE('$taskEdate$','/',''); /*yyyy/MM/dd*/
+			
+			SET @taskSday = DATE_FORMAT(@taskSdate, '%d');
+			SET @taskEday = DATE_FORMAT(@taskEdate, '%d');
+			
+			SET @taskSmonthLastDay = DATE_FORMAT((SELECT LAST_DAY(@taskSdate)), '%d');
+			/*task 시작 월에서 차지하는 비중*/
+			SET @taskSmonthWeight = (@taskSmonthLastDay - @taskSday + 1) / @taskSmonthLastDay;
+			
+			SET @taskEmonthLastDay = DATE_FORMAT((SELECT LAST_DAY(@taskEdate)), '%d');
+			/*task 종료 월에서 차지하는 비중*/
+			SET @taskEmonthWeight = @taskEday / @taskEmonthLastDay;
+			
+			/*task가 한달 내일 경우 그 달에서 차지하는 비중*/
+			SET @taskWithinOneMonthWeight = (DATE_FORMAT(@taskEdate, '%d') - DATE_FORMAT(@taskSdate, '%d') + 1) / @taskEmonthLastDay;
+			
+			SELECT
+				/*task 기간 동안 emplNo에게 투입된 인건비*/
+				SUM(ACTUAL_PAY) AS ACTUAL_PAY
+			FROM
+				(
+					SELECT EMPLYR_NO
+						,YMONTH
+						,TOTAL_PAY /*월 급여*/
+					
+						/*task가 해당 월에서 차지하는 비중*/
+						,(CASE YMONTH
+						WHEN LEFT(@taskSdate,6) THEN
+							IF(LEFT(@taskSdate,6)<>LEFT(@taskEdate,6), @taskSmonthWeight, @taskWithinOneMonthWeight)
+						WHEN LEFT(@taskEdate,6) THEN
+							IF(LEFT(@taskSdate,6)<>LEFT(@taskEdate,6), @taskEmonthWeight, @taskWithinOneMonthWeight)
+						ELSE
+							1
+						END) AS PAY_WEIGHT
+						
+						/*task 비중에 따른 월별 emplNo에게 투입된 인건비*/
+						,(CASE YMONTH
+						WHEN LEFT(@taskSdate,6) THEN
+							TOTAL_PAY * IF(LEFT(@taskSdate,6)<>LEFT(@taskEdate,6), @taskSmonthWeight, @taskWithinOneMonthWeight)
+						WHEN LEFT(@taskEdate,6) THEN
+							TOTAL_PAY * IF(LEFT(@taskSdate,6)<>LEFT(@taskEdate,6), @taskEmonthWeight, @taskWithinOneMonthWeight)
+						ELSE
+							TOTAL_PAY
+						END) AS ACTUAL_PAY
+					
+					FROM TB_SALARYMANAGE
+					WHERE YMONTH >= LEFT(@taskSdate,6)
+						AND YMONTH <= LEFT(@taskEdate,6)
+						AND EMPLYR_NO = '$emplNo$'
+				) X
+			GROUP BY EMPLYR_NO
+		]]>
+	</select>
+	
+	<select id="profitLossDAO.selectTaskWorkHour" resultClass="egovMap">
+		<![CDATA[
+			SET @emplNo = '$emplNo$';
+			SET @taskId = '$taskId$';
+			SET @taskSdate = '$taskSdate$'; /*yyyy/MM/dd*/
+			SET @taskEdate = '$taskEdate$'; /*yyyy/MM/dd*/
+			
+			/*@taskId 기간 내 @emplNo의 모든 Task 일정 시간의 합*/
+			SET @totalSchdulTime =
+				(SELECT
+					SUM(SCHDUL_TIME)
+					/*,TASK_ID*/
+					/*,FRST_REGISTER_ID*/	
+					/*,LEFT(SCHDUL_SDT,10)*/
+					/*,LEFT(SCHDUL_EDT,10)*/
+					/*,@taskSdate*/
+					/*,@taskEdate*/
+			FROM COMTNSCHDULINFO
+			WHERE FRST_REGISTER_ID = @emplNo
+				AND LEFT(SCHDUL_SDT,10) >= @taskSdate
+				AND LEFT(SCHDUL_EDT,10) <= @taskEdate
+				AND SCHDUL_TIME IS NOT NULL);
+			
+			/*@taskId 기간 내 @emplNo의 task 관련 일정 시간 총 합, @taskId 기간 내 타 task 포함한 모든 일정 시간 총 합*/
+			SELECT
+				@taskId
+				,IFNULL(SUM(SCHDUL_TIME),0) AS TASK_SCHDUL_TIME
+				,IFNULL(@totalSchdulTime,0) AS TOTAL_SCHDUL_TIME
+				/*,(SUM(SCHDUL_TIME) / @totalSchdulTime) AS TASK_SCHDUL_WEIGHT*/
+			FROM COMTNSCHDULINFO
+			WHERE FRST_REGISTER_ID = @emplNo
+				AND SCHDUL_TIME IS NOT NULL
+				AND TASK_ID = @taskId
+		]]>
+	</select>
+	
+	<select id="profitLossDAO.selectSpannedScheduleForAnotherTaskHead" resultClass="egovMap">
+		<![CDATA[
+			SELECT SCHDUL_SDT
+				,SCHDUL_EDT
+			FROM COMTNSCHDULINFO
+			WHERE TASK_ID <> '$taskId$'
+				AND LEFT(SCHDUL_SDT,10) < '$taskSdate$'
+				AND LEFT(SCHDUL_EDT,10) >= '$taskSdate$'
+		]]>
+	</select>
+	
+	<select id="profitLossDAO.selectSpannedScheduleForAnotherTaskTail" resultClass="egovMap">
+		<![CDATA[
+			SELECT SCHDUL_SDT
+				,SCHDUL_EDT
+			FROM COMTNSCHDULINFO
+			WHERE TASK_ID <> '$taskId$'
+				AND LEFT(SCHDUL_SDT,10) <= '$taskEdate$'
+				AND LEFT(SCHDUL_EDT,10) > '$taskEdate$'
+		]]>
+	</select>
+</sqlMap>

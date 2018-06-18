@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="SalaryDAO">
+	<typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	<typeAlias  alias="SalaryVO" type="tis.com.financial.salary.service.SalaryVO"/>
+	
+	<resultMap id="salaryDetail" class="tis.com.financial.salary.service.SalaryVO">
+		<result property="emplyrNo" column="EMPLYR_NO" columnIndex="1"/>
+		<result property="basicWorkingTime" column="BASIC_WORKING_TIME" columnIndex="2"/>
+		<result property="nightWorkingTime" column="NIGHT_WORKING_TIME" columnIndex="3"/>
+		<result property="holidayWorkingTime" column="HOLIDAY_WORKING_TIME" columnIndex="4"/>
+		<result property="totalIncrease" column="TOTAL_INCREASE" columnIndex="5"/>
+		<result property="totalReduction" column="TOTAL_REDUCTION" columnIndex="6"/>
+		<result property="totalPay" column="TOTAL_PAY" columnIndex="7"/>
+		<result property="rm" column="RM" columnIndex="8"/>
+		<result property="affiliationId" column="AFFILIATION_ID" columnIndex="8"/>
+		<result property="emplyrNm" column="EMPLYR_NM" columnIndex="9"/>
+		<result property="ymonth" column="YMONTH" columnIndex="10"/>
+	</resultMap>
+	
+	 <select id="salaryDAO.allSalaryList" resultClass="egovMap">
+			SELECT 
+				   YMONTH,
+				   PAY_DT,
+				   TOTAL_INCREASE,
+				   TOTAL_REDUCTION,
+				   TOTAL_PAY,
+				   AFFILIATION_ID
+				   
+			FROM tb_salarymanagemaster
+			WHERE AFFILIATION_ID = #affiliationId#
+				<isNotEmpty prepend="AND" property="startDate">
+					YMONTH BETWEEN #startDate# and #endDate#
+				</isNotEmpty>
+			ORDER BY YMONTH DESC
+			<isGreaterThan property="recordCountPerPage" compareValue="1">
+				LIMIT #recordCountPerPage# OFFSET #firstIndex#
+			</isGreaterThan>
+	 </select>
+	 
+	 <select id="salaryDAO.selectSalaryList" resultClass="egovMap">
+			SELECT 
+				   YMONTH,
+				   PAY_DT,
+				   TOTAL_INCREASE,
+				   TOTAL_REDUCTION,
+				   TOTAL_PAY,
+				   AFFILIATION_ID
+				   
+			FROM tb_salarymanagemaster
+			WHERE AFFILIATION_ID = #affiliationId# AND
+			      YMONTH = #ymonth#
+			ORDER BY YMONTH DESC
+	 </select>
+	 
+	 <select id="salaryDAO.salaryView" resultClass="egovMap">
+			SELECT	EMPLYR_NO,
+					EMPLYR_NM,
+					BASIC_WORKING_TIME,
+					NIGHT_WORKING_TIME,
+					HOLIDAY_WORKING_TIME,
+					TOTAL_INCREASE,
+					TOTAL_REDUCTION,
+					TOTAL_PAY,
+					RM,
+					AFFILIATION_ID,
+					YMONTH
+						
+			FROM 	tb_salarymanage
+			WHERE	
+					YMONTH = #ymonth# AND
+					AFFILIATION_ID = #affiliationId#
+			
+	</select>
+	
+	<select id="salaryDAO.salaryViewExcel" resultClass="egovMap">
+			SELECT	EMPLYR_NO,
+					EMPLYR_NM,
+					BASIC_WORKING_TIME,
+					NIGHT_WORKING_TIME,
+					HOLIDAY_WORKING_TIME,
+					TOTAL_INCREASE,
+					TOTAL_REDUCTION,
+					TOTAL_PAY,
+					RM,
+					AFFILIATION_ID,
+					YMONTH
+						
+			FROM 	tb_salarymanage
+			WHERE	
+					YMONTH = #ymonth# AND
+					AFFILIATION_ID = #affiliationId# AND
+					EMPLYR_NO = #emplyrNo#
+			
+	</select>
+	
+	<select id="salaryDAO.salaryEmplyrDetail" resultClass="egovMap">
+			SELECT 
+				   EMPLYR_NO,
+				   YMONTH,		   
+				   BASIC_WORKING_TIME,
+				   NIGHT_WORKING_TIME,
+				   HOLIDAY_WORKING_TIME,
+				   TOTAL_INCREASE,
+				   INCOME_TAX,
+				   RESIDENCE_TAX,
+				   NATIONAL_PENSION,
+				   HEALTH_INSU,
+				   UMPL_INSU,
+				   LONG_CARE_INSU,
+				   TOTAL_REDUCTION,
+				   TOTAL_PAY,
+				   AFFILIATION_ID
+				   
+			FROM tb_salarymanage
+			WHERE AFFILIATION_ID = #affiliationId# AND
+				  EMPLYR_NO = #emplyrNo#
+			<isNotEmpty prepend="AND" property="startDate">
+				  YMONTH BETWEEN #startDate# and #endDate#
+			</isNotEmpty>
+			ORDER BY YMONTH DESC
+			<isGreaterThan property="recordCountPerPage" compareValue="1">
+				LIMIT #recordCountPerPage# OFFSET #firstIndex#
+			</isGreaterThan>
+	 </select>
+	 
+	<select id="salaryDAO.salaryEmplyrDetailExcel" resultClass="egovMap">
+			SELECT 
+				   EMPLYR_NO,
+				   YMONTH,		   
+				   BASIC_WORKING_TIME,
+				   NIGHT_WORKING_TIME,
+				   HOLIDAY_WORKING_TIME,
+				   TOTAL_INCREASE,
+				   INCOME_TAX,
+				   RESIDENCE_TAX,
+				   NATIONAL_PENSION,
+				   HEALTH_INSU,
+				   UMPL_INSU,
+				   LONG_CARE_INSU,
+				   TOTAL_REDUCTION,
+				   TOTAL_PAY,
+				   AFFILIATION_ID
+				   
+			FROM tb_salarymanage
+			WHERE AFFILIATION_ID = #affiliationId# AND
+				  EMPLYR_NO = #emplyrNo# AND
+				  YMONTH = #ymonth#
+	 </select>
+	 
+	 <insert id="salaryDAO.insertExcelDetail">
+	     	INSERT INTO tb_salarymanage
+		     	( 
+		    		EMPLYR_NO,
+		    		EMPLYR_NM,
+					YMONTH,
+					PAY_TYPE,
+					BASIC_WORKING_TIME,
+					NIGHT_WORKING_TIME,
+					HOLIDAY_WORKING_TIME,
+					BASICM_PAY,
+					BASICD_PAY,
+					BASICH_PAY,
+					WEEKLY_HOLIDAY_PAY,
+					EXTENDED_PAY,
+					HOLIDAY_PAY,
+					NIGHT_WORK_PAY,
+					BONUS,
+					OFCPS_PAY,
+					OVERTIME_PAY,
+					TRANSPOR_EXPE,
+					CAR_MAINTEN_EXPE,
+					CHILD_REARING_EXPE,
+					MEAL_EXPENSES,
+					PAYMENT_RESULTS,
+					INCOME_TAX,
+					RESIDENCE_TAX,
+					NATIONAL_PENSION,
+					HEALTH_INSU,
+					UMPL_INSU,
+					LONG_CARE_INSU,
+					TOTAL_INCREASE,
+					TOTAL_REDUCTION,
+					TOTAL_PAY,
+					RM,
+					AFFILIATION_ID
+				)
+			VALUES 
+				(
+		    		#emplyrNo# ,
+		    		#emplyrNm# ,
+					#ymonth# ,
+					#payType# ,
+					#basicWorkingTime# ,
+					#nightWorkingTime# ,
+					#holidayWorkingTime# ,
+					#basicmPay# ,
+					#basicdPay# ,
+					#basichPay# ,
+					#weeklyHolidayPay# ,
+					#extendedPay# ,
+					#holidayPay# ,
+					#nightWorkPay# ,
+					#bonus# ,
+					#ofcpsPay# ,
+					#overtimePay# ,
+					#transporExpe# ,
+					#carMaintenExpe# ,
+					#childRearingExpe# ,
+					#mealExpenses# ,
+					#paymentResults# ,
+					#incomeTax# ,
+					#residenceTax# ,
+					#nationalPension# ,
+					#healthInsu# ,
+					#umplInsu# ,
+					#longCareInsu# ,
+					#totalIncrease# ,
+					#totalReduction# ,
+					#totalPay# ,
+					#rm#,
+					#affiliationId#
+				)
+	 </insert>
+	 
+	 <delete id="salaryDAO.deleteExcelDetail">
+	     	DELETE FROM tb_salarymanage
+	     	WHERE YMONTH =#ymonth# AND
+	           	  AFFILIATION_ID = #affiliationId#
+	 </delete>
+	 
+	 <delete id="salaryDAO.deleteExcelMaster">
+	     	DELETE FROM tb_salarymanagemaster
+	     	WHERE YMONTH =#ymonth# AND
+	     	      AFFILIATION_ID = #affiliationId#
+	 </delete>
+	 
+	 <insert id="salaryDAO.insertExcelMaster">
+	     	INSERT INTO tb_salarymanagemaster
+		     	( 
+		    		YMONTH,
+					PAY_DT,
+					AFFILIATION_ID
+				)
+			VALUES 
+				(
+		    		#ymonth#,
+					#payDt#,
+					#affiliationId#
+				)
+	 </insert>
+	 
+	 <update id="salaryDAO.updateExcelMaster">
+	     	UPDATE tb_salarymanagemaster SET
+	     		TOTAL_INCREASE = #totalIncrease#,
+				TOTAL_REDUCTION = #totalReduction#,
+				TOTAL_PAY = #totalPay#
+				
+	   		WHERE  YMONTH = #ymonth# AND
+	   			   AFFILIATION_ID = #affiliationId#
+	     
+	 </update>
+	 
+	 <select id="salaryDAO.salaryFull" resultClass="egovMap">
+	 	SELECT 		EMPLYR_NO,
+	 				EMPLYR_NM,
+					YMONTH,
+					PAY_TYPE,
+					BASIC_WORKING_TIME,
+					NIGHT_WORKING_TIME,
+					HOLIDAY_WORKING_TIME,
+					BASICM_PAY,
+					BASICD_PAY,
+					BASICH_PAY,
+					WEEKLY_HOLIDAY_PAY,
+					EXTENDED_PAY,
+					HOLIDAY_PAY,
+					NIGHT_WORK_PAY,
+					BONUS,
+					OFCPS_PAY,
+					OVERTIME_PAY,
+					TRANSPOR_EXPE,
+					CAR_MAINTEN_EXPE,
+					CHILD_REARING_EXPE,
+					MEAL_EXPENSES,
+					PAYMENT_RESULTS,
+					INCOME_TAX,
+					RESIDENCE_TAX,
+					NATIONAL_PENSION,
+					HEALTH_INSU,
+					UMPL_INSU,
+					LONG_CARE_INSU,
+					TOTAL_INCREASE,
+					TOTAL_REDUCTION,
+					TOTAL_PAY,
+					RM
+					
+		FROM tb_salarymanage
+		WHERE YMONTH = #ymonth# AND
+		      AFFILIATION_ID = #affiliationId#
+					
+	 </select>
+	 
+	 <select id="BasketDAO.salaryListCnt" resultClass="int">
+	    SELECT COUNT(*) AS CNT
+		FROM 	tb_salarymanagemaster
+		WHERE AFFILIATION_ID = #affiliationId#
+				<isNotEmpty prepend="AND" property="startDate">
+					YMONTH BETWEEN #startDate# and #endDate#
+				</isNotEmpty>
+	 </select>
+	 
+	 <select id="BasketDAO.emplSalaryListCnt" resultClass="int">
+	    SELECT COUNT(*) AS CNT
+		FROM 	tb_salarymanage
+		WHERE AFFILIATION_ID = #affiliationId# AND
+			  EMPLYR_NO = #emplyrNo#	
+			<isNotEmpty prepend="AND" property="startDate">
+				YMONTH BETWEEN #startDate# and #endDate#
+			</isNotEmpty>
+	 </select>
+</sqlMap>
